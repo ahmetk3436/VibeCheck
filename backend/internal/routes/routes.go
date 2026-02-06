@@ -5,11 +5,13 @@ import (
 	"github.com/ahmetcoskunkizilkaya/vibecheck/backend/internal/handlers"
 	"github.com/ahmetcoskunkizilkaya/vibecheck/backend/internal/middleware"
 	"github.com/gofiber/fiber/v2"
+	"gorm.io/gorm"
 )
 
 func Setup(
 	app *fiber.App,
 	cfg *config.Config,
+	db *gorm.DB,
 	authHandler *handlers.AuthHandler,
 	healthHandler *handlers.HealthHandler,
 	webhookHandler *handlers.WebhookHandler,
@@ -45,9 +47,8 @@ func Setup(
 	vibes.Get("/history", vibeHandler.GetVibeHistory) // Get vibe history
 	vibes.Get("/stats", vibeHandler.GetVibeStats)     // Get stats & streaks
 
-	// Admin moderation panel (protected + admin check)
-	// In production, add an admin role middleware here
-	admin := api.Group("/admin", middleware.JWTProtected(cfg))
+	// Admin moderation panel (protected + admin role required)
+	admin := api.Group("/admin", middleware.JWTProtected(cfg), middleware.AdminRequired(db))
 	admin.Get("/moderation/reports", moderationHandler.ListReports)
 	admin.Put("/moderation/reports/:id", moderationHandler.ActionReport)
 

@@ -74,7 +74,7 @@ func main() {
 	app.Use("/api/auth", authLimiter)
 
 	// Routes
-	routes.Setup(app, cfg, authHandler, healthHandler, webhookHandler, moderationHandler, vibeHandler)
+	routes.Setup(app, cfg, database.DB, authHandler, healthHandler, webhookHandler, moderationHandler, vibeHandler)
 
 	// Graceful shutdown
 	quit := make(chan os.Signal, 1)

@@ -4,13 +4,13 @@
       "id": "enhance_001",
       "title": "Replace keyword mood analysis with real AI API",
       "description": "The backend vibe_service.go analyzeMood() at line 59 uses simple keyword matching with a hardcoded map and falls back to RANDOM aesthetic selection when no keywords match (line 84-88). The calculateVibeScore() at line 92 is also a naive word counter starting at 50 and adding/subtracting 10 per keyword. This must be replaced with real OpenAI GPT-4o-mini calls.\n\nModify backend/internal/services/vibe_service.go:\n- Add new field to VibeService struct: `openaiKey string` loaded from config\n- Add new config field in backend/internal/config/config.go: `OpenAIKey string` from env var `OPENAI_API_KEY`\n- Pass config.OpenAIKey to NewVibeService() in cmd/server/main.go\n- Replace analyzeMood() with a function that calls https://api.openai.com/v1/chat/completions using net/http and encoding/json\n- System prompt: 'You are a mood-to-aesthetic analyzer. Given a user mood text, respond with JSON: {\"aesthetic_key\": one of [chill,energetic,romantic,melancholy,adventurous,creative,peaceful,confident,cozy,mysterious], \"vibe_score\": 10-100, \"insight\": short 1-sentence insight about their vibe}. Match the aesthetic that best fits the emotional tone.'\n- User prompt: the moodText\n- Parse the JSON response, look up aesthetic from models.Aesthetics map\n- Add fallback: if OPENAI_API_KEY is empty or API call fails, fall back to the existing keyword logic (keep it as fallbackAnalyzeMood)\n- Replace calculateVibeScore() to use the AI-returned vibe_score instead\n- Add new field 'Insight' to models.VibeCheck struct (string, json:\"insight\"), run AutoMigrate\n- Add 'Insight' field to dto/vibe_dto.go VibeCheckResponse\n- Update CreateVibeCheck to store the insight in the database\n- Add env var OPENAI_API_KEY to .env.example",
-      "status": "in_progress",
+      "status": "completed",
       "priority": 10,
       "depends_on": [],
       "test_command": "cd backend \u0026\u0026 go build ./...",
       "auto_commit": true,
       "created_at": "",
-      "updated_at": "2026-02-06T22:34:43Z"
+      "updated_at": "2026-02-06T22:38:19Z"
     },
     {
       "id": "enhance_002",
@@ -154,13 +154,13 @@
       "id": "enhance_013",
       "title": "Add admin role middleware and Apple token verification",
       "description": "Two CRITICAL security issues: 1) Admin endpoints have NO role check (routes.go line 49) - any authenticated user can access admin panel. 2) Apple Sign-In token signature is NOT verified (auth_service.go line 146-201).\n\nModify backend/internal/models/user.go:\n- Add Role field: `Role string json:\"role\" gorm:\"default:'user'\"` with values 'user' or 'admin'\n- This will AutoMigrate and add the column\n\nModify backend/internal/middleware/auth.go:\n- Add new middleware function AdminRequired() fiber.Handler:\n  - Extract userID from c.Locals('userID')\n  - Query database for user, check Role == 'admin'\n  - If not admin, return 403 Forbidden with message 'Admin access required'\n  - Pass db *gorm.DB to middleware via closure: func AdminRequired(db *gorm.DB) fiber.Handler\n\nModify backend/internal/routes/routes.go:\n- Add AdminRequired middleware to admin group: admin := api.Group('/admin', middleware.JWTProtected(cfg), middleware.AdminRequired(db))\n- Pass db parameter to SetupRoutes function signature\n- Update cmd/server/main.go to pass db to SetupRoutes\n\nModify backend/internal/services/auth_service.go:\n- Add Apple token verification in AppleSignIn method:\n  - Fetch Apple's public keys from https://appleid.apple.com/auth/keys using net/http\n  - Parse the JWKS response to get the signing key\n  - Verify the JWT signature using crypto/rsa and crypto/x509\n  - Verify claims: iss == 'https://appleid.apple.com', aud == your app bundle ID (from config)\n  - Verify exp is not expired\n  - Add AppBundleID to config.go from env var APPLE_BUNDLE_ID\n  - If verification fails, return error 'invalid Apple identity token'\n  - Add import for 'crypto/rsa', 'crypto/x509', 'encoding/pem', 'math/big'\n  - Cache Apple's public keys for 24 hours to avoid repeated fetches (use sync.Once or time-based cache)",
-      "status": "pending",
+      "status": "in_progress",
       "priority": 10,
       "depends_on": [],
       "test_command": "cd backend \u0026\u0026 go build ./...",
       "auto_commit": true,
       "created_at": "",
-      "updated_at": ""
+      "updated_at": "2026-02-06T22:38:19Z"
     },
     {
       "id": "enhance_014",
