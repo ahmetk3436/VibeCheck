@@ -34,3 +34,11 @@ Thumbs.db
 
 # Logs
 *.log
+
+# Nested project clones (junk)
+AuraSnap/
+Feelsy/
+
+# Auto-generated agent files
+**/CLAUDE.md
+human_req.txt
