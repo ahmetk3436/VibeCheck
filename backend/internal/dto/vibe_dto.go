@@ -15,6 +15,7 @@ type VibeCheckResponse struct {
 	ColorAccent    string `json:"color_accent"`
 	VibeScore      int    `json:"vibe_score"`
 	Emoji          string `json:"emoji"`
+	Insight        string `json:"insight"`
 	CheckDate      string `json:"check_date"`
 }
 

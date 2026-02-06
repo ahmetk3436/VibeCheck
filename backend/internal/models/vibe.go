@@ -18,6 +18,7 @@ type VibeCheck struct {
 	ColorAccent    string      `gorm:"size:7" json:"color_accent"`
 	VibeScore   int            `gorm:"default:50" json:"vibe_score"`
 	Emoji       string         `gorm:"size:10" json:"emoji"`
+	Insight     string         `gorm:"size:500" json:"insight"`
 	CheckDate   time.Time      `gorm:"type:date;not null" json:"check_date"`
 	CreatedAt   time.Time      `json:"created_at"`
 	UpdatedAt   time.Time      `json:"updated_at"`

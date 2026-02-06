@@ -42,7 +42,7 @@ func main() {
 	authService := services.NewAuthService(database.DB, cfg)
 	subscriptionService := services.NewSubscriptionService(database.DB)
 	moderationService := services.NewModerationService(database.DB)
-	vibeService := services.NewVibeService(database.DB)
+	vibeService := services.NewVibeService(database.DB, cfg.OpenAIKey)
 
 	// Handlers
 	authHandler := handlers.NewAuthHandler(authService)
