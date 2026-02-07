@@ -6,20 +6,31 @@
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "scheme": "vibecheck",
-    "userInterfaceStyle": "light",
+    "userInterfaceStyle": "dark",
     "newArchEnabled": true,
+    "owner": "ahmetcoskunkizilkaya",
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#030712"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": false,
+      "bundleIdentifier": "com.ahmetcoskunkizilkaya.vibecheck",
+      "buildNumber": "1",
+      "infoPlist": {
+        "NSFaceIDUsageDescription": "VibeCheck uses Face ID to protect your account",
+        "NSCameraUsageDescription": "VibeCheck needs camera access for future features"
+      },
+      "config": {
+        "usesNonExemptEncryption": false
+      }
     },
     "android": {
+      "package": "com.ahmetcoskunkizilkaya.vibecheck",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "backgroundColor": "#030712"
       },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false
@@ -29,7 +40,10 @@
     },
     "plugins": [
       "expo-router",
-      "expo-secure-store"
+      "expo-secure-store",
+      "expo-apple-authentication",
+      "expo-haptics",
+      "expo-local-authentication"
     ]
   }
 }

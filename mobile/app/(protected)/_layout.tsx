@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, Pressable } from 'react-native';
+import { View, Text, Pressable, Platform } from 'react-native';
 import { Slot, usePathname, router, Redirect } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -7,9 +7,24 @@ import { useAuth } from '../../contexts/AuthContext';
 import { hapticSelection } from '../../lib/haptics';
 
 const TABS = [
-  { name: 'Home', route: '/(protected)/home', icon: 'pulse' as const },
-  { name: 'History', route: '/(protected)/history', icon: 'time' as const },
-  { name: 'Settings', route: '/(protected)/settings', icon: 'settings' as const },
+  {
+    route: '/(protected)/home',
+    icon: 'sparkles' as const,
+    iconOutline: 'sparkles-outline' as const,
+    label: 'Vibe',
+  },
+  {
+    route: '/(protected)/history',
+    icon: 'time' as const,
+    iconOutline: 'time-outline' as const,
+    label: 'History',
+  },
+  {
+    route: '/(protected)/settings',
+    icon: 'settings-sharp' as const,
+    iconOutline: 'settings-outline' as const,
+    label: 'Settings',
+  },
 ];
 
 export default function ProtectedLayout() {
@@ -38,29 +53,42 @@ export default function ProtectedLayout() {
       {/* Custom Tab Bar */}
       <View
         className="flex-row bg-gray-900 border-t border-gray-800"
-        style={{ paddingBottom: insets.bottom > 0 ? insets.bottom : 8 }}
+        style={{
+          paddingBottom: Platform.OS === 'ios' && insets.bottom > 0 ? insets.bottom : 8,
+          paddingTop: 8,
+          paddingHorizontal: 16,
+        }}
       >
         {TABS.map((tab) => {
-          const isActive = pathname === tab.route || pathname === `/${tab.route.split('/').pop()}`;
+          const isActive =
+            pathname === tab.route ||
+            pathname === `/${tab.route.split('/').pop()}` ||
+            pathname.includes(tab.route.split('/').pop() || '');
+
           return (
             <Pressable
-              key={tab.name}
-              className="flex-1 items-center pt-3 pb-2"
+              key={tab.label}
+              className="flex-1 items-center py-1"
               onPress={() => {
                 hapticSelection();
                 router.push(tab.route as any);
               }}
             >
               <Ionicons
-                name={isActive ? tab.icon : (`${tab.icon}-outline` as any)}
-                size={24}
-                color={isActive ? '#6366f1' : '#6b7280'}
+                name={isActive ? tab.icon : tab.iconOutline}
+                size={22}
+                color={isActive ? '#2563eb' : '#9ca3af'}
               />
               <Text
-                className={`text-xs mt-1 ${isActive ? 'text-indigo-400 font-semibold' : 'text-gray-500'}`}
+                className={`text-xs mt-0.5 ${
+                  isActive ? 'text-primary-600 font-semibold' : 'text-gray-400'
+                }`}
               >
-                {tab.name}
+                {tab.label}
               </Text>
+              {isActive && (
+                <View className="w-1 h-1 rounded-full bg-primary-600 mt-1" />
+              )}
             </Pressable>
           );
         })}

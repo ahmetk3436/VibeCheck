@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, KeyboardAvoidingView, Platform, Pressable } from 'react-native';
 import { Link, router } from 'expo-router';
 import { useAuth } from '../../contexts/AuthContext';
+import { hapticLight } from '../../lib/haptics';
 import Button from '../../components/ui/Button';
 import Input from '../../components/ui/Input';
 import AppleSignInButton from '../../components/ui/AppleSignInButton';
@@ -33,6 +34,7 @@ export default function LoginScreen() {
   };
 
   const handleGuestMode = async () => {
+    hapticLight();
     await continueAsGuest();
     router.replace('/(protected)/home');
   };
@@ -43,15 +45,17 @@ export default function LoginScreen() {
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
       <View className="flex-1 justify-center px-8">
-        <Text className="mb-2 text-3xl font-bold text-white">
-          Welcome back
+        {/* Branding */}
+        <Text className="text-5xl text-center">{'\u2728'}</Text>
+        <Text className="text-3xl font-bold text-white text-center mt-2">
+          VibeCheck
         </Text>
-        <Text className="mb-8 text-base text-gray-400">
-          Sign in to your account
+        <Text className="text-base text-gray-400 text-center mt-1 mb-8">
+          Welcome back
         </Text>
 
         {error ? (
-          <View className="mb-4 rounded-lg bg-red-900/40 p-3">
+          <View className="mb-4 rounded-xl bg-red-900/30 p-3">
             <Text className="text-sm text-red-400">{error}</Text>
           </View>
         ) : null}
@@ -65,6 +69,7 @@ export default function LoginScreen() {
             autoCapitalize="none"
             keyboardType="email-address"
             textContentType="emailAddress"
+            editable={!isLoading}
           />
         </View>
 
@@ -76,6 +81,7 @@ export default function LoginScreen() {
             onChangeText={setPassword}
             secureTextEntry
             textContentType="password"
+            editable={!isLoading}
           />
         </View>
 
@@ -86,23 +92,21 @@ export default function LoginScreen() {
           size="lg"
         />
 
-        {/* Sign in with Apple -- equal visual prominence (Guideline 4.8) */}
-        <AppleSignInButton onError={(msg) => setError(msg)} />
-
-        {/* Try Without Account */}
-        <Pressable className="mt-6 items-center py-3" onPress={handleGuestMode}>
-          <Text className="text-base font-medium text-indigo-400">
-            Try Without Account
-          </Text>
-          <Text className="text-xs text-gray-500 mt-1">3 free uses, no sign-up needed</Text>
-        </Pressable>
-
         <View className="mt-4 flex-row items-center justify-center">
-          <Text className="text-gray-400">Don't have an account? </Text>
+          <Text className="text-gray-400">No account? </Text>
           <Link href="/(auth)/register" asChild>
-            <Text className="font-semibold text-indigo-400">Sign Up</Text>
+            <Text className="font-semibold text-primary-500">Sign Up</Text>
           </Link>
         </View>
+
+        {/* Sign in with Apple (Guideline 4.8) */}
+        <AppleSignInButton onError={(msg) => setError(msg)} />
+
+        {/* Skip for now */}
+        <Pressable className="mt-6 items-center py-3" onPress={handleGuestMode}>
+          <Text className="text-sm text-gray-500">Skip for now</Text>
+          <Text className="text-xs text-gray-600 mt-0.5">3 free uses, no sign-up needed</Text>
+        </Pressable>
       </View>
     </KeyboardAvoidingView>
   );

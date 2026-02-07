@@ -66,7 +66,7 @@ func (s *VibeService) CreateVibeCheck(userID uuid.UUID, moodText string) (*model
 	aesthetic := models.Aesthetics[result.AestheticKey]
 
 	check := &models.VibeCheck{
-		UserID:         userID,
+		UserID:         &userID,
 		MoodText:       moodText,
 		Aesthetic:      aesthetic.Name,
 		ColorPrimary:   aesthetic.ColorPrimary,
@@ -84,6 +84,46 @@ func (s *VibeService) CreateVibeCheck(userID uuid.UUID, moodText string) (*model
 
 	// Update streak
 	s.updateStreak(userID, today)
+
+	return check, nil
+}
+
+// CreateGuestVibeCheck creates a vibe check for a guest user (no auth required)
+func (s *VibeService) CreateGuestVibeCheck(moodText, deviceID string) (*models.VibeCheck, error) {
+	today := time.Now().Truncate(24 * time.Hour)
+
+	// Count today's guest checks for this device
+	var count int64
+	s.db.Model(&models.VibeCheck{}).
+		Where("device_id = ? AND check_date = ? AND user_id IS NULL", deviceID, today).
+		Count(&count)
+
+	if count >= 3 {
+		return nil, errors.New("free limit reached, sign up for unlimited vibes")
+	}
+
+	// Analyze mood
+	result := s.analyzeWithAI(moodText)
+
+	aesthetic := models.Aesthetics[result.AestheticKey]
+
+	check := &models.VibeCheck{
+		UserID:         nil,
+		DeviceID:       &deviceID,
+		MoodText:       moodText,
+		Aesthetic:      aesthetic.Name,
+		ColorPrimary:   aesthetic.ColorPrimary,
+		ColorSecondary: aesthetic.ColorSecondary,
+		ColorAccent:    aesthetic.ColorAccent,
+		VibeScore:      result.VibeScore,
+		Emoji:          aesthetic.Emoji,
+		Insight:        result.Insight,
+		CheckDate:      today,
+	}
+
+	if err := s.db.Create(check).Error; err != nil {
+		return nil, err
+	}
 
 	return check, nil
 }
@@ -222,7 +262,7 @@ func (s *VibeService) fallbackAnalyzeMood(moodText string) (string, string) {
 	}
 
 	// Random if no match
-	aestheticKeys := []string{"chill", "energetic", "romantic", "adventurous", "creative", "peaceful", "confident", "cozy", "mysterious"}
+	aestheticKeys := []string{"chill", "energetic", "romantic", "melancholy", "adventurous", "creative", "peaceful", "confident", "cozy", "mysterious"}
 	randomKey := aestheticKeys[rand.Intn(len(aestheticKeys))]
 	return randomKey, models.Aesthetics[randomKey].Emoji
 }

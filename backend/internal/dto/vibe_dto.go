@@ -5,6 +5,12 @@ type CreateVibeCheckRequest struct {
 	MoodText string `json:"mood_text" validate:"required,max=500"`
 }
 
+// CreateGuestVibeCheckRequest represents a guest vibe check-in request
+type CreateGuestVibeCheckRequest struct {
+	MoodText string `json:"mood_text" validate:"required,max=500"`
+	DeviceID string `json:"device_id" validate:"required"`
+}
+
 // VibeCheckResponse represents a vibe check response
 type VibeCheckResponse struct {
 	ID             string `json:"id"`

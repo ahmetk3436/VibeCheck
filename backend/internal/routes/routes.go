@@ -30,6 +30,9 @@ func Setup(
 	auth.Post("/refresh", authHandler.Refresh)
 	auth.Post("/apple", authHandler.AppleSignIn) // Sign in with Apple (Guideline 4.8)
 
+	// Guest vibe check (public, rate limited by device)
+	api.Post("/vibes/guest", vibeHandler.CreateGuestVibeCheck)
+
 	// Auth (protected)
 	protected := api.Group("", middleware.JWTProtected(cfg))
 	protected.Post("/auth/logout", authHandler.Logout)

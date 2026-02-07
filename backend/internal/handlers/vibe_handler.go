@@ -89,6 +89,38 @@ func (h *VibeHandler) GetVibeHistory(c *fiber.Ctx) error {
 	})
 }
 
+// CreateGuestVibeCheck handles POST /api/vibes/guest
+func (h *VibeHandler) CreateGuestVibeCheck(c *fiber.Ctx) error {
+	var req dto.CreateGuestVibeCheckRequest
+	if err := c.BodyParser(&req); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error":   true,
+			"message": "Invalid request body",
+		})
+	}
+
+	if req.MoodText == "" || req.DeviceID == "" {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error":   true,
+			"message": "mood_text and device_id are required",
+		})
+	}
+
+	check, err := h.service.CreateGuestVibeCheck(req.MoodText, req.DeviceID)
+	if err != nil {
+		status := fiber.StatusBadRequest
+		if err.Error() == "free limit reached, sign up for unlimited vibes" {
+			status = fiber.StatusForbidden
+		}
+		return c.Status(status).JSON(fiber.Map{
+			"error":   true,
+			"message": err.Error(),
+		})
+	}
+
+	return c.Status(fiber.StatusCreated).JSON(check)
+}
+
 // GetVibeStats handles GET /api/vibes/stats
 func (h *VibeHandler) GetVibeStats(c *fiber.Ctx) error {
 	userToken := c.Locals("user").(*jwt.Token)

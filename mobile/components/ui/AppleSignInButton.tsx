@@ -51,9 +51,9 @@ export default function AppleSignInButton({ onError }: AppleSignInButtonProps) {
   return (
     <View className="mt-4">
       <View className="mb-4 flex-row items-center">
-        <View className="h-px flex-1 bg-gray-300" />
+        <View className="h-px flex-1 bg-gray-700" />
         <Text className="mx-4 text-sm text-gray-500">or</Text>
-        <View className="h-px flex-1 bg-gray-300" />
+        <View className="h-px flex-1 bg-gray-700" />
       </View>
 
       <Pressable

@@ -11,7 +11,7 @@ export default function RootLayout() {
     <SafeAreaProvider>
       <AuthProvider>
         <SubscriptionProvider>
-          <StatusBar style="light" />
+          <StatusBar style="light" backgroundColor="#030712" />
           <Slot />
         </SubscriptionProvider>
       </AuthProvider>

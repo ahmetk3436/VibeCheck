@@ -1,5 +1,12 @@
 import React, { useState } from 'react';
-import { View, Text, KeyboardAvoidingView, Platform } from 'react-native';
+import {
+  View,
+  Text,
+  KeyboardAvoidingView,
+  Platform,
+  Pressable,
+  Linking,
+} from 'react-native';
 import { Link } from 'expo-router';
 import { useAuth } from '../../contexts/AuthContext';
 import Button from '../../components/ui/Button';
@@ -49,15 +56,16 @@ export default function RegisterScreen() {
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
       <View className="flex-1 justify-center px-8">
-        <Text className="mb-2 text-3xl font-bold text-white">
-          Create account
+        <Text className="text-5xl text-center">{'\u2728'}</Text>
+        <Text className="text-3xl font-bold text-white text-center mt-2">
+          Create Account
         </Text>
-        <Text className="mb-8 text-base text-gray-400">
-          Start tracking your daily vibe
+        <Text className="text-base text-gray-400 text-center mt-1 mb-8">
+          Discover your daily vibe aesthetic
         </Text>
 
         {error ? (
-          <View className="mb-4 rounded-lg bg-red-900/40 p-3">
+          <View className="mb-4 rounded-xl bg-red-900/30 p-3">
             <Text className="text-sm text-red-400">{error}</Text>
           </View>
         ) : null}
@@ -71,6 +79,7 @@ export default function RegisterScreen() {
             autoCapitalize="none"
             keyboardType="email-address"
             textContentType="emailAddress"
+            editable={!isLoading}
           />
         </View>
 
@@ -82,6 +91,7 @@ export default function RegisterScreen() {
             onChangeText={setPassword}
             secureTextEntry
             textContentType="newPassword"
+            editable={!isLoading}
           />
         </View>
 
@@ -93,11 +103,12 @@ export default function RegisterScreen() {
             onChangeText={setConfirmPassword}
             secureTextEntry
             textContentType="newPassword"
+            editable={!isLoading}
           />
         </View>
 
         <Button
-          title="Create Account"
+          title={isLoading ? 'Creating your account...' : 'Create Account'}
           onPress={handleRegister}
           isLoading={isLoading}
           size="lg"
@@ -106,9 +117,27 @@ export default function RegisterScreen() {
         <View className="mt-6 flex-row items-center justify-center">
           <Text className="text-gray-400">Already have an account? </Text>
           <Link href="/(auth)/login" asChild>
-            <Text className="font-semibold text-indigo-400">Sign In</Text>
+            <Text className="font-semibold text-primary-500">Sign In</Text>
           </Link>
         </View>
+
+        {/* Legal */}
+        <Text className="text-xs text-gray-600 text-center mt-6 px-4">
+          By creating an account, you agree to our{' '}
+          <Text
+            className="text-gray-400"
+            onPress={() => Linking.openURL('https://vibecheck.app/terms')}
+          >
+            Terms of Service
+          </Text>
+          {' '}and{' '}
+          <Text
+            className="text-gray-400"
+            onPress={() => Linking.openURL('https://vibecheck.app/privacy')}
+          >
+            Privacy Policy
+          </Text>
+        </Text>
       </View>
     </KeyboardAvoidingView>
   );
