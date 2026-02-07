@@ -9,6 +9,9 @@
     "userInterfaceStyle": "dark",
     "newArchEnabled": true,
     "owner": "ahmetcoskunkizilkaya",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
@@ -44,6 +47,11 @@
       "expo-apple-authentication",
       "expo-haptics",
       "expo-local-authentication"
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "FILL_IN"
+      }
+    }
   }
 }
