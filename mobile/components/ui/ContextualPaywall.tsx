@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, Pressable, Modal } from 'react-native';
+import { View, Text, Pressable, Modal, StyleSheet } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -62,113 +62,102 @@ export default function ContextualPaywall({
       animationType="fade"
       onRequestClose={dismissible ? onClose : () => {}}
     >
-      <SafeAreaView className="flex-1 bg-black/80 items-center justify-center px-5">
+      <SafeAreaView style={styles.safeArea}>
         {/* Card */}
-        <View className="w-full max-w-sm">
+        <View style={styles.cardContainer}>
           {/* Gradient border effect */}
-          <View className="rounded-3xl overflow-hidden">
-            <LinearGradient
-              colors={['#8b5cf6', '#ec4899', '#f97316']}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 1 }}
-              className="p-0.5"
-            >
-              <View className="bg-gray-900 rounded-3xl p-6">
-                {/* Lock icon */}
-                <View className="w-16 h-16 mx-auto rounded-full bg-gradient-to-br from-violet-500/20 to-pink-500/20 items-center justify-center mb-4">
-                  <Text className="text-3xl">{gateConfig.icon}</Text>
+          <LinearGradient
+            colors={['#8b5cf6', '#ec4899', '#f97316']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={styles.gradientBorder}
+          >
+            <View style={styles.card}>
+              {/* Lock icon */}
+              <View style={styles.iconContainer}>
+                <Text style={styles.emoji}>{gateConfig.icon}</Text>
+              </View>
+
+              {/* Premium badge */}
+              <View style={styles.badgeContainer}>
+                <LinearGradient
+                  colors={['#8b5cf6', '#ec4899']}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 0 }}
+                  style={styles.badge}
+                >
+                  <Text style={styles.badgeText}>Premium Feature</Text>
+                </LinearGradient>
+              </View>
+
+              {/* Title */}
+              <Text style={styles.title}>{gateConfig.title}</Text>
+
+              {/* Description */}
+              <Text style={styles.description}>{gateConfig.description}</Text>
+
+              {/* Value proposition */}
+              <View style={styles.valueBox}>
+                <View style={styles.checkRow}>
+                  <Ionicons name="checkmark-circle" size={20} color="#4ade80" />
+                  <Text style={styles.checkText}>{benefit}</Text>
                 </View>
-
-                {/* Premium badge */}
-                <View className="mx-auto mb-4">
-                  <View className="bg-gradient-to-r from-violet-600 to-pink-600 px-4 py-1.5 rounded-full">
-                    <Text className="text-xs font-semibold text-white uppercase tracking-wider">
-                      Premium Feature
-                    </Text>
-                  </View>
+                <View style={styles.checkRow}>
+                  <Ionicons name="checkmark-circle" size={20} color="#4ade80" />
+                  <Text style={styles.checkText}>Cancel anytime</Text>
                 </View>
+              </View>
 
-                {/* Title */}
-                <Text className="text-2xl font-bold text-white text-center mb-2">
-                  {gateConfig.title}
-                </Text>
+              {/* CTA Buttons */}
+              <Pressable
+                onPress={() => {
+                  hapticSelection();
+                  unlockAction();
+                }}
+                style={styles.ctaButton}
+              >
+                <LinearGradient
+                  colors={['#8b5cf6', '#ec4899']}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 0 }}
+                  style={styles.ctaGradient}
+                >
+                  <Text style={styles.ctaText}>{gateConfig.cta}</Text>
+                </LinearGradient>
+              </Pressable>
 
-                {/* Description */}
-                <Text className="text-base text-gray-400 text-center mb-6">
-                  {gateConfig.description}
-                </Text>
+              {/* Pricing hint */}
+              <Text style={styles.pricing}>From $4.99/month • 7-day free trial</Text>
 
-                {/* Value proposition */}
-                <View className="bg-gray-800 rounded-2xl p-4 mb-6">
-                  <View className="flex-row items-center mb-2">
-                    <Ionicons name="checkmark-circle" size={20} color="#4ade80" />
-                    <Text className="text-sm text-gray-300 ml-2 flex-1">
-                      {benefit}
-                    </Text>
-                  </View>
-                  <View className="flex-row items-center">
-                    <Ionicons name="checkmark-circle" size={20} color="#4ade80" />
-                    <Text className="text-sm text-gray-300 ml-2 flex-1">
-                      Cancel anytime
-                    </Text>
-                  </View>
-                </View>
-
-                {/* CTA Buttons */}
+              {/* Dismiss */}
+              {dismissible && (
                 <Pressable
                   onPress={() => {
                     hapticSelection();
-                    unlockAction();
+                    onClose();
                   }}
-                  className="mb-3 overflow-hidden rounded-2xl"
+                  style={styles.dismissButton}
                 >
-                  <LinearGradient
-                    colors={['#8b5cf6', '#ec4899']}
-                    start={{ x: 0, y: 0 }}
-                    end={{ x: 1, y: 1 }}
-                    className="py-4 items-center"
-                  >
-                    <Text className="text-lg font-bold text-white">
-                      {gateConfig.cta}
-                    </Text>
-                  </LinearGradient>
+                  <Text style={styles.dismissText}>Maybe later</Text>
                 </Pressable>
+              )}
+            </View>
+          </LinearGradient>
+        </View>
 
-                {/* Pricing hint */}
-                <Text className="text-center text-sm text-gray-500 mb-4">
-                  From $4.99/month • 7-day free trial
-                </Text>
-
-                {/* Dismiss */}
-                {dismissible && (
-                  <Pressable
-                    onPress={() => {
-                      hapticSelection();
-                      onClose();
-                    }}
-                    className="items-center py-2"
-                  >
-                    <Text className="text-sm text-gray-600">Maybe later</Text>
-                  </Pressable>
-                )}
-              </View>
-            </LinearGradient>
+        {/* Trust badges */}
+        <View style={styles.trustBadges}>
+          <View style={styles.trustItem}>
+            <Ionicons name="shield-checkmark" size={16} color="#6b7280" />
+            <Text style={styles.trustText}>Secure</Text>
           </View>
-
-          {/* Trust badges */}
-          <View className="flex-row items-center justify-center mt-4 gap-6">
-            <View className="flex-row items-center">
-              <Ionicons name="shield-checkmark" size={16} color="#6b7280" />
-              <Text className="text-xs text-gray-600 ml-1">Secure</Text>
-            </View>
-            <View className="flex-row items-center">
-              <Ionicons name="lock-closed" size={16} color="#6b7280" />
-              <Text className="text-xs text-gray-600 ml-1">Private</Text>
-            </View>
-            <View className="flex-row items-center">
-              <Ionicons name="star" size={16} color="#6b7280" />
-              <Text className="text-xs text-gray-600 ml-1">4.9★</Text>
-            </View>
+          <View style={styles.trustItem}>
+            <Ionicons name="lock-closed" size={16} color="#6b7280" />
+            <Text style={styles.trustText}>Private</Text>
+          </View>
+          <View style={styles.trustItem}>
+            <Ionicons name="star" size={16} color="#6b7280" />
+            <Text style={styles.trustText}>4.9★</Text>
           </View>
         </View>
       </SafeAreaView>
@@ -194,25 +183,19 @@ export function UpgradeBanner({
         hapticSelection();
         onPress();
       }}
-      className="relative overflow-hidden rounded-2xl"
-      style={style}
+      style={[styles.upgradeBanner, style]}
     >
       <LinearGradient
         colors={['#8b5cf6', '#ec4899']}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
-        className="p-4"
+        style={styles.upgradeGradient}
       >
-        <View className="flex-row items-center">
-          <View className="flex-1">
-            <Text className="text-lg font-bold text-white">{title}</Text>
-            {description && (
-              <Text className="text-sm text-white/80 mt-0.5">
-                {description}
-              </Text>
-            )}
-          </View>
-          <Ionicons name="chevron-forward" size={20} color="white" />
+        <View style={styles.upgradeContent}>
+          <Text style={styles.upgradeTitle}>{title}</Text>
+          {description && (
+            <Text style={styles.upgradeDescription}>{description}</Text>
+          )}
         </View>
       </LinearGradient>
     </Pressable>
@@ -233,17 +216,191 @@ export function FeatureLocked({
         hapticSelection();
         onTap();
       }}
-      className="bg-gray-900/50 rounded-2xl border border-gray-800 p-6 items-center justify-center"
+      style={styles.lockedCard}
     >
-      <View className="w-12 h-12 rounded-full bg-gray-800 items-center justify-center mb-3">
+      <View style={styles.lockIcon}>
         <Ionicons name="lock-closed" size={24} color="#6b7280" />
       </View>
-      <Text className="text-base font-semibold text-white mb-1">
-        {featureName}
-      </Text>
-      <Text className="text-sm text-primary-500 font-medium">
-        Upgrade to unlock
-      </Text>
+      <Text style={styles.lockedTitle}>{featureName}</Text>
+      <Text style={styles.lockedCTA}>Upgrade to unlock</Text>
     </Pressable>
   );
 }
+
+const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.8)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 20,
+  },
+  cardContainer: {
+    width: '100%',
+    maxWidth: 350,
+  },
+  gradientBorder: {
+    padding: 2,
+    borderRadius: 24,
+  },
+  card: {
+    backgroundColor: '#111827',
+    borderRadius: 22,
+    padding: 24,
+  },
+  iconContainer: {
+    width: 64,
+    height: 64,
+    borderRadius: 999,
+    backgroundColor: 'rgba(139, 92, 246, 0.2)',
+    alignSelf: 'center',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 16,
+  },
+  emoji: {
+    fontSize: 32,
+  },
+  badgeContainer: {
+    alignSelf: 'center',
+    marginBottom: 16,
+  },
+  badge: {
+    paddingHorizontal: 16,
+    paddingVertical: 6,
+    borderRadius: 999,
+  },
+  badgeText: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: 'white',
+    textTransform: 'uppercase',
+    letterSpacing: 1,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: 'white',
+    textAlign: 'center',
+    marginBottom: 8,
+  },
+  description: {
+    fontSize: 16,
+    color: '#9ca3af',
+    textAlign: 'center',
+    marginBottom: 24,
+  },
+  valueBox: {
+    backgroundColor: '#1f2937',
+    borderRadius: 16,
+    padding: 16,
+    marginBottom: 24,
+  },
+  checkRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  checkText: {
+    fontSize: 14,
+    color: '#d1d5db',
+    marginLeft: 8,
+    flex: 1,
+  },
+  ctaButton: {
+    marginBottom: 16,
+    borderRadius: 16,
+    overflow: 'hidden',
+  },
+  ctaGradient: {
+    paddingVertical: 16,
+    paddingHorizontal: 24,
+  },
+  ctaText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: 'white',
+    textAlign: 'center',
+  },
+  pricing: {
+    fontSize: 14,
+    color: '#6b7280',
+    textAlign: 'center',
+    marginBottom: 16,
+  },
+  dismissButton: {
+    alignItems: 'center',
+    paddingVertical: 8,
+  },
+  dismissText: {
+    fontSize: 14,
+    color: '#6b7280',
+  },
+  trustBadges: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 16,
+    gap: 24,
+  },
+  trustItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  trustText: {
+    fontSize: 12,
+    color: '#6b7280',
+    marginLeft: 4,
+  },
+  upgradeBanner: {
+    borderRadius: 16,
+    overflow: 'hidden',
+  },
+  upgradeGradient: {
+    padding: 16,
+  },
+  upgradeContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  upgradeTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: 'white',
+  },
+  upgradeDescription: {
+    fontSize: 14,
+    color: 'rgba(255,255,255,0.8)',
+    marginTop: 2,
+  },
+  lockedCard: {
+    backgroundColor: 'rgba(17, 24, 39, 0.5)',
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: '#1f2937',
+    padding: 24,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  lockIcon: {
+    width: 48,
+    height: 48,
+    borderRadius: 999,
+    backgroundColor: '#1f2937',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 12,
+  },
+  lockedTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: 'white',
+    marginBottom: 4,
+  },
+  lockedCTA: {
+    fontSize: 14,
+    color: '#8b5cf6',
+    fontWeight: '500',
+  },
+});

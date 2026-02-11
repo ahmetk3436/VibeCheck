@@ -6,7 +6,6 @@ import {
   Animated,
   Share,
   Dimensions,
-  Image,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { captureRef } from 'react-native-view-shot';
@@ -36,7 +35,6 @@ export default function ShareableResult({
   const cardRef = useRef<View>(null);
 
   useEffect(() => {
-    // Entrance animation
     Animated.parallel([
       Animated.spring(scaleAnim, {
         toValue: 1,
@@ -61,7 +59,6 @@ export default function ShareableResult({
     hapticSelection();
 
     try {
-      // Capture the card as an image
       if (cardRef.current) {
         const uri = await captureRef(cardRef, {
           format: 'png',
@@ -69,7 +66,6 @@ export default function ShareableResult({
           width: SCREEN_WIDTH * 0.85,
         });
 
-        // Share the image
         await Share.share({
           message: `${emoji} My vibe today is ${aesthetic}! Score: ${vibeScore}/100\n\nCheck your vibe at vibecheck.app`,
           url: uri,
@@ -102,62 +98,61 @@ export default function ShareableResult({
         colors={getGradientColors()}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
-        className="rounded-3xl overflow-hidden"
-        style={{ width: SCREEN_WIDTH * 0.85 }}
+        style={{ width: SCREEN_WIDTH * 0.85, borderRadius: 24, overflow: 'hidden' }}
       >
         {/* Pattern overlay */}
-        <View className="absolute inset-0 opacity-20">
-          <View className="w-full h-full">
+        <View style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, opacity: 0.2 }}>
+          <View style={{ width: '100%', height: '100%' }}>
             {/* Decorative circles */}
-            <View className="absolute -top-10 -right-10 w-32 h-32 rounded-full bg-white/10" />
-            <View className="absolute -bottom-10 -left-10 w-24 h-24 rounded-full bg-white/10" />
+            <View style={{ position: 'absolute', top: -40, right: -40, width: 128, height: 128, borderRadius: 64, backgroundColor: 'rgba(255,255,255,0.1)' }} />
+            <View style={{ position: 'absolute', bottom: -40, left: -40, width: 96, height: 96, borderRadius: 48, backgroundColor: 'rgba(255,255,255,0.1)' }} />
           </View>
         </View>
 
         {/* Content */}
-        <View className="p-6 relative z-10">
+        <View style={{ padding: 24, position: 'relative', zIndex: 10 }}>
           {/* Header */}
-          <View className="flex-row justify-between items-start mb-4">
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16 }}>
             <View>
-              <Text className="text-xs font-medium text-white/70 uppercase tracking-wider">
+              <Text style={{ fontSize: 12, fontWeight: '600', color: 'rgba(255,255,255,0.7)', textTransform: 'uppercase', letterSpacing: 1 }}>
                 VibeCheck
               </Text>
-              <Text className="text-xs text-white/50 mt-0.5">
+              <Text style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)', marginTop: 2 }}>
                 {new Date().toLocaleDateString()}
               </Text>
             </View>
             {streak && streak > 0 && (
               <Animated.View style={{ transform: [{ rotate: spin }] }}>
-                <Text className="text-xl">🔥</Text>
+                <Text style={{ fontSize: 20 }}>🔥</Text>
               </Animated.View>
             )}
           </View>
 
           {/* Main emoji */}
-          <Text className="text-7xl text-center my-6">{emoji}</Text>
+          <Text style={{ fontSize: 56, textAlign: 'center', marginVertical: 24 }}>{emoji}</Text>
 
           {/* Aesthetic name */}
-          <Text className="text-2xl font-bold text-white text-center capitalize mb-2">
+          <Text style={{ fontSize: 24, fontWeight: 'bold', color: 'white', textAlign: 'center', capitalize: 'true' }}>
             {aesthetic}
           </Text>
 
           {/* Vibe score */}
-          <View className="items-center my-4">
-            <View className="bg-white/20 backdrop-blur-sm rounded-full px-6 py-2">
-              <Text className="text-3xl font-bold text-white">
+          <View style={{ alignItems: 'center', marginVertical: 16 }}>
+            <View style={{ backgroundColor: 'rgba(255,255,255,0.2)', borderRadius: 999, paddingHorizontal: 24, paddingVertical: 8 }}>
+              <Text style={{ fontSize: 28, fontWeight: 'bold', color: 'white' }}>
                 {vibeScore}
               </Text>
             </View>
-            <Text className="text-xs text-white/70 mt-2 uppercase tracking-wider">
+            <Text style={{ fontSize: 12, color: 'rgba(255,255,255,0.7)', marginTop: 8, textTransform: 'uppercase', letterSpacing: 1 }}>
               Vibe Score
             </Text>
           </View>
 
           {/* Streak badge */}
           {streak && streak > 0 && (
-            <View className="items-center mt-4">
-              <View className="bg-white/20 backdrop-blur-sm rounded-full px-4 py-1.5">
-                <Text className="text-sm font-semibold text-white">
+            <View style={{ alignItems: 'center', marginTop: 16 }}>
+              <View style={{ backgroundColor: 'rgba(255,255,255,0.2)', borderRadius: 999, paddingHorizontal: 16, paddingVertical: 6 }}>
+                <Text style={{ fontSize: 14, fontWeight: '600', color: 'white' }}>
                   🔥 {streak} day streak
                 </Text>
               </View>
@@ -165,8 +160,8 @@ export default function ShareableResult({
           )}
 
           {/* Footer */}
-          <View className="mt-6 pt-4 border-t border-white/20">
-            <Text className="text-center text-xs text-white/60">
+          <View style={{ marginTop: 24, paddingTop: 16, borderTopColor: 'rgba(255,255,255,0.2)', borderTopWidth: 1 }}>
+            <Text style={{ textAlign: 'center', fontSize: 12, color: 'rgba(255,255,255,0.6)' }}>
               vibecheck.app • Share your vibe
             </Text>
           </View>
@@ -176,10 +171,10 @@ export default function ShareableResult({
       {/* Share button */}
       <Pressable
         onPress={handleShare}
-        className="mt-4 mx-auto bg-white/10 backdrop-blur-sm rounded-full px-6 py-3 flex-row items-center"
+        style={{ marginTop: 16, alignSelf: 'center', backgroundColor: 'rgba(255,255,255,0.1)', borderRadius: 999, paddingHorizontal: 24, paddingVertical: 12, flexDirection: 'row', alignItems: 'center' }}
       >
-        <Text className="text-white font-semibold mr-2">Share Result</Text>
-        <Text className="text-white">📤</Text>
+        <Text style={{ color: 'white', fontWeight: '600', marginRight: 8 }}>Share Result</Text>
+        <Text style={{ color: 'white' }}>📤</Text>
       </Pressable>
     </Animated.View>
   );
@@ -203,20 +198,20 @@ export function MiniShareCard({
         hapticSelection();
         onPress?.();
       }}
-      className="bg-gray-900 rounded-2xl border border-gray-800 overflow-hidden active:scale-95 transition-transform"
+      style={{ backgroundColor: '#111827', borderRadius: 16, borderWidth: 1, borderColor: '#1f2937', overflow: 'hidden' }}
     >
-      <View className="p-4 flex-row items-center">
-        <Text className="text-4xl mr-3">{emoji}</Text>
-        <View className="flex-1">
-          <Text className="text-base font-semibold text-white capitalize">
+      <View style={{ padding: 16, flexDirection: 'row', alignItems: 'center' }}>
+        <Text style={{ fontSize: 36, marginRight: 12 }}>{emoji}</Text>
+        <View style={{ flex: 1 }}>
+          <Text style={{ fontSize: 16, fontWeight: '600', color: 'white', capitalize: 'true' }}>
             {aesthetic}
           </Text>
-          <Text className="text-sm text-gray-500">
+          <Text style={{ fontSize: 14, color: '#6b7280' }}>
             Score: {vibeScore}/100
           </Text>
         </View>
-        <View className="w-8 h-8 rounded-full bg-gray-800 items-center justify-center">
-          <Text className="text-sm">📤</Text>
+        <View style={{ width: 32, height: 32, borderRadius: 999, backgroundColor: '#1f2937', alignItems: 'center', justifyContent: 'center' }}>
+          <Text style={{ fontSize: 16 }}>📤</Text>
         </View>
       </View>
     </Pressable>

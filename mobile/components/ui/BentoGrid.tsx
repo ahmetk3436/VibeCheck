@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Pressable, Text, ScrollView } from 'react-native';
+import { View, Pressable, Text, ScrollView, StyleSheet } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { cn } from '../../lib/cn';
 import { hapticSelection } from '../../lib/haptics';
@@ -32,78 +32,48 @@ export default function BentoGrid({
   columns = 2,
   gap = 12,
 }: BentoGridProps) {
-  const totalWidth = 100; // 100%
-
   return (
     <ScrollView
       horizontal={false}
-      contentContainerStyle={{ gap }}
-      className="w-full"
+      contentContainerStyle={[styles.container, { gap }]}
+      style={styles.scrollView}
     >
-      {items.reduce((rows: JSX.Element[][], item, index) => {
+      {items.map((item) => {
         const config = SIZE_CONFIG[item.size];
-        const isNewRow = index === 0 || rows[rows.length - 1].length + config.width > columns;
+        const itemWidth = (config.width / columns) * 100;
 
-        if (isNewRow) {
-          rows.push([]);
-        }
+        return (
+          <Pressable
+            key={item.id}
+            onPress={() => {
+              hapticSelection();
+              item.onPress?.();
+            }}
+            style={[
+              styles.item,
+              {
+                backgroundColor: '#111827',
+                width: `${itemWidth}%`,
+                minHeight: config.height,
+                marginRight: gap,
+              },
+            ]}
+          >
+            {item.gradient && item.gradientColors ? (
+              <LinearGradient
+                colors={item.gradientColors}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+                style={styles.gradient}
+              />
+            ) : null}
 
-        const currentRow = rows[rows.length - 1];
-        const rowWidth = currentRow.reduce((sum, i) => {
-          const itemConfig = SIZE_CONFIG[items.find((x) => x.id === i)!.size];
-          return sum + itemConfig.width;
-        }, 0);
-
-        if (rowWidth + config.width <= columns) {
-          currentRow.push(item.id);
-        } else {
-          rows.push([item.id]);
-        }
-
-        return rows;
-      }, []).map((rowItems, rowIndex) => (
-        <View key={`row-${rowIndex}`} className="flex-row" style={{ gap }}>
-          {rowItems.map((itemId) => {
-            const item = items.find((i) => i.id === itemId)!;
-            const config = SIZE_CONFIG[item.size];
-            const itemWidth = (config.width / columns) * 100 - (gap / 2);
-
-            return (
-              <Pressable
-                key={item.id}
-                onPress={() => {
-                  hapticSelection();
-                  item.onPress?.();
-                }}
-                className="overflow-hidden rounded-3xl border border-gray-800"
-                style={[
-                  {
-                    backgroundColor: '#111827',
-                    width: `${itemWidth}%`,
-                    minHeight: config.height,
-                  },
-                  item.gradient && item.gradientColors
-                    ? {}
-                    : {},
-                ]}
-              >
-                {item.gradient && item.gradientColors ? (
-                  <LinearGradient
-                    colors={item.gradientColors}
-                    start={{ x: 0, y: 0 }}
-                    end={{ x: 1, y: 1 }}
-                    className="absolute inset-0"
-                  />
-                ) : null}
-
-                <View className="relative z-10 p-4 justify-between flex-1">
-                  {item.content}
-                </View>
-              </Pressable>
-            );
-          })}
-        </View>
-      ))}
+            <View style={styles.itemContent}>
+              {item.content}
+            </View>
+          </Pressable>
+        );
+      })}
     </ScrollView>
   );
 }
@@ -124,23 +94,19 @@ export function StatBentoItem({
 }) {
   return (
     <>
-      <View className="flex-row items-start justify-between">
-        <View
-          className="w-10 h-10 rounded-xl items-center justify-center"
-          style={{ backgroundColor: `${color}20` }}
-        >
-          <Text className="text-lg">{icon}</Text>
+      <View style={styles.rowBetween}>
+        <View style={[styles.iconContainer, { backgroundColor: `${color}20` }]}>
+          <Text style={styles.iconText}>{icon}</Text>
         </View>
         {trend && (
           <View
-            className={`px-2 py-1 rounded-full ${
-              trend.up ? 'bg-green-500/20' : 'bg-red-500/20'
-            }`}
+            style={[
+              styles.trendBadge,
+              { backgroundColor: trend.up ? 'rgba(34, 197, 94, 0.2)' : 'rgba(239, 68, 68, 0.2)' },
+            ]}
           >
             <Text
-              className={`text-xs font-semibold ${
-                trend.up ? 'text-green-400' : 'text-red-400'
-              }`}
+              style={[styles.trendText, { color: trend.up ? '#4ade80' : '#ef4444' }]}
             >
               {trend.up ? '↑' : '↓'} {trend.value}
             </Text>
@@ -148,8 +114,8 @@ export function StatBentoItem({
         )}
       </View>
       <View>
-        <Text className="text-2xl font-bold text-white">{value}</Text>
-        <Text className="text-xs text-gray-500 mt-1">{label}</Text>
+        <Text style={styles.valueText}>{value}</Text>
+        <Text style={styles.labelText}>{label}</Text>
       </View>
     </>
   );
@@ -172,11 +138,11 @@ export function ActionBentoItem({
         hapticSelection();
         onPress?.();
       }}
-      className="bg-gray-800 rounded-3xl p-4 border border-gray-700"
+      style={styles.actionItem}
     >
-      <Text className="text-3xl mb-3">{icon}</Text>
-      <Text className="text-base font-semibold text-white">{title}</Text>
-      <Text className="text-sm text-gray-500 mt-1">{description}</Text>
+      <Text style={styles.emojiLarge}>{icon}</Text>
+      <Text style={styles.actionTitle}>{title}</Text>
+      <Text style={styles.actionDescription}>{description}</Text>
     </Pressable>
   );
 }
@@ -200,22 +166,119 @@ export function GradientBentoItem({
         hapticSelection();
         onPress?.();
       }}
-      className="rounded-3xl overflow-hidden"
+      style={styles.gradientItem}
     >
       <LinearGradient
         colors={gradientColors}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
-        className="p-5 justify-between flex-1"
+        style={styles.gradient}
       >
-        {icon && <Text className="text-4xl">{icon}</Text>}
+        {icon && <Text style={styles.emojiLarge}>{icon}</Text>}
         <View>
-          <Text className="text-lg font-bold text-white">{title}</Text>
+          <Text style={styles.gradientTitle}>{title}</Text>
           {description && (
-            <Text className="text-sm text-white/80 mt-1">{description}</Text>
+            <Text style={styles.gradientDescription}>{description}</Text>
           )}
         </View>
       </LinearGradient>
     </Pressable>
   );
 }
+
+const styles = StyleSheet.create({
+  scrollView: {
+    width: '100%',
+  },
+  container: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+  },
+  item: {
+    borderRadius: 24,
+    borderWidth: 1,
+    borderColor: '#1f2937',
+    overflow: 'hidden',
+    marginBottom: 12,
+  },
+  gradient: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+  },
+  itemContent: {
+    padding: 16,
+    zIndex: 10,
+  },
+  rowBetween: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+  },
+  iconContainer: {
+    width: 40,
+    height: 40,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  iconText: {
+    fontSize: 18,
+  },
+  trendBadge: {
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 999,
+  },
+  trendText: {
+    fontSize: 12,
+    fontWeight: '600',
+  },
+  valueText: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: 'white',
+  },
+  labelText: {
+    fontSize: 12,
+    color: '#6b7280',
+    marginTop: 4,
+  },
+  actionItem: {
+    backgroundColor: '#1f2937',
+    borderRadius: 24,
+    padding: 16,
+    borderWidth: 1,
+    borderColor: '#374151',
+  },
+  actionTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: 'white',
+  },
+  actionDescription: {
+    fontSize: 14,
+    color: '#6b7280',
+    marginTop: 4,
+  },
+  emojiLarge: {
+    fontSize: 28,
+    marginBottom: 12,
+  },
+  gradientItem: {
+    borderRadius: 24,
+    overflow: 'hidden',
+  },
+  gradientTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: 'white',
+  },
+  gradientDescription: {
+    fontSize: 14,
+    color: 'rgba(255, 255, 255, 0.8)',
+    marginTop: 4,
+  },
+});

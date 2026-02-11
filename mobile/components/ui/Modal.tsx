@@ -6,8 +6,8 @@ import {
   Pressable,
   Animated,
   Dimensions,
+  PanResponder,
   type ModalProps as RNModalProps,
-  type PanResponderInstance,
 } from 'react-native';
 import { BlurView } from 'expo-blur';
 import { cn } from '../../lib/cn';
@@ -23,13 +23,6 @@ interface ModalProps extends Omit<RNModalProps, 'visible'> {
 }
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
-
-const sizeStyles = {
-  sm: 'max-w-xs',
-  md: 'max-w-sm',
-  lg: 'max-w-md',
-  full: 'w-full h-full',
-};
 
 // 2025-2026 Trend: Swipe-to-dismiss modal with backdrop blur
 export default function Modal({
@@ -70,15 +63,15 @@ export default function Modal({
 
   React.useEffect(() => {
     if (visible) {
-      Animated.parallel([showModal, fadeIn]).start();
+      Animated.parallel([showModal.start, fadeIn.start]).start();
     } else {
-      Animated.parallel([hideModal, fadeOut]).start();
+      Animated.parallel([hideModal.start, fadeOut.start]).start();
     }
   }, [visible]);
 
   const handleClose = () => {
     hapticSelection();
-    Animated.parallel([hideModal, fadeOut]).end?.();
+    Animated.parallel([hideModal, fadeOut]).start?.();
     setTimeout(() => onClose(), 250);
   };
 
@@ -87,37 +80,28 @@ export default function Modal({
     handleClose();
   };
 
-  // Gesture for swipe down to close
-  const onGestureEvent = Animated.event(
-    [{ nativeEvent: { translationY: translateY } }],
-    { useNativeDriver: true }
-  );
-
-  const onHandlerStateChange = (event: any) => {
-    if (event.nativeEvent.oldState === 4 && event.nativeState === 5) {
-      const { translationY } = event.nativeEvent;
-      if (translationY > 100) {
-        handleClose();
-      } else {
-        Animated.spring(translateY, {
-          toValue: 0,
-          useNativeDriver: true,
-          damping: 15,
-        }).start();
-      }
-    }
-  };
-
   const panResponder = useRef(
     swipeToClose
-      ? (PanResponder as any).create({
+      ? PanResponder.create({
           onMoveShouldSetPanResponder: (_, gestureState) => {
             return gestureState.dy > 0 && Math.abs(gestureState.dy) > Math.abs(gestureState.dx);
           },
-          onPanResponderMove: onGestureEvent,
-          onPanResponderRelease: onHandlerStateChange,
+          onPanResponderMove: (_, gestureState) => {
+            translateY.setValue(gestureState.dy);
+          },
+          onPanResponderRelease: (_, gestureState) => {
+            if (gestureState.dy > 100) {
+              handleClose();
+            } else {
+              Animated.spring(translateY, {
+                toValue: 0,
+                useNativeDriver: true,
+                damping: 15,
+              }).start();
+            }
+          },
         })
-      : { PanHandlers: null }
+      : null
   ).current;
 
   return (
@@ -138,7 +122,7 @@ export default function Modal({
           className="flex-1 bg-black/60"
           onPress={handleBackdropPress}
         >
-          <BlurView intensity={20} tint="dark" className="flex-1" />
+          <BlurView intensity={20} tint="dark" style={{ flex: 1 }} />
         </Pressable>
 
         {/* Modal Content */}
@@ -150,7 +134,7 @@ export default function Modal({
           style={{
             transform: [{ translateY }],
           }}
-          {...panResponder.panHandlers}
+          {...panResponder?.panHandlers}
         >
           {/* Swipe indicator */}
           {swipeToClose && size !== 'full' && (
