@@ -24,6 +24,7 @@ import VibeCard from '../../components/ui/VibeCard';
 import StreakBadge from '../../components/ui/StreakBadge';
 import { CardSkeleton } from '../../components/ui/LoadingShimmer';
 import ShareableResult from '../../components/ui/ShareableResult';
+import BentoGrid, { StatBentoItem, ActionBentoItem, GradientBentoItem } from '../../components/ui/BentoGrid';
 
 export default function HomeScreen() {
   const {
@@ -447,69 +448,81 @@ export default function HomeScreen() {
           </View>
         )}
 
-        {/* Stats Row - ENHANCED */}
+        {/* BentoGrid Stats Dashboard */}
         {stats && !isGuest && (
-          <View className="mx-5 mt-6 flex-row gap-3">
-            {/* Streak Card with Gradient */}
-            <View
-              className="flex-1 rounded-2xl overflow-hidden border border-amber-500/20"
-              style={{
-                shadowColor: '#f59e0b',
-                shadowOffset: { width: 0, height: 2 },
-                shadowOpacity: 0.15,
-                shadowRadius: 4,
-                elevation: 3,
-              }}
-            >
-              <LinearGradient
-                colors={stats.current_streak > 0 ? ['#f59e0b15', '#f59e0b05'] : ['#1f2937', '#111827']}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 0, y: 1 }}
-                className="p-4 items-center"
-              >
-                <Ionicons name="flame" size={24} color="#f59e0b" />
-                <Text className="text-2xl font-bold text-amber-500 mt-1">
-                  {stats.current_streak}
-                </Text>
-                <Text className="text-xs text-gray-400 mt-1">Streak</Text>
-              </LinearGradient>
-            </View>
-
-            {/* Total Vibes Card */}
-            <View
-              className="flex-1 rounded-2xl bg-gray-900 p-4 items-center border border-gray-800"
-              style={{
-                shadowColor: '#000',
-                shadowOffset: { width: 0, height: 2 },
-                shadowOpacity: 0.2,
-                shadowRadius: 4,
-                elevation: 3,
-              }}
-            >
-              <Ionicons name="stats-chart" size={24} color="#60a5fa" />
-              <Text className="text-2xl font-bold text-blue-400 mt-1">
-                {stats.total_checks}
-              </Text>
-              <Text className="text-xs text-gray-400 mt-1">Total Vibes</Text>
-            </View>
-
-            {/* Avg Score Card */}
-            <View
-              className="flex-1 rounded-2xl bg-gray-900 p-4 items-center border border-gray-800"
-              style={{
-                shadowColor: '#000',
-                shadowOffset: { width: 0, height: 2 },
-                shadowOpacity: 0.2,
-                shadowRadius: 4,
-                elevation: 3,
-              }}
-            >
-              <Ionicons name="star" size={24} color="#a78bfa" />
-              <Text className="text-2xl font-bold text-purple-400 mt-1">
-                {Math.round(stats.avg_vibe_score)}
-              </Text>
-              <Text className="text-xs text-gray-400 mt-1">Avg Score</Text>
-            </View>
+          <View className="mx-5 mt-6">
+            <BentoGrid
+              items={[
+                {
+                  id: 'streak',
+                  size: 'sm',
+                  content: (
+                    <StatBentoItem
+                      icon="🔥"
+                      value={stats.current_streak}
+                      label="Day Streak"
+                      color="#f59e0b"
+                    />
+                  ),
+                },
+                {
+                  id: 'total',
+                  size: 'sm',
+                  content: (
+                    <StatBentoItem
+                      icon="📊"
+                      value={stats.total_checks}
+                      label="Total Vibes"
+                      color="#60a5fa"
+                    />
+                  ),
+                },
+                {
+                  id: 'avg',
+                  size: 'sm',
+                  content: (
+                    <StatBentoItem
+                      icon="⭐"
+                      value={Math.round(stats.avg_vibe_score)}
+                      label="Avg Score"
+                      color="#a78bfa"
+                    />
+                  ),
+                },
+                {
+                  id: 'aesthetic',
+                  size: 'sm',
+                  gradient: true,
+                  gradientColors: ['#8b5cf6', '#6366f1'],
+                  content: (
+                    <GradientBentoItem
+                      title="Top Aesthetic"
+                      description={stats.top_aesthetic || 'None yet'}
+                      gradientColors={['#8b5cf6', '#6366f1']}
+                      icon="🎨"
+                    />
+                  ),
+                },
+                {
+                  id: 'history',
+                  size: 'full',
+                  onPress: () => {
+                    router.push('/(protected)/history');
+                  },
+                  content: (
+                    <ActionBentoItem
+                      icon="📈"
+                      title="View History"
+                      description="See all your past vibe checks"
+                      onPress={() => {
+                        hapticSelection();
+                        router.push('/(protected)/history');
+                      }}
+                    />
+                  ),
+                },
+              ]}
+            />
           </View>
         )}
 

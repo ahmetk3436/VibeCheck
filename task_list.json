@@ -142,25 +142,25 @@
       "id": "enhance_012",
       "title": "Add contextual paywall triggers at win moments instead of only settings",
       "description": "The paywall is only accessible from settings screen subscription section and the upgrade banner on home. Per 2025-2026 trends, contextual paywalls should appear at 'win' moments for higher conversion.\n\nModify file: mobile/app/(protected)/home.tsx\n1. After a successful vibe check (inside the try block after line 103), check if the user is authenticated but NOT subscribed. If so, and if this is their 3rd+ vibe check (stats.total_checks \u003e= 3), show a contextual upgrade prompt after a 2-second delay:\n```tsx\nif (isAuthenticated \u0026\u0026 !isSubscribed \u0026\u0026 stats \u0026\u0026 stats.total_checks \u003e= 3) {\n  setTimeout(() =\u003e {\n    setShowUpgradePrompt(true);\n  }, 2000);\n}\n```\n2. Add state: `const [showUpgradePrompt, setShowUpgradePrompt] = useState(false);`\n3. Import `useSubscription` from contexts: `const { isSubscribed } = useSubscription();`\n4. Add a bottom sheet-style prompt (using the existing Modal component):\n```tsx\n\u003cModal visible={showUpgradePrompt} onClose={() =\u003e setShowUpgradePrompt(false)} title=\"Loving VibeCheck?\"\u003e\n  \u003cText className=\"text-sm text-gray-400 mb-4\"\u003eUnlock AI-powered deep analysis and 20+ aesthetic palettes\u003c/Text\u003e\n  \u003cButton title=\"Go Premium\" variant=\"primary\" onPress={() =\u003e { setShowUpgradePrompt(false); router.push('/(protected)/paywall'); }} /\u003e\n  \u003cPressable className=\"mt-3 py-2 items-center\" onPress={() =\u003e setShowUpgradePrompt(false)}\u003e\n    \u003cText className=\"text-gray-500 text-sm\"\u003eMaybe later\u003c/Text\u003e\n  \u003c/Pressable\u003e\n\u003c/Modal\u003e\n```\n\nModify file: mobile/app/(protected)/history.tsx\n5. When history has 5+ items and user is not subscribed, show a ContextualPaywall banner from components/ui/ContextualPaywall.tsx above the list:\n```tsx\n{vibes.length \u003e= 5 \u0026\u0026 !isSubscribed \u0026\u0026 (\n  \u003cContextualPaywall\n    trigger=\"history_milestone\"\n    onUpgrade={() =\u003e router.push('/(protected)/paywall')}\n  /\u003e\n)}\n```\nImport ContextualPaywall and useSubscription.\n\nCheck ContextualPaywall.tsx props and adapt the usage to match its actual interface.\n\nTest: cd mobile \u0026\u0026 npx tsc --noEmit",
+      "status": "completed",
+      "priority": 6,
+      "depends_on": [],
+      "test_command": "cd mobile \u0026\u0026 npx tsc --noEmit",
+      "auto_commit": true,
+      "created_at": "",
+      "updated_at": "2026-02-15T10:48:23Z"
+    },
+    {
+      "id": "enhance_013",
+      "title": "Add BentoGrid stats dashboard to home screen below vibe card",
+      "description": "The BentoGrid component (mobile/components/ui/BentoGrid.tsx) exists but is unused. The home screen shows stats as 3 plain cards in a row. Replace with a visually richer Bento Grid layout using the existing component.\n\nModify file: mobile/app/(protected)/home.tsx\n\n1. Import BentoGrid components. First read BentoGrid.tsx to check exact exports — it likely exports StatBentoItem, ActionBentoItem, GradientBentoItem, and a container BentoGrid.\n\n2. Replace the stats row (lines 328-356) with a BentoGrid layout. Use the component's API — likely something like:\n```tsx\n\u003cBentoGrid\u003e\n  \u003cStatBentoItem\n    icon=\"🔥\"\n    value={stats.current_streak}\n    label=\"Day Streak\"\n    highlight={stats.current_streak \u003e 0}\n  /\u003e\n  \u003cStatBentoItem\n    icon=\"📊\"\n    value={stats.total_checks}\n    label=\"Total Vibes\"\n  /\u003e\n  \u003cStatBentoItem\n    icon=\"⭐\"\n    value={Math.round(stats.avg_vibe_score)}\n    label=\"Avg Score\"\n  /\u003e\n  \u003cActionBentoItem\n    icon=\"📈\"\n    title=\"View History\"\n    onPress={() =\u003e router.push('/(protected)/history')}\n  /\u003e\n\u003c/BentoGrid\u003e\n```\n\n3. If BentoGrid uses different props, adapt accordingly. The goal is to use the existing component instead of raw Views.\n\n4. Also add the top_aesthetic stat from the stats response (already returned by backend). Show it as a GradientBentoItem:\n```tsx\n\u003cGradientBentoItem\n  title=\"Top Aesthetic\"\n  value={stats.top_aesthetic || 'None yet'}\n  colors={['#8b5cf6', '#6366f1']}\n/\u003e\n```\n\n5. Wrap the entire BentoGrid in `\u003cView className=\"mx-5 mt-6\"\u003e` for consistent padding.\n\nTest: cd mobile \u0026\u0026 npx tsc --noEmit",
       "status": "in_progress",
       "priority": 6,
       "depends_on": [],
       "test_command": "cd mobile \u0026\u0026 npx tsc --noEmit",
       "auto_commit": true,
       "created_at": "",
-      "updated_at": "2026-02-15T10:44:06Z"
-    },
-    {
-      "id": "enhance_013",
-      "title": "Add BentoGrid stats dashboard to home screen below vibe card",
-      "description": "The BentoGrid component (mobile/components/ui/BentoGrid.tsx) exists but is unused. The home screen shows stats as 3 plain cards in a row. Replace with a visually richer Bento Grid layout using the existing component.\n\nModify file: mobile/app/(protected)/home.tsx\n\n1. Import BentoGrid components. First read BentoGrid.tsx to check exact exports — it likely exports StatBentoItem, ActionBentoItem, GradientBentoItem, and a container BentoGrid.\n\n2. Replace the stats row (lines 328-356) with a BentoGrid layout. Use the component's API — likely something like:\n```tsx\n\u003cBentoGrid\u003e\n  \u003cStatBentoItem\n    icon=\"🔥\"\n    value={stats.current_streak}\n    label=\"Day Streak\"\n    highlight={stats.current_streak \u003e 0}\n  /\u003e\n  \u003cStatBentoItem\n    icon=\"📊\"\n    value={stats.total_checks}\n    label=\"Total Vibes\"\n  /\u003e\n  \u003cStatBentoItem\n    icon=\"⭐\"\n    value={Math.round(stats.avg_vibe_score)}\n    label=\"Avg Score\"\n  /\u003e\n  \u003cActionBentoItem\n    icon=\"📈\"\n    title=\"View History\"\n    onPress={() =\u003e router.push('/(protected)/history')}\n  /\u003e\n\u003c/BentoGrid\u003e\n```\n\n3. If BentoGrid uses different props, adapt accordingly. The goal is to use the existing component instead of raw Views.\n\n4. Also add the top_aesthetic stat from the stats response (already returned by backend). Show it as a GradientBentoItem:\n```tsx\n\u003cGradientBentoItem\n  title=\"Top Aesthetic\"\n  value={stats.top_aesthetic || 'None yet'}\n  colors={['#8b5cf6', '#6366f1']}\n/\u003e\n```\n\n5. Wrap the entire BentoGrid in `\u003cView className=\"mx-5 mt-6\"\u003e` for consistent padding.\n\nTest: cd mobile \u0026\u0026 npx tsc --noEmit",
-      "status": "pending",
-      "priority": 6,
-      "depends_on": [],
-      "test_command": "cd mobile \u0026\u0026 npx tsc --noEmit",
-      "auto_commit": true,
-      "created_at": "",
-      "updated_at": ""
+      "updated_at": "2026-02-15T10:48:23Z"
     },
     {
       "id": "enhance_014",
