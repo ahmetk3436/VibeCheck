@@ -10,6 +10,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useAuth } from '../../contexts/AuthContext';
 import { useSubscription } from '../../contexts/SubscriptionContext';
 import api from '../../lib/api';
@@ -53,6 +54,18 @@ export default function HistoryScreen() {
   const loadHistory = async (filterType: FilterType = filter) => {
     try {
       setError(null);
+
+      if (isGuest) {
+        // Load guest vibes from AsyncStorage
+        const stored = await AsyncStorage.getItem('guest_vibes');
+        if (stored) {
+          setHistory(JSON.parse(stored));
+        } else {
+          setHistory([]);
+        }
+        return;
+      }
+
       const limitMap: Record<FilterType, number> = {
         week: 7,
         month: 30,
@@ -69,6 +82,10 @@ export default function HistoryScreen() {
 
   // Load trend data for chart
   const loadTrend = async () => {
+    if (isGuest) {
+      setTrend([]);
+      return;
+    }
     try {
       const res = await api.get('/vibes/trend?days=7');
       setTrend(res.data || []);
@@ -291,41 +308,29 @@ export default function HistoryScreen() {
     );
   };
 
-  // Render guest empty state
-  const renderGuestState = () => (
-    <View className="flex-1 items-center justify-center px-5">
-      <View className="bg-gray-900 rounded-2xl p-6 border border-gray-800 items-center w-full max-w-sm">
-        <Ionicons
-          name="lock-closed-outline"
-          size={48}
-          color={COLORS.primary}
-        />
-        <Text className="text-lg font-semibold text-white text-center mt-4">
-          Sign Up to Track Your Vibe History
+  // Render guest empty state (shown when guest has no local history)
+  const renderGuestEmptyState = () => (
+    <View className="items-center py-12 px-6">
+      <Ionicons
+        name="analytics-outline"
+        size={64}
+        color={COLORS.textMuted}
+      />
+      <Text className="text-lg font-semibold text-white mt-4 text-center">
+        No Vibes Yet
+      </Text>
+      <Text className="text-sm text-gray-400 mt-2 text-center">
+        Complete your first vibe check to see your history here. Sign up to save your history across devices!
+      </Text>
+      <Pressable
+        className="bg-primary-600 rounded-xl py-3 px-6 mt-4 items-center"
+        style={{ backgroundColor: COLORS.primary }}
+        onPress={handleNavigateToRegister}
+      >
+        <Text className="text-white font-semibold text-base">
+          Create Free Account
         </Text>
-        <Text className="text-sm text-gray-400 text-center mt-2">
-          Create an account to save your vibe analyses, track your emotional
-          trends, and unlock personalized insights.
-        </Text>
-        <Pressable
-          className="bg-primary-600 rounded-xl py-3 px-6 mt-4 w-full items-center"
-          style={{ backgroundColor: COLORS.primary }}
-          onPress={handleNavigateToRegister}
-        >
-          <Text className="text-white font-semibold text-base">
-            Create Free Account
-          </Text>
-        </Pressable>
-        <Pressable
-          className="mt-3 py-2"
-          onPress={() => {
-            hapticSelection();
-            router.back();
-          }}
-        >
-          <Text className="text-gray-400 text-sm">Maybe Later</Text>
-        </Pressable>
-      </View>
+      </Pressable>
     </View>
   );
 
@@ -343,15 +348,6 @@ export default function HistoryScreen() {
     );
   }
 
-  // Guest state - show sign up prompt
-  if (isGuest) {
-    return (
-      <SafeAreaView className="flex-1 bg-gray-950">
-        {renderGuestState()}
-      </SafeAreaView>
-    );
-  }
-
   return (
     <SafeAreaView className="flex-1 bg-gray-950">
       <View className="flex-1">
@@ -359,19 +355,33 @@ export default function HistoryScreen() {
         <View className="px-5 pt-4 pb-3">
           <Text className="text-2xl font-bold text-white">Vibe History</Text>
           <Text className="text-sm text-gray-400 mt-1">
-            Track your emotional journey over time
+            {isGuest ? 'Your local vibe history' : 'Track your emotional journey over time'}
           </Text>
         </View>
 
-        {/* Filter Chips */}
-        <View className="flex-row gap-2 px-5 mb-4">
-          {renderFilterChip('week', '7 Days')}
-          {renderFilterChip('month', '30 Days')}
-          {renderFilterChip('all', 'All Time')}
-        </View>
+        {/* Filter Chips - only for authenticated users */}
+        {!isGuest && (
+          <View className="flex-row gap-2 px-5 mb-4">
+            {renderFilterChip('week', '7 Days')}
+            {renderFilterChip('month', '30 Days')}
+            {renderFilterChip('all', 'All Time')}
+          </View>
+        )}
+
+        {/* Guest sign-up banner */}
+        {isGuest && history.length > 0 && (
+          <Pressable
+            className="mx-5 mb-4 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 p-4"
+            onPress={handleNavigateToRegister}
+          >
+            <Text className="text-indigo-400 font-medium text-sm">
+              Sign up to save your history across devices and unlock unlimited vibes
+            </Text>
+          </Pressable>
+        )}
 
         {/* Contextual Paywall Banner - shown when history has 5+ items and user is not subscribed */}
-        {history.length >= 5 && !isSubscribed && (
+        {!isGuest && history.length >= 5 && !isSubscribed && (
           <View className="mx-5 mb-4">
             <UpgradeBanner
               title="5+ Vibe Checks! Unlock Premium"
@@ -387,8 +397,8 @@ export default function HistoryScreen() {
           keyExtractor={(item) => item.id}
           renderItem={renderHistoryItem}
           contentContainerStyle={{ paddingBottom: 100 }}
-          ListHeaderComponent={renderTrendChart}
-          ListEmptyComponent={renderEmptyState}
+          ListHeaderComponent={!isGuest ? renderTrendChart : undefined}
+          ListEmptyComponent={isGuest ? renderGuestEmptyState : renderEmptyState}
           refreshControl={
             <RefreshControl
               refreshing={isRefreshing}
