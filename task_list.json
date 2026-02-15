@@ -154,25 +154,25 @@
       "id": "enhance_013",
       "title": "Add BentoGrid stats dashboard to home screen below vibe card",
       "description": "The BentoGrid component (mobile/components/ui/BentoGrid.tsx) exists but is unused. The home screen shows stats as 3 plain cards in a row. Replace with a visually richer Bento Grid layout using the existing component.\n\nModify file: mobile/app/(protected)/home.tsx\n\n1. Import BentoGrid components. First read BentoGrid.tsx to check exact exports — it likely exports StatBentoItem, ActionBentoItem, GradientBentoItem, and a container BentoGrid.\n\n2. Replace the stats row (lines 328-356) with a BentoGrid layout. Use the component's API — likely something like:\n```tsx\n\u003cBentoGrid\u003e\n  \u003cStatBentoItem\n    icon=\"🔥\"\n    value={stats.current_streak}\n    label=\"Day Streak\"\n    highlight={stats.current_streak \u003e 0}\n  /\u003e\n  \u003cStatBentoItem\n    icon=\"📊\"\n    value={stats.total_checks}\n    label=\"Total Vibes\"\n  /\u003e\n  \u003cStatBentoItem\n    icon=\"⭐\"\n    value={Math.round(stats.avg_vibe_score)}\n    label=\"Avg Score\"\n  /\u003e\n  \u003cActionBentoItem\n    icon=\"📈\"\n    title=\"View History\"\n    onPress={() =\u003e router.push('/(protected)/history')}\n  /\u003e\n\u003c/BentoGrid\u003e\n```\n\n3. If BentoGrid uses different props, adapt accordingly. The goal is to use the existing component instead of raw Views.\n\n4. Also add the top_aesthetic stat from the stats response (already returned by backend). Show it as a GradientBentoItem:\n```tsx\n\u003cGradientBentoItem\n  title=\"Top Aesthetic\"\n  value={stats.top_aesthetic || 'None yet'}\n  colors={['#8b5cf6', '#6366f1']}\n/\u003e\n```\n\n5. Wrap the entire BentoGrid in `\u003cView className=\"mx-5 mt-6\"\u003e` for consistent padding.\n\nTest: cd mobile \u0026\u0026 npx tsc --noEmit",
+      "status": "completed",
+      "priority": 6,
+      "depends_on": [],
+      "test_command": "cd mobile \u0026\u0026 npx tsc --noEmit",
+      "auto_commit": true,
+      "created_at": "",
+      "updated_at": "2026-02-15T10:51:14Z"
+    },
+    {
+      "id": "enhance_014",
+      "title": "Add tab bar gradient accent line and polish protected layout",
+      "description": "The custom tab bar (mobile/app/(protected)/_layout.tsx) is functional but plain — gray background with no visual distinction. The active tab color is hardcoded to #2563eb but should use the primary color consistently.\n\nModify file: mobile/app/(protected)/_layout.tsx\n\n1. Add import: `import { LinearGradient } from 'expo-linear-gradient';`\n\n2. Add a gradient top border to the tab bar. Above the tab bar View (line 54), add:\n```tsx\n\u003cLinearGradient\n  colors={['#2563eb', '#8b5cf6', '#2563eb']}\n  start={{x: 0, y: 0}}\n  end={{x: 1, y: 0}}\n  style={{height: 1}}\n/\u003e\n```\nThis replaces the plain `border-t border-gray-800` class. Remove that class from the tab bar View.\n\n3. Enhance active tab indicator: Replace the small dot (lines 89-91, `w-1 h-1 rounded-full bg-primary-600`) with a wider pill:\n```tsx\n{isActive \u0026\u0026 (\n  \u003cView className=\"w-4 h-1 rounded-full bg-primary-500 mt-1\" /\u003e\n)}\n```\n\n4. Add subtle background highlight for active tab:\n```tsx\n\u003cPressable\n  key={tab.label}\n  className={`flex-1 items-center py-1 rounded-xl ${isActive ? 'bg-primary-600/10' : ''}`}\n  ...\n\u003e\n```\n\n5. Change the tab bar background from `bg-gray-900` to a slightly darker `bg-gray-950/95` with backdrop blur effect. Since expo-blur's BlurView can be used:\n```tsx\nimport { BlurView } from 'expo-blur';\n```\nWrap the tab bar in BlurView with `intensity={40} tint=\"dark\"` and make the background semi-transparent.\n\n6. Fix the hardcoded color on line 81: replace `color={isActive ? '#2563eb' : '#9ca3af'}` with `color={isActive ? '#3b82f6' : '#6b7280'}` for better contrast.\n\n7. Add tab press scale animation: wrap each tab icon in an Animated.View that scales to 0.9 on press-in and back to 1.0 on press-out using Pressable's onPressIn/onPressOut.\n\nTest: cd mobile \u0026\u0026 npx tsc --noEmit",
       "status": "in_progress",
       "priority": 6,
       "depends_on": [],
       "test_command": "cd mobile \u0026\u0026 npx tsc --noEmit",
       "auto_commit": true,
       "created_at": "",
-      "updated_at": "2026-02-15T10:48:23Z"
-    },
-    {
-      "id": "enhance_014",
-      "title": "Add tab bar gradient accent line and polish protected layout",
-      "description": "The custom tab bar (mobile/app/(protected)/_layout.tsx) is functional but plain — gray background with no visual distinction. The active tab color is hardcoded to #2563eb but should use the primary color consistently.\n\nModify file: mobile/app/(protected)/_layout.tsx\n\n1. Add import: `import { LinearGradient } from 'expo-linear-gradient';`\n\n2. Add a gradient top border to the tab bar. Above the tab bar View (line 54), add:\n```tsx\n\u003cLinearGradient\n  colors={['#2563eb', '#8b5cf6', '#2563eb']}\n  start={{x: 0, y: 0}}\n  end={{x: 1, y: 0}}\n  style={{height: 1}}\n/\u003e\n```\nThis replaces the plain `border-t border-gray-800` class. Remove that class from the tab bar View.\n\n3. Enhance active tab indicator: Replace the small dot (lines 89-91, `w-1 h-1 rounded-full bg-primary-600`) with a wider pill:\n```tsx\n{isActive \u0026\u0026 (\n  \u003cView className=\"w-4 h-1 rounded-full bg-primary-500 mt-1\" /\u003e\n)}\n```\n\n4. Add subtle background highlight for active tab:\n```tsx\n\u003cPressable\n  key={tab.label}\n  className={`flex-1 items-center py-1 rounded-xl ${isActive ? 'bg-primary-600/10' : ''}`}\n  ...\n\u003e\n```\n\n5. Change the tab bar background from `bg-gray-900` to a slightly darker `bg-gray-950/95` with backdrop blur effect. Since expo-blur's BlurView can be used:\n```tsx\nimport { BlurView } from 'expo-blur';\n```\nWrap the tab bar in BlurView with `intensity={40} tint=\"dark\"` and make the background semi-transparent.\n\n6. Fix the hardcoded color on line 81: replace `color={isActive ? '#2563eb' : '#9ca3af'}` with `color={isActive ? '#3b82f6' : '#6b7280'}` for better contrast.\n\n7. Add tab press scale animation: wrap each tab icon in an Animated.View that scales to 0.9 on press-in and back to 1.0 on press-out using Pressable's onPressIn/onPressOut.\n\nTest: cd mobile \u0026\u0026 npx tsc --noEmit",
-      "status": "pending",
-      "priority": 6,
-      "depends_on": [],
-      "test_command": "cd mobile \u0026\u0026 npx tsc --noEmit",
-      "auto_commit": true,
-      "created_at": "",
-      "updated_at": ""
+      "updated_at": "2026-02-15T10:51:14Z"
     }
   ]
 }
