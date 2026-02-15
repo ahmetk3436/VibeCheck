@@ -1,489 +1,296 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import {
-  View,
-  Text,
-  Pressable,
-  FlatList,
-  ActivityIndicator,
-  RefreshControl,
-  Share,
-  Alert,
-} from 'react-native';
+import { View, Text, Pressable, FlatList, ActivityIndicator, RefreshControl } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useAuth } from '../../contexts/AuthContext';
-import { useSubscription } from '../../contexts/SubscriptionContext';
 import api from '../../lib/api';
-import { hapticSelection, hapticError, hapticSuccess, hapticMedium, hapticLight } from '../../lib/haptics';
-import { VibeCheck, VibeTrendItem } from '../../types/vibe';
-import { UpgradeBanner } from '../../components/ui/ContextualPaywall';
-import GestureSwipeCard from '../../components/ui/GestureSwipeCard';
-import { CardSkeleton } from '../../components/ui/LoadingShimmer';
-
-// Color scheme for VibeMeter
-const COLORS = {
-  primary: '#8B5CF6',
-  primaryDark: '#7C3AED',
-  accent: '#EC4899',
-  success: '#10B981',
-  warning: '#F59E0B',
-  danger: '#EF4444',
-  background: '#030712',
-  surface: '#111827',
-  border: '#1F2937',
-  textPrimary: '#FFFFFF',
-  textSecondary: '#9CA3AF',
-  textMuted: '#6B7280',
-};
-
-// Filter type
-type FilterType = 'week' | 'month' | 'all';
+import { useAuth } from '../../contexts/AuthContext';
+import { hapticSelection, hapticSuccess, hapticError } from '../../lib/haptics';
+import { VibeCheck } from '../../types/vibe';
 
 export default function HistoryScreen() {
-  const router = useRouter();
-  const { isGuest } = useAuth();
-  const { isSubscribed } = useSubscription();
-
-  // State
+  // History state
   const [history, setHistory] = useState<VibeCheck[]>([]);
-  const [trend, setTrend] = useState<VibeTrendItem[]>([]);
-  const [filter, setFilter] = useState<FilterType>('all');
   const [isLoading, setIsLoading] = useState(true);
-  const [isRefreshing, setIsRefreshing] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [refreshing, setRefreshing] = useState(false);
 
-  // Load history data
-  const loadHistory = async (filterType: FilterType = filter) => {
+  // Filter state for time range
+  const [filter, setFilter] = useState<'week' | 'month' | 'all'>('all');
+
+  // Trend data for 7-day chart
+  const [trend, setTrend] = useState<{date: string; vibe_score: number; emoji: string}[]>([]);
+
+  // Auth context
+  const { isGuest } = useAuth();
+  const router = useRouter();
+
+  // Load history with filter
+  const loadHistory = async (filterType: 'week' | 'month' | 'all' = 'all') => {
     try {
-      setError(null);
-
-      if (isGuest) {
-        // Load guest vibes from AsyncStorage
-        const stored = await AsyncStorage.getItem('guest_vibes');
-        if (stored) {
-          setHistory(JSON.parse(stored));
-        } else {
-          setHistory([]);
-        }
-        return;
-      }
-
-      const limitMap: Record<FilterType, number> = {
-        week: 7,
-        month: 30,
-        all: 50,
-      };
-      const limit = limitMap[filterType];
+      const limit = filterType === 'week' ? 7 : filterType === 'month' ? 30 : 50;
       const res = await api.get(`/vibes/history?limit=${limit}`);
-      setHistory(res.data.data || []);
-    } catch (err: any) {
+      setHistory(res.data?.history || []);
+    } catch (error) {
+      console.error('Failed to load history:', error);
       hapticError();
-      setError(err.response?.data?.message || 'Failed to load history');
     }
   };
 
-  // Load trend data for chart
+  // Load 7-day trend data
   const loadTrend = async () => {
-    if (isGuest) {
-      setTrend([]);
-      return;
-    }
     try {
       const res = await api.get('/vibes/trend?days=7');
       setTrend(res.data || []);
-    } catch {
-      // Silently ignore - non-critical feature
-      setTrend([]);
+    } catch (error) {
+      console.error('Failed to load trend:', error);
     }
   };
 
-  // Initial load
-  useEffect(() => {
-    const initialize = async () => {
-      setIsLoading(true);
-      await Promise.all([loadHistory(), loadTrend()]);
-      setIsLoading(false);
-    };
-    initialize();
-  }, []);
-
   // Handle pull-to-refresh
   const handleRefresh = async () => {
-    setIsRefreshing(true);
+    setRefreshing(true);
     hapticSelection();
-    await Promise.all([loadHistory(), loadTrend()]);
-    setIsRefreshing(false);
+    await Promise.all([loadHistory(filter), loadTrend()]);
+    setRefreshing(false);
+    hapticSuccess();
   };
 
   // Handle filter change
-  const handleFilterChange = (newFilter: FilterType) => {
+  const handleFilterChange = (newFilter: 'week' | 'month' | 'all') => {
     hapticSelection();
     setFilter(newFilter);
-    loadHistory(newFilter);
+    setIsLoading(true);
+    loadHistory(newFilter).finally(() => setIsLoading(false));
   };
 
-  // Navigate to register
-  const handleNavigateToRegister = () => {
+  // Handle sign up CTA for guests
+  const handleSignUpCTA = () => {
     hapticSelection();
     router.push('/(auth)/register');
   };
 
-  // Get bar color based on score
-  const getBarColor = (score: number): string => {
-    if (score >= 70) return COLORS.success;
-    if (score >= 40) return COLORS.warning;
-    return COLORS.danger;
-  };
+  // Load data on mount
+  useEffect(() => {
+    setIsLoading(true);
+    Promise.all([loadHistory(filter), loadTrend()])
+      .finally(() => setIsLoading(false));
+  }, []);
 
-  // Get score badge style
-  const getScoreBadgeStyle = (score: number): string => {
-    if (score >= 70) return 'bg-green-500/20';
-    if (score >= 40) return 'bg-yellow-500/20';
-    return 'bg-red-500/20';
-  };
+  // Render individual history item
+  const renderHistoryItem = ({ item }: { item: VibeCheck }) => (
+    <Pressable
+      className="bg-gray-900 rounded-2xl p-4 mb-3 border border-gray-800 flex-row items-center"
+      onPress={() => {
+        hapticSelection();
+        router.push(`/result?id=${item.id}`);
+      }}
+    >
+      <View className="w-14 h-14 rounded-xl bg-primary-500/20 items-center justify-center mr-4">
+        <Text className="text-2xl">{item.emoji || '✨'}</Text>
+      </View>
 
-  // Get score text color
-  const getScoreTextColor = (score: number): string => {
-    if (score >= 70) return 'text-green-400';
-    if (score >= 40) return 'text-yellow-400';
-    return 'text-red-400';
-  };
-
-  // Format date for display
-  const formatDate = (dateString: string): string => {
-    const date = new Date(dateString);
-    const now = new Date();
-    const diffDays = Math.floor(
-      (now.getTime() - date.getTime()) / (1000 * 60 * 60 * 24)
-    );
-
-    if (diffDays === 0) return 'Today';
-    if (diffDays === 1) return 'Yesterday';
-    if (diffDays < 7) return `${diffDays} days ago`;
-
-    return date.toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric',
-    });
-  };
-
-  // Render filter chip
-  const renderFilterChip = (filterType: FilterType, label: string) => {
-    const isActive = filter === filterType;
-    return (
-      <Pressable
-        key={filterType}
-        onPress={() => handleFilterChange(filterType)}
-        className={`px-4 py-2 rounded-full ${
-          isActive ? 'bg-primary-600' : 'bg-gray-800 border border-gray-700'
-        }`}
-        style={isActive ? { backgroundColor: COLORS.primary } : undefined}
-      >
-        <Text
-          className={`text-sm ${
-            isActive ? 'font-semibold text-white' : 'font-medium text-gray-400'
-          }`}
-        >
-          {label}
+      <View className="flex-1">
+        <Text className="text-white font-semibold text-base mb-1" numberOfLines={1}>
+          {item.aesthetic || 'Vibe Analysis'}
         </Text>
-      </Pressable>
-    );
-  };
+        <Text className="text-gray-400 text-sm" numberOfLines={1}>
+          {item.mood_text?.substring(0, 40) || 'No input text'}
+        </Text>
+      </View>
 
-  // Render trend chart
+      <View className="bg-primary-500 rounded-full px-3 py-1 ml-3">
+        <Text className="text-white font-bold text-sm">{item.vibe_score}%</Text>
+      </View>
+
+      <Ionicons name="chevron-forward" size={20} color="#6B7280" />
+    </Pressable>
+  );
+
+  // Render trend chart (ListHeaderComponent)
   const renderTrendChart = () => {
-    if (trend.length === 0) return null;
+    if (isGuest || trend.length === 0) return null;
 
     return (
       <View className="mx-5 mb-4 bg-gray-900 rounded-2xl p-4 border border-gray-800">
-        <View className="flex-row justify-between items-center mb-3">
-          <Text className="text-sm font-semibold text-white">
-            7-Day Vibe Trend
-          </Text>
-          <Text className="text-xs text-gray-500">Your emotional journey</Text>
+        <View className="flex-row items-center justify-between mb-3">
+          <Text className="text-sm font-semibold text-white">7-Day Vibe Trend</Text>
+          <View className="flex-row items-center">
+            <View className="w-3 h-3 rounded-full bg-primary-500 mr-2" />
+            <Text className="text-xs text-gray-400">Vibe Score</Text>
+          </View>
         </View>
 
-        <View
-          className="flex-row items-end justify-between"
-          style={{ height: 80 }}
-        >
-          {trend.map((item, index) => {
+        <View className="flex-row items-end justify-between" style={{ height: 80 }}>
+          {trend.map((item, i) => {
             const barHeight = Math.max(4, (item.vibe_score / 100) * 70);
-            const barColor = getBarColor(item.vibe_score);
-            const dayLabel = new Date(item.date).toLocaleDateString('en-US', {
-              weekday: 'narrow',
-            });
 
             return (
-              <View key={index} className="items-center flex-1">
-                <Text className="text-lg mb-1">{item.emoji}</Text>
+              <View key={i} className="items-center flex-1">
                 <View
-                  className="w-6 rounded-t-lg"
-                  style={{
-                    height: barHeight,
-                    backgroundColor: barColor,
-                  }}
+                  className="w-6 rounded-t-lg bg-primary-500"
+                  style={{ height: barHeight }}
                 />
-                <Text className="text-xs text-gray-500 mt-1">{dayLabel}</Text>
+                <Text className="text-xs text-gray-500 mt-1">
+                  {new Date(item.date).toLocaleDateString('en-US', { weekday: 'narrow' })}
+                </Text>
+                {item.emoji && (
+                  <Text className="text-xs mt-0.5">{item.emoji}</Text>
+                )}
               </View>
             );
           })}
         </View>
 
-        {/* Average score display */}
         {trend.length > 0 && (
-          <View className="flex-row justify-center mt-3 pt-3 border-t border-gray-800">
-            <Text className="text-xs text-gray-500">Average: </Text>
-            <Text className="text-xs font-semibold text-white">
-              {Math.round(
-                trend.reduce((sum, item) => sum + item.vibe_score, 0) /
-                  trend.length
-              )}
+          <View className="mt-3 pt-3 border-t border-gray-800 flex-row justify-between">
+            <Text className="text-xs text-gray-400">Weekly Average</Text>
+            <Text className="text-xs font-semibold text-primary-400">
+              {Math.round(trend.reduce((sum, item) => sum + item.vibe_score, 0) / trend.length)}%
             </Text>
-            <Text className="text-xs text-gray-500"> / 100</Text>
           </View>
         )}
       </View>
     );
   };
 
-  // Handle share for a history item
-  const handleShare = useCallback(async (item: VibeCheck) => {
-    hapticSelection();
-
-    const shareMessage =
-      `🎨 My Vibe: ${item.emoji} ${item.aesthetic}\n` +
-      `✨ Vibe Score: ${item.vibe_score}/100\n` +
-      `💭 "${item.mood_text}"\n\n` +
-      `Check your vibe at vibecheck.app`;
-
-    try {
-      await Share.share({
-        message: shareMessage,
-        title: 'My Vibe Result',
-      });
-      hapticSuccess();
-    } catch (error) {
-      hapticError();
-      console.error('Share failed:', error);
-    }
-  }, []);
-
-  // Handle delete for a history item
-  const handleDelete = useCallback(async (item: VibeCheck) => {
-    hapticSelection();
-
-    if (isGuest) {
-      // Remove from local storage
-      try {
-        const stored = await AsyncStorage.getItem('guest_vibes');
-        if (stored) {
-          const vibes = JSON.parse(stored).filter((v: VibeCheck) => v.id !== item.id);
-          await AsyncStorage.setItem('guest_vibes', JSON.stringify(vibes));
-          setHistory(vibes);
-          hapticSuccess();
-        }
-      } catch (error) {
-        hapticError();
-        console.error('Delete failed:', error);
-      }
-      return;
-    }
-
-    try {
-      await api.delete(`/vibes/${item.id}`);
-      setHistory(prev => prev.filter(v => v.id !== item.id));
-      hapticSuccess();
-    } catch (error) {
-      hapticError();
-      Alert.alert('Error', 'Failed to delete vibe. Please try again.');
-      console.error('Delete failed:', error);
-    }
-  }, [isGuest]);
-
-  // Render history item wrapped in GestureSwipeCard
-  const renderHistoryItem = ({ item }: { item: VibeCheck }) => (
-    <View className="mx-5 mb-3">
-      <GestureSwipeCard
-        title={item.aesthetic}
-        subtitle={formatDate(item.check_date)}
-        leftAction={{
-          icon: 'trash',
-          color: '#EF4444',
-          label: 'Delete',
-          onPress: () => handleDelete(item),
-        }}
-        rightAction={{
-          icon: 'share-social',
-          color: '#8B5CF6',
-          label: 'Share',
-          onPress: () => handleShare(item),
-        }}
-        onPress={() => hapticSelection()}
-      >
-        <View className="flex-row items-center">
-          {/* Emoji container */}
-          <View className="w-12 h-12 rounded-xl bg-gray-800 items-center justify-center">
-            <Text className="text-2xl">{item.emoji}</Text>
-          </View>
-
-          {/* Content */}
-          <View className="flex-1 ml-3">
-            <Text className="text-xs text-gray-500" numberOfLines={1}>
-              {item.mood_text}
-            </Text>
-            {item.insight && (
-              <Text className="text-sm text-gray-400 italic mt-1">
-                {'✨ '}{item.insight}
-              </Text>
-            )}
-          </View>
-
-          {/* Score badge */}
-          <View
-            className={`px-3 py-1 rounded-full ${getScoreBadgeStyle(item.vibe_score)}`}
+  // Render filter chips
+  const renderFilterChips = () => (
+    <View className="flex-row gap-2 px-5 mb-4">
+      {(['week', 'month', 'all'] as const).map((f) => (
+        <Pressable
+          key={f}
+          className={`px-4 py-2 rounded-full ${
+            filter === f ? 'bg-primary-600' : 'bg-gray-800 border border-gray-700'
+          }`}
+          onPress={() => handleFilterChange(f)}
+        >
+          <Text
+            className={`text-sm font-medium ${
+              filter === f ? 'text-white' : 'text-gray-400'
+            }`}
           >
-            <Text
-              className={`text-sm font-bold ${getScoreTextColor(item.vibe_score)}`}
-            >
-              {item.vibe_score}
-            </Text>
-          </View>
-        </View>
-      </GestureSwipeCard>
+            {f === 'week' ? '7 Days' : f === 'month' ? '30 Days' : 'All Time'}
+          </Text>
+        </Pressable>
+      ))}
     </View>
   );
 
-  // Render empty state for logged-in users
-  const renderEmptyState = () => {
-    if (isLoading) return null;
-
-    return (
-      <View className="items-center py-12 px-6">
-        <Ionicons
-          name="analytics-outline"
-          size={64}
-          color={COLORS.textMuted}
-        />
-        <Text className="text-lg font-semibold text-white mt-4 text-center">
-          No Vibe History Yet
-        </Text>
-        <Text className="text-sm text-gray-400 mt-2 text-center">
-          Start analyzing your vibes to see your emotional journey unfold here.
-        </Text>
-      </View>
-    );
-  };
-
-  // Render guest empty state (shown when guest has no local history)
+  // Render guest empty state
   const renderGuestEmptyState = () => (
-    <View className="items-center py-12 px-6">
-      <Ionicons
-        name="analytics-outline"
-        size={64}
-        color={COLORS.textMuted}
-      />
-      <Text className="text-lg font-semibold text-white mt-4 text-center">
-        No Vibes Yet
+    <View className="flex-1 items-center justify-center px-6 py-12">
+      <View className="w-20 h-20 rounded-full bg-primary-500/20 items-center justify-center mb-6">
+        <Ionicons name="lock-closed" size={36} color="#8B5CF6" />
+      </View>
+
+      <Text className="text-xl font-bold text-white text-center mb-2">
+        Track Your Vibe History
       </Text>
-      <Text className="text-sm text-gray-400 mt-2 text-center">
-        Complete your first vibe check to see your history here. Sign up to save your history across devices!
+
+      <Text className="text-gray-400 text-center mb-6 px-4">
+        Sign up to save your vibe analyses, track your emotional trends over time, and unlock personalized insights.
       </Text>
+
       <Pressable
-        className="bg-primary-600 rounded-xl py-3 px-6 mt-4 items-center"
-        style={{ backgroundColor: COLORS.primary }}
-        onPress={handleNavigateToRegister}
+        className="bg-primary-500 rounded-full px-8 py-4 flex-row items-center"
+        onPress={handleSignUpCTA}
       >
-        <Text className="text-white font-semibold text-base">
-          Create Free Account
+        <Ionicons name="person-add" size={20} color="white" style={{ marginRight: 8 }} />
+        <Text className="text-white font-semibold text-base">Create Free Account</Text>
+      </Pressable>
+
+      <Pressable
+        className="mt-4"
+        onPress={() => {
+          hapticSelection();
+          router.push('/(auth)/login');
+        }}
+      >
+        <Text className="text-primary-400 text-sm">
+          Already have an account? <Text className="font-semibold">Sign In</Text>
         </Text>
       </Pressable>
     </View>
   );
 
-  // Loading state
-  if (isLoading) {
+  // Render empty state for logged-in users
+  const renderEmptyState = () => (
+    <View className="flex-1 items-center justify-center px-6 py-12">
+      <View className="w-20 h-20 rounded-full bg-gray-800 items-center justify-center mb-6">
+        <Ionicons name="sparkles-outline" size={36} color="#6B7280" />
+      </View>
+
+      <Text className="text-xl font-bold text-white text-center mb-2">
+        No Vibe History Yet
+      </Text>
+
+      <Text className="text-gray-400 text-center mb-6 px-4">
+        Start analyzing your vibes to build your personal history and track your emotional journey.
+      </Text>
+
+      <Pressable
+        className="bg-primary-500 rounded-full px-8 py-4"
+        onPress={() => {
+          hapticSelection();
+          router.push('/(protected)/home');
+        }}
+      >
+        <Text className="text-white font-semibold text-base">Analyze Your First Vibe</Text>
+      </Pressable>
+    </View>
+  );
+
+  // Guest view
+  if (isGuest) {
     return (
       <SafeAreaView className="flex-1 bg-gray-950">
-        <View className="px-5 pt-4 pb-3">
+        <View className="px-5 pt-2 pb-4">
           <Text className="text-2xl font-bold text-white">Vibe History</Text>
-          <Text className="text-sm text-gray-400 mt-1">Track your emotional journey over time</Text>
+          <Text className="text-gray-400 text-sm mt-1">Track your emotional journey</Text>
         </View>
-        <View className="flex-1 px-5 pt-4">
-          <CardSkeleton />
-          <View className="mt-3" />
-          <CardSkeleton />
-          <View className="mt-3" />
-          <CardSkeleton />
-        </View>
+        {renderGuestEmptyState()}
       </SafeAreaView>
     );
   }
 
+  // Logged-in user view
   return (
     <SafeAreaView className="flex-1 bg-gray-950">
-      <View className="flex-1">
-        {/* Header */}
-        <View className="px-5 pt-4 pb-3">
-          <Text className="text-2xl font-bold text-white">Vibe History</Text>
-          <Text className="text-sm text-gray-400 mt-1">
-            {isGuest ? 'Your local vibe history' : 'Swipe to share or delete'}
-          </Text>
+      {/* Header */}
+      <View className="px-5 pt-2 pb-4">
+        <Text className="text-2xl font-bold text-white">Vibe History</Text>
+        <Text className="text-gray-400 text-sm mt-1">Track your emotional journey</Text>
+      </View>
+
+      {/* Filter Chips */}
+      {renderFilterChips()}
+
+      {/* Content */}
+      {isLoading ? (
+        <View className="flex-1 items-center justify-center">
+          <ActivityIndicator size="large" color="#8B5CF6" />
+          <Text className="text-gray-400 mt-3">Loading your vibe history...</Text>
         </View>
-
-        {/* Filter Chips - only for authenticated users */}
-        {!isGuest && (
-          <View className="flex-row gap-2 px-5 mb-4">
-            {renderFilterChip('week', '7 Days')}
-            {renderFilterChip('month', '30 Days')}
-            {renderFilterChip('all', 'All Time')}
-          </View>
-        )}
-
-        {/* Guest sign-up banner */}
-        {isGuest && history.length > 0 && (
-          <Pressable
-            className="mx-5 mb-4 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 p-4"
-            onPress={handleNavigateToRegister}
-          >
-            <Text className="text-indigo-400 font-medium text-sm">
-              Sign up to save your history across devices and unlock unlimited vibes
-            </Text>
-          </Pressable>
-        )}
-
-        {/* Contextual Paywall Banner - shown when history has 5+ items and user is not subscribed */}
-        {!isGuest && history.length >= 5 && !isSubscribed && (
-          <View className="mx-5 mb-4">
-            <UpgradeBanner
-              title="5+ Vibe Checks! Unlock Premium"
-              description="Get unlimited history & deep insights"
-              onPress={() => router.push('/(protected)/paywall')}
-            />
-          </View>
-        )}
-
-        {/* History List with Trend Chart Header */}
+      ) : history.length === 0 ? (
+        renderEmptyState()
+      ) : (
         <FlatList
           data={history}
-          keyExtractor={(item) => item.id}
           renderItem={renderHistoryItem}
-          contentContainerStyle={{ paddingBottom: 100 }}
-          ListHeaderComponent={!isGuest ? renderTrendChart : undefined}
-          ListEmptyComponent={isGuest ? renderGuestEmptyState : renderEmptyState}
+          keyExtractor={(item) => item.id}
+          contentContainerClassName="px-5 pb-6"
+          showsVerticalScrollIndicator={false}
+          ListHeaderComponent={renderTrendChart}
           refreshControl={
             <RefreshControl
-              refreshing={isRefreshing}
+              refreshing={refreshing}
               onRefresh={handleRefresh}
-              tintColor={COLORS.primary}
-              colors={[COLORS.primary]}
+              tintColor="#8B5CF6"
+              colors={['#8B5CF6']}
             />
           }
-          showsVerticalScrollIndicator={false}
         />
-      </View>
+      )}
     </SafeAreaView>
   );
 }
