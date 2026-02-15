@@ -5,18 +5,23 @@ import {
   ScrollView,
   TextInput,
   Pressable,
-  Share,
   ActivityIndicator,
   RefreshControl,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
+import Animated, { useSharedValue, useAnimatedStyle, withSpring } from 'react-native-reanimated';
 import api from '../../lib/api';
 import { hapticSuccess, hapticError, hapticSelection, hapticLight } from '../../lib/haptics';
 import { useAuth } from '../../contexts/AuthContext';
 import { VibeCheck, VibeStats } from '../../types/vibe';
 import VibeCard from '../../components/ui/VibeCard';
+import StreakBadge from '../../components/ui/StreakBadge';
+import { CardSkeleton } from '../../components/ui/LoadingShimmer';
+import ShareableResult from '../../components/ui/ShareableResult';
 
 export default function HomeScreen() {
   const {
@@ -42,6 +47,17 @@ export default function HomeScreen() {
   const [showCelebration, setShowCelebration] = useState(false);
   const [celebrationText, setCelebrationText] = useState('');
   const [prevStreak, setPrevStreak] = useState(0);
+
+  // Celebration animation values
+  const celebrationScale = useSharedValue(0.8);
+  const celebrationOpacity = useSharedValue(0);
+
+  const celebrationAnimatedStyle = useAnimatedStyle(() => {
+    return {
+      transform: [{ scale: celebrationScale.value }],
+      opacity: celebrationOpacity.value,
+    };
+  });
 
   // Initialize persistent device ID for guests
   useEffect(() => {
@@ -171,12 +187,20 @@ export default function HomeScreen() {
 
             setCelebrationText(text);
             setShowCelebration(true);
+            celebrationScale.value = withSpring(1, { damping: 8, stiffness: 100 });
+            celebrationOpacity.value = withSpring(1);
             if (newStreak === 3 || newStreak === 7 || newStreak === 14 || newStreak === 30) {
               hapticSuccess();
             } else {
               hapticLight();
             }
-            setTimeout(() => setShowCelebration(false), 2500);
+            setTimeout(() => {
+              celebrationOpacity.value = withSpring(0);
+              setTimeout(() => {
+                setShowCelebration(false);
+                celebrationScale.value = 0.8;
+              }, 300);
+            }, 2500);
           }
         }
       }
@@ -193,32 +217,12 @@ export default function HomeScreen() {
     }
   };
 
-  const handleShare = async () => {
-    if (!todayVibe) return;
-    hapticSelection();
-    try {
-      await Share.share({
-        message: `${todayVibe.emoji} My vibe today is ${todayVibe.aesthetic}! Score: ${todayVibe.vibe_score}/100\n\nCheck your vibe at vibecheck.app`,
-      });
-      hapticSuccess();
-    } catch {
-      // User cancelled share
-    }
-  };
-
   // Full-screen loading skeleton
   if (isDataLoading && !isGuest) {
     return (
       <SafeAreaView className="flex-1 bg-gray-950" edges={['top']}>
         <View className="flex-1 px-5 pt-8">
-          <View className="h-10 w-40 bg-gray-900 rounded-xl mb-6" />
-          <View className="h-64 bg-gray-900 rounded-3xl mb-4" style={{ opacity: 0.5 }} />
-          <View className="h-20 bg-gray-900 rounded-2xl mb-4" style={{ opacity: 0.3 }} />
-          <View className="flex-row gap-3">
-            <View className="flex-1 h-24 bg-gray-900 rounded-2xl" style={{ opacity: 0.3 }} />
-            <View className="flex-1 h-24 bg-gray-900 rounded-2xl" style={{ opacity: 0.3 }} />
-            <View className="flex-1 h-24 bg-gray-900 rounded-2xl" style={{ opacity: 0.3 }} />
-          </View>
+          <CardSkeleton />
         </View>
       </SafeAreaView>
     );
@@ -251,14 +255,38 @@ export default function HomeScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-gray-950" edges={['top']}>
-      {/* Streak celebration overlay */}
+      {/* Streak celebration overlay - ENHANCED */}
       {showCelebration && (
-        <View className="absolute inset-0 z-50 items-center justify-center bg-black/80">
-          <Text className="text-7xl">{'\u{1F525}'}</Text>
-          <Text className="text-3xl font-bold text-amber-400 mt-4">
-            {celebrationText}
-          </Text>
-        </View>
+        <Animated.View
+          style={[celebrationAnimatedStyle]}
+          className="absolute inset-0 z-50 items-center justify-center"
+        >
+          <LinearGradient
+            colors={['rgba(0,0,0,0.9)', 'rgba(37,99,235,0.3)', 'rgba(0,0,0,0.9)']}
+            start={{ x: 0.5, y: 0 }}
+            end={{ x: 0.5, y: 1 }}
+            className="absolute inset-0"
+          />
+          <View className="bg-gray-900 rounded-3xl p-8 items-center border border-amber-500/30 mx-6">
+            <Text className="text-7xl">{'\u{1F525}'}</Text>
+            <Text className="text-3xl font-bold text-amber-400 mt-4">
+              {celebrationText}
+            </Text>
+            <Pressable
+              onPress={() => {
+                hapticSelection();
+                celebrationOpacity.value = withSpring(0);
+                setTimeout(() => {
+                  setShowCelebration(false);
+                  celebrationScale.value = 0.8;
+                }, 300);
+              }}
+              className="mt-6 bg-amber-500 rounded-xl px-6 py-3"
+            >
+              <Text className="text-white font-semibold">Keep Going!</Text>
+            </Pressable>
+          </View>
+        </Animated.View>
       )}
 
       <ScrollView
@@ -274,9 +302,7 @@ export default function HomeScreen() {
             <View>
               <Text className="text-2xl font-bold text-white">VibeCheck</Text>
               {stats && stats.current_streak > 0 ? (
-                <Text className="text-sm text-primary-500 font-medium mt-0.5">
-                  {'\u{1F525}'} {stats.current_streak} day streak
-                </Text>
+                <StreakBadge streak={stats.current_streak} size="md" />
               ) : (
                 <Text className="text-sm text-gray-500 mt-0.5">
                   What is your vibe today?
@@ -312,99 +338,158 @@ export default function HomeScreen() {
         {todayVibe ? (
           <View className="mx-5 mt-6">
             <VibeCard
-              aesthetic={todayVibe.aesthetic}
-              emoji={todayVibe.emoji}
+              vibeName={todayVibe.aesthetic}
+              vibeDescription={todayVibe.mood_text}
               vibeScore={todayVibe.vibe_score}
-              moodText={todayVibe.mood_text}
               colorPrimary={todayVibe.color_primary}
               colorSecondary={todayVibe.color_secondary}
               colorAccent={todayVibe.color_accent}
-              date={todayVibe.check_date}
-              streak={stats?.current_streak}
-              insight={todayVibe.insight}
+              keywords={todayVibe.insight ? todayVibe.insight.split(' ').slice(0, 3) : []}
+              timestamp={todayVibe.check_date}
             />
-            <Pressable
-              className="bg-gray-800 rounded-2xl py-4 mt-4 items-center"
-              onPress={handleShare}
-            >
-              <Text className="text-white text-base font-semibold">
-                Share Your Vibe
-              </Text>
-            </Pressable>
+            <View className="mt-4 items-center">
+              <ShareableResult
+                aesthetic={todayVibe.aesthetic}
+                emoji={todayVibe.emoji}
+                vibeScore={todayVibe.vibe_score}
+                moodText={todayVibe.mood_text}
+                colorPrimary={todayVibe.color_primary}
+                colorSecondary={todayVibe.color_secondary}
+                colorAccent={todayVibe.color_accent}
+                streak={stats?.current_streak}
+                onShare={() => {
+                  console.log('Result shared successfully');
+                }}
+              />
+            </View>
           </View>
         ) : (
-          /* Input Section */
-          <View className="mx-5 mt-6 bg-gray-900 rounded-3xl p-6 border border-gray-800">
-            <Text className="text-xl font-semibold text-white mb-4">
-              How are you feeling?
-            </Text>
-            <TextInput
-              value={moodText}
-              onChangeText={setMoodText}
-              placeholder="Describe your mood, thoughts, or how your day is going..."
-              placeholderTextColor="#6b7280"
-              className="bg-gray-800 rounded-2xl p-4 text-base text-white"
-              multiline
-              numberOfLines={4}
-              maxLength={500}
-              style={{ minHeight: 120, textAlignVertical: 'top' }}
-              editable={!submitting}
+          /* Input Section - ENHANCED */
+          <View className="mx-5 mt-6 bg-gray-900 rounded-3xl border border-gray-700/50 overflow-hidden">
+            {/* Gradient accent strip at top */}
+            <LinearGradient
+              colors={['#2563eb', '#8b5cf6']}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 0 }}
+              className="h-1"
             />
-            <Text className="text-xs text-gray-500 text-right mt-1">
-              {moodText.length}/500
-            </Text>
 
-            {errorMsg ? (
-              <View className="bg-red-900/30 rounded-xl p-3 mt-3">
-                <Text className="text-sm text-red-400">{errorMsg}</Text>
-              </View>
-            ) : null}
+            <View className="p-6">
+              <Text className="text-xl font-semibold text-white mb-4">
+                How are you feeling?
+              </Text>
+              <TextInput
+                value={moodText}
+                onChangeText={setMoodText}
+                placeholder="Describe your mood, thoughts, or how your day is going..."
+                placeholderTextColor="#6b7280"
+                className="bg-gray-800 rounded-2xl p-4 text-base text-white border border-gray-700"
+                multiline
+                numberOfLines={4}
+                maxLength={500}
+                style={{ minHeight: 120, textAlignVertical: 'top' }}
+                editable={!submitting}
+              />
+              <Text className="text-xs text-gray-500 text-right mt-1">
+                {moodText.length}/500
+              </Text>
 
-            <Pressable
-              className={`bg-primary-600 rounded-2xl py-4 mt-4 items-center ${submitting ? 'opacity-70' : ''}`}
-              onPress={handleVibeCheck}
-              disabled={submitting || !moodText.trim()}
-            >
-              {submitting ? (
-                <View className="flex-row items-center">
-                  <ActivityIndicator color="#ffffff" size="small" />
-                  <Text className="text-white text-sm ml-2">Analyzing your vibe...</Text>
+              {errorMsg ? (
+                <View className="bg-red-900/30 rounded-xl p-3 mt-3">
+                  <Text className="text-sm text-red-400">{errorMsg}</Text>
                 </View>
-              ) : (
-                <Text className="text-white text-lg font-semibold">
-                  Check My Vibe {'\u2728'}
-                </Text>
-              )}
-            </Pressable>
+              ) : null}
+
+              {/* Submit Button - ENHANCED */}
+              <Pressable
+                onPress={handleVibeCheck}
+                disabled={submitting || !moodText.trim()}
+                className="overflow-hidden rounded-2xl mt-4"
+              >
+                <LinearGradient
+                  colors={submitting || !moodText.trim() ? ['#374151', '#374151'] : ['#2563eb', '#1d4ed8']}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 0 }}
+                  className="py-4 items-center"
+                >
+                  {submitting ? (
+                    <View className="flex-row items-center gap-2">
+                      <ActivityIndicator color="#fff" size="small" />
+                      <Text className="text-white font-medium">Analyzing...</Text>
+                    </View>
+                  ) : (
+                    <View className="flex-row items-center gap-2">
+                      <Ionicons name="sparkles" size={20} color="#fff" />
+                      <Text className="text-white font-semibold text-lg">
+                        Check My Vibe
+                      </Text>
+                    </View>
+                  )}
+                </LinearGradient>
+              </Pressable>
+            </View>
           </View>
         )}
 
-        {/* Stats Row */}
+        {/* Stats Row - ENHANCED */}
         {stats && !isGuest && (
           <View className="mx-5 mt-6 flex-row gap-3">
+            {/* Streak Card with Gradient */}
             <View
-              className={`flex-1 rounded-2xl p-4 items-center border ${
-                stats.current_streak > 0
-                  ? 'bg-amber-500/10 border-amber-500/20'
-                  : 'bg-gray-900 border-gray-800'
-              }`}
+              className="flex-1 rounded-2xl overflow-hidden border border-amber-500/20"
+              style={{
+                shadowColor: '#f59e0b',
+                shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: 0.15,
+                shadowRadius: 4,
+                elevation: 3,
+              }}
             >
-              <Text className="text-2xl">{'\u{1F525}'}</Text>
-              <Text className="text-2xl font-bold text-white mt-1">
-                {stats.current_streak}
-              </Text>
-              <Text className="text-xs text-gray-400 mt-1">Streak</Text>
+              <LinearGradient
+                colors={stats.current_streak > 0 ? ['#f59e0b15', '#f59e0b05'] : ['#1f2937', '#111827']}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 0, y: 1 }}
+                className="p-4 items-center"
+              >
+                <Ionicons name="flame" size={24} color="#f59e0b" />
+                <Text className="text-2xl font-bold text-amber-500 mt-1">
+                  {stats.current_streak}
+                </Text>
+                <Text className="text-xs text-gray-400 mt-1">Streak</Text>
+              </LinearGradient>
             </View>
-            <View className="flex-1 rounded-2xl bg-gray-900 p-4 items-center border border-gray-800">
-              <Text className="text-2xl">{'\u{1F4CA}'}</Text>
-              <Text className="text-2xl font-bold text-white mt-1">
+
+            {/* Total Vibes Card */}
+            <View
+              className="flex-1 rounded-2xl bg-gray-900 p-4 items-center border border-gray-800"
+              style={{
+                shadowColor: '#000',
+                shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: 0.2,
+                shadowRadius: 4,
+                elevation: 3,
+              }}
+            >
+              <Ionicons name="stats-chart" size={24} color="#60a5fa" />
+              <Text className="text-2xl font-bold text-blue-400 mt-1">
                 {stats.total_checks}
               </Text>
               <Text className="text-xs text-gray-400 mt-1">Total Vibes</Text>
             </View>
-            <View className="flex-1 rounded-2xl bg-gray-900 p-4 items-center border border-gray-800">
-              <Text className="text-2xl">{'\u2B50'}</Text>
-              <Text className="text-2xl font-bold text-white mt-1">
+
+            {/* Avg Score Card */}
+            <View
+              className="flex-1 rounded-2xl bg-gray-900 p-4 items-center border border-gray-800"
+              style={{
+                shadowColor: '#000',
+                shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: 0.2,
+                shadowRadius: 4,
+                elevation: 3,
+              }}
+            >
+              <Ionicons name="star" size={24} color="#a78bfa" />
+              <Text className="text-2xl font-bold text-purple-400 mt-1">
                 {Math.round(stats.avg_vibe_score)}
               </Text>
               <Text className="text-xs text-gray-400 mt-1">Avg Score</Text>
@@ -412,16 +497,30 @@ export default function HomeScreen() {
           </View>
         )}
 
-        {/* Upgrade Banner */}
+        {/* Upgrade Banner - ENHANCED */}
         {isAuthenticated && (
           <Pressable
-            className="mx-5 mt-6 bg-primary-600/10 border border-primary-600/20 rounded-2xl p-4"
-            onPress={() => router.push('/(protected)/paywall')}
+            onPress={() => {
+              hapticSelection();
+              router.push('/(protected)/paywall');
+            }}
+            className="mx-5 mt-6 overflow-hidden rounded-2xl"
           >
-            <Text className="text-sm text-gray-300">
-              Unlock deeper AI insights with Premium
-            </Text>
-            <Text className="text-primary-500 font-semibold mt-1 text-sm">Upgrade</Text>
+            <LinearGradient
+              colors={['#2563eb10', '#8b5cf610']}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 0 }}
+              className="p-4 flex-row items-center border border-blue-500/20 rounded-2xl"
+            >
+              <Ionicons name="diamond" size={16} color="#3b82f6" />
+              <View className="flex-1 ml-3">
+                <Text className="text-sm text-gray-300">
+                  Unlock deeper AI insights with Premium
+                </Text>
+                <Text className="text-blue-400 font-semibold mt-1 text-sm">Upgrade</Text>
+              </View>
+              <Ionicons name="chevron-forward" size={16} color="#60a5fa" />
+            </LinearGradient>
           </Pressable>
         )}
       </ScrollView>

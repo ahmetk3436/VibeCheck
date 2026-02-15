@@ -1,121 +1,197 @@
 import React from 'react';
-import { View, Text } from 'react-native';
+import { View, Text, Pressable, Share } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
+import * as Haptics from 'expo-haptics';
+import { Ionicons } from '@expo/vector-icons';
 
 interface VibeCardProps {
-  aesthetic: string;
-  emoji: string;
+  vibeName: string;
+  vibeDescription: string;
   vibeScore: number;
-  moodText: string;
   colorPrimary: string;
   colorSecondary: string;
   colorAccent: string;
-  date: string;
-  streak?: number;
-  insight?: string;
+  keywords: string[];
+  timestamp?: string;
 }
 
 export default function VibeCard({
-  aesthetic,
-  emoji,
+  vibeName,
+  vibeDescription,
   vibeScore,
-  moodText,
   colorPrimary,
   colorSecondary,
   colorAccent,
-  date,
-  streak,
-  insight,
+  keywords = [],
+  timestamp,
 }: VibeCardProps) {
-  const formattedDate = new Date(date).toLocaleDateString('en-US', {
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric',
-  });
+  const handleShare = async () => {
+    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    try {
+      await Share.share({
+        message: `My vibe is "${vibeName}" with a score of ${vibeScore}/100! 🎨✨ Check out VibeMeter AI to discover your vibe.`,
+        title: 'My Vibe Result',
+      });
+    } catch (error) {
+      console.error('Share error:', error);
+    }
+  };
+
+  const getScoreLabel = (score: number): string => {
+    if (score >= 80) return 'Peak Vibes';
+    if (score >= 60) return 'Good Energy';
+    if (score >= 40) return 'Mellow';
+    return 'Low Key';
+  };
 
   return (
-    <View
+    <LinearGradient
+      colors={[colorPrimary + '25', colorSecondary + '15', '#030712']}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 1, y: 1 }}
       className="w-full rounded-3xl overflow-hidden"
-      style={{ backgroundColor: colorPrimary + '15' }}
     >
-      <View className="p-6">
-        {/* Top bar */}
-        <View className="flex-row justify-between items-center">
-          <Text className="text-xs font-bold text-gray-500 uppercase tracking-widest">
-            VibeCheck
-          </Text>
-          <Text className="text-xs text-gray-500">{formattedDate}</Text>
-        </View>
-
-        {/* Center: emoji + aesthetic name */}
-        <Text className="text-7xl text-center mt-6">{emoji}</Text>
-        <Text className="text-2xl font-bold text-white text-center mt-3 capitalize">
-          {aesthetic}
-        </Text>
-
-        {/* Vibe score circle */}
-        <View className="items-center mt-4">
-          <View
-            className="w-16 h-16 rounded-full items-center justify-center self-center"
-            style={{ borderWidth: 3, borderColor: colorPrimary }}
-          >
-            <Text className="text-xl font-bold" style={{ color: colorPrimary }}>
-              {vibeScore}
-            </Text>
-          </View>
-          <Text className="text-xs text-gray-500 text-center mt-1">
-            vibe score
-          </Text>
-        </View>
-
-        {/* Mood quote */}
+      {/* Decorative Pattern Overlay */}
+      <View className="absolute top-0 right-0 w-32 h-32 opacity-10">
         <View
-          className="mt-5"
-          style={{ borderLeftWidth: 3, borderLeftColor: colorPrimary, paddingLeft: 16 }}
-        >
-          <Text className="text-base text-gray-400 italic" numberOfLines={3}>
-            &ldquo;{moodText}&rdquo;
+          className="w-full h-full rounded-bl-full"
+          style={{ backgroundColor: colorPrimary }}
+        />
+      </View>
+
+      {/* Content Container */}
+      <View className="p-6 pt-4">
+        {/* Header with Branding */}
+        <View className="flex-row items-center justify-between mb-4">
+          <View className="flex-row items-center gap-2">
+            <Text
+              className="text-sm font-bold uppercase"
+              style={{ color: colorPrimary, letterSpacing: 4 }}
+            >
+              VIBECHECK
+            </Text>
+            <View
+              className="w-2 h-2 rounded-full"
+              style={{ backgroundColor: colorPrimary }}
+            />
+          </View>
+          <Text className="text-xs text-gray-500">
+            {timestamp || new Date().toLocaleDateString()}
           </Text>
         </View>
 
-        {/* Insight */}
-        {insight ? (
-          <View className="bg-gray-800/50 rounded-xl p-3 mt-4">
-            <Text className="text-sm text-gray-300">
-              {'\u2728'} {insight}
-            </Text>
+        {/* Score Circle with Outer Ring */}
+        <View className="items-center my-6">
+          <View
+            style={{
+              borderWidth: 1,
+              borderColor: colorPrimary + '40',
+              borderRadius: 9999,
+              padding: 4,
+            }}
+          >
+            <View
+              className="w-24 h-24 rounded-full items-center justify-center"
+              style={{
+                backgroundColor: colorPrimary + '20',
+                borderWidth: 3,
+                borderColor: colorPrimary,
+              }}
+            >
+              <Text
+                className="text-3xl font-bold"
+                style={{ color: colorPrimary }}
+              >
+                {vibeScore}
+              </Text>
+              <Text className="text-xs text-gray-500">/100</Text>
+            </View>
           </View>
-        ) : null}
-
-        {/* Color palette */}
-        <View className="flex-row gap-2 mt-5 justify-center">
-          <View
-            className="w-6 h-6 rounded-full"
-            style={{ backgroundColor: colorPrimary }}
-          />
-          <View
-            className="w-6 h-6 rounded-full"
-            style={{ backgroundColor: colorSecondary }}
-          />
-          <View
-            className="w-6 h-6 rounded-full"
-            style={{ backgroundColor: colorAccent }}
-          />
+          <Text
+            className="text-xs font-medium mt-1"
+            style={{ color: colorPrimary }}
+          >
+            {getScoreLabel(vibeScore)}
+          </Text>
         </View>
 
-        {/* Streak badge */}
-        {streak && streak > 0 ? (
-          <View className="flex-row items-center self-center mt-4 bg-amber-500/10 rounded-full px-4 py-1.5">
-            <Text className="text-sm font-semibold text-amber-400">
-              {'\u{1F525}'} {streak} day streak
-            </Text>
-          </View>
-        ) : null}
+        {/* Vibe Name and Description */}
+        <View className="mb-4">
+          <Text className="text-2xl font-bold text-white text-center mb-1">
+            {vibeName}
+          </Text>
+          <Text className="text-sm text-gray-400 text-center">
+            {vibeDescription}
+          </Text>
+        </View>
 
-        {/* Footer */}
-        <Text className="text-xs text-gray-600 text-center mt-4">
-          vibecheck.app
-        </Text>
+        {/* Color Palette Row */}
+        <View className="flex-row justify-center gap-6 my-4">
+          <View className="items-center">
+            <View
+              className="w-8 h-8 rounded-full"
+              style={{
+                borderWidth: 2,
+                borderColor: '#ffffff20',
+                backgroundColor: colorPrimary,
+              }}
+            />
+            <Text className="text-xs text-gray-600 mt-1">Primary</Text>
+          </View>
+          <View className="items-center">
+            <View
+              className="w-8 h-8 rounded-full"
+              style={{
+                borderWidth: 2,
+                borderColor: '#ffffff20',
+                backgroundColor: colorSecondary,
+              }}
+            />
+            <Text className="text-xs text-gray-600 mt-1">Secondary</Text>
+          </View>
+          <View className="items-center">
+            <View
+              className="w-8 h-8 rounded-full"
+              style={{
+                borderWidth: 2,
+                borderColor: '#ffffff20',
+                backgroundColor: colorAccent,
+              }}
+            />
+            <Text className="text-xs text-gray-600 mt-1">Accent</Text>
+          </View>
+        </View>
+
+        {/* Keywords */}
+        {keywords.length > 0 && (
+          <View className="flex-row items-center justify-center gap-2 mb-4 flex-wrap">
+            {keywords.map((keyword, index) => (
+              <View
+                key={index}
+                className="px-3 py-1 rounded-full"
+                style={{ backgroundColor: colorPrimary + '15' }}
+              >
+                <Text
+                  className="text-xs font-medium"
+                  style={{ color: colorPrimary }}
+                >
+                  {keyword}
+                </Text>
+              </View>
+            ))}
+          </View>
+        )}
+
+        {/* Share Button */}
+        <Pressable
+          className="flex-row items-center justify-center gap-2 py-3 px-6 rounded-2xl"
+          style={{ backgroundColor: colorPrimary }}
+          onPress={handleShare}
+        >
+          <Ionicons name="share-outline" size={18} color="white" />
+          <Text className="text-sm font-semibold text-white">Share Vibe</Text>
+        </Pressable>
       </View>
-    </View>
+    </LinearGradient>
   );
 }

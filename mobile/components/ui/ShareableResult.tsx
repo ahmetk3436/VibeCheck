@@ -1,219 +1,171 @@
-import React, { useEffect, useRef } from 'react';
-import {
-  View,
-  Text,
-  Pressable,
-  Animated,
-  Share,
-  Dimensions,
-} from 'react-native';
+import React, { useRef, useCallback } from 'react';
+import { View, Text, Pressable, Share, Alert } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { captureRef } from 'react-native-view-shot';
-import * as FileSystem from 'expo-file-system';
-import { hapticSuccess, hapticSelection } from '../../lib/haptics';
+import { Ionicons } from '@expo/vector-icons';
+import { hapticSuccess, hapticError, hapticSelection } from '../../lib/haptics';
 
-// 2025-2026 Trend: Shareable cards for viral growth
 interface ShareableResultProps {
   aesthetic: string;
   emoji: string;
   vibeScore: number;
+  moodText: string;
+  colorPrimary: string;
+  colorSecondary?: string;
+  colorAccent?: string;
   streak?: number;
   onShare?: () => void;
 }
-
-const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
 export default function ShareableResult({
   aesthetic,
   emoji,
   vibeScore,
-  streak,
+  moodText,
+  colorPrimary,
+  colorSecondary = '#8B5CF6',
+  colorAccent = '#EC4899',
+  streak = 0,
   onShare,
 }: ShareableResultProps) {
-  const scaleAnim = useRef(new Animated.Value(0)).current;
-  const rotateAnim = useRef(new Animated.Value(0)).current;
-  const cardRef = useRef<View>(null);
+  const viewShotRef = useRef<View>(null);
 
-  useEffect(() => {
-    Animated.parallel([
-      Animated.spring(scaleAnim, {
-        toValue: 1,
-        tension: 50,
-        friction: 7,
-        useNativeDriver: true,
-      }),
-      Animated.timing(rotateAnim, {
-        toValue: 1,
-        duration: 600,
-        useNativeDriver: true,
-      }),
-    ]).start();
-  }, []);
+  const truncatedMoodText = moodText.length > 100
+    ? moodText.substring(0, 97) + '...'
+    : moodText;
 
-  const spin = rotateAnim.interpolate({
-    inputRange: [0, 1],
-    outputRange: ['0deg', '360deg'],
-  });
-
-  const handleShare = async () => {
+  const handleShareImage = useCallback(async () => {
     hapticSelection();
 
-    try {
-      if (cardRef.current) {
-        const uri = await captureRef(cardRef, {
-          format: 'png',
-          quality: 1,
-          width: SCREEN_WIDTH * 0.85,
-        });
-
-        await Share.share({
-          message: `${emoji} My vibe today is ${aesthetic}! Score: ${vibeScore}/100\n\nCheck your vibe at vibecheck.app`,
-          url: uri,
-        });
-        hapticSuccess();
-      }
-    } catch (error) {
-      console.error('Share failed:', error);
+    if (!viewShotRef.current) {
+      hapticError();
+      Alert.alert('Error', 'Card not ready. Please try again.');
+      return;
     }
 
-    onShare?.();
-  };
+    try {
+      const uri = await captureRef(viewShotRef, {
+        format: 'png',
+        quality: 0.9,
+        result: 'tmpfile',
+      });
 
-  // Gradient colors based on vibe score
-  const getGradientColors = () => {
-    if (vibeScore >= 80) return ['#10b981', '#059669']; // Emerald
-    if (vibeScore >= 60) return ['#8b5cf6', '#6366f1']; // Violet
-    if (vibeScore >= 40) return ['#f59e0b', '#d97706']; // Amber
-    return ['#ef4444', '#dc2626']; // Red
-  };
+      await Share.share({
+        url: uri,
+        message: `My vibe today: ${aesthetic} ✨`,
+      });
+
+      hapticSuccess();
+
+      if (onShare) {
+        onShare();
+      }
+    } catch (error) {
+      hapticError();
+      Alert.alert('Share Failed', 'Could not share the image. Please try again.');
+      console.error('Share error:', error);
+    }
+  }, [aesthetic, onShare]);
+
+  const handleShareText = useCallback(async () => {
+    hapticSelection();
+
+    const shareMessage = `🎨 My Vibe Today: ${aesthetic}\n\n` +
+      `✨ Vibe Score: ${vibeScore}%\n` +
+      `💭 "${truncatedMoodText}"\n` +
+      `🔥 ${streak} day streak\n\n` +
+      `Check your vibe at vibecheck.app`;
+
+    try {
+      await Share.share({ message: shareMessage });
+      hapticSuccess();
+    } catch (error) {
+      hapticError();
+      console.error('Share text error:', error);
+    }
+  }, [aesthetic, vibeScore, truncatedMoodText, streak]);
 
   return (
-    <Animated.View
-      ref={cardRef}
-      style={{
-        transform: [{ scale: scaleAnim }],
-      }}
-    >
-      <LinearGradient
-        colors={getGradientColors() as any}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 1 }}
-        style={{ width: SCREEN_WIDTH * 0.85, borderRadius: 24, overflow: 'hidden' }}
+    <View className="flex-1 items-center justify-center p-6 bg-gray-50">
+      {/* Shareable Card */}
+      <View
+        ref={viewShotRef}
+        className="w-[320] rounded-3xl overflow-hidden shadow-2xl"
+        collapsable={false}
       >
-        {/* Pattern overlay */}
-        <View style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, opacity: 0.2 }}>
-          <View style={{ width: '100%', height: '100%' }}>
-            {/* Decorative circles */}
-            <View style={{ position: 'absolute', top: -40, right: -40, width: 128, height: 128, borderRadius: 64, backgroundColor: 'rgba(255,255,255,0.1)' }} />
-            <View style={{ position: 'absolute', bottom: -40, left: -40, width: 96, height: 96, borderRadius: 48, backgroundColor: 'rgba(255,255,255,0.1)' }} />
-          </View>
-        </View>
+        <LinearGradient
+          colors={[colorPrimary, colorSecondary]}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={{ padding: 24, alignItems: 'center' }}
+        >
+          {/* Emoji */}
+          <Text className="text-7xl mb-2">{emoji}</Text>
 
-        {/* Content */}
-        <View style={{ padding: 24, position: 'relative', zIndex: 10 }}>
-          {/* Header */}
-          <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16 }}>
-            <View>
-              <Text style={{ fontSize: 12, fontWeight: '600', color: 'rgba(255,255,255,0.7)', textTransform: 'uppercase', letterSpacing: 1 }}>
-                VibeCheck
-              </Text>
-              <Text style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)', marginTop: 2 }}>
-                {new Date().toLocaleDateString()}
-              </Text>
-            </View>
-            {streak && streak > 0 && (
-              <Animated.View style={{ transform: [{ rotate: spin }] }}>
-                <Text style={{ fontSize: 20 }}>🔥</Text>
-              </Animated.View>
-            )}
-          </View>
-
-          {/* Main emoji */}
-          <Text style={{ fontSize: 56, textAlign: 'center', marginVertical: 24 }}>{emoji}</Text>
-
-          {/* Aesthetic name */}
-          <Text style={{ fontSize: 24, fontWeight: 'bold', color: 'white', textAlign: 'center', textTransform: 'capitalize' }}>
+          {/* Aesthetic Name */}
+          <Text className="text-2xl font-bold text-white text-center mb-4">
             {aesthetic}
           </Text>
 
-          {/* Vibe score */}
-          <View style={{ alignItems: 'center', marginVertical: 16 }}>
-            <View style={{ backgroundColor: 'rgba(255,255,255,0.2)', borderRadius: 999, paddingHorizontal: 24, paddingVertical: 8 }}>
-              <Text style={{ fontSize: 28, fontWeight: 'bold', color: 'white' }}>
-                {vibeScore}
-              </Text>
-            </View>
-            <Text style={{ fontSize: 12, color: 'rgba(255,255,255,0.7)', marginTop: 8, textTransform: 'uppercase', letterSpacing: 1 }}>
-              Vibe Score
-            </Text>
+          {/* Vibe Score Circle */}
+          <View className="w-20 h-20 rounded-full bg-white/20 border-2 border-white/40 items-center justify-center mb-4">
+            <Text className="text-2xl font-bold text-white">{vibeScore}%</Text>
           </View>
 
-          {/* Streak badge */}
-          {streak && streak > 0 && (
-            <View style={{ alignItems: 'center', marginTop: 16 }}>
-              <View style={{ backgroundColor: 'rgba(255,255,255,0.2)', borderRadius: 999, paddingHorizontal: 16, paddingVertical: 6 }}>
-                <Text style={{ fontSize: 14, fontWeight: '600', color: 'white' }}>
-                  🔥 {streak} day streak
-                </Text>
-              </View>
+          {/* Mood Text */}
+          <Text className="text-base text-white/90 text-center italic mb-4 px-4">
+            "{truncatedMoodText}"
+          </Text>
+
+          {/* Color Palette Dots */}
+          <View className="flex-row gap-2 mb-4">
+            <View
+              className="w-6 h-6 rounded-full border border-white/30"
+              style={{ backgroundColor: colorPrimary }}
+            />
+            <View
+              className="w-6 h-6 rounded-full border border-white/30"
+              style={{ backgroundColor: colorSecondary }}
+            />
+            <View
+              className="w-6 h-6 rounded-full border border-white/30"
+              style={{ backgroundColor: colorAccent }}
+            />
+          </View>
+
+          {/* Streak */}
+          {streak > 0 && (
+            <View className="flex-row items-center gap-1 mb-2">
+              <Ionicons name="flame" size={16} color="#FFD700" />
+              <Text className="text-sm text-white/80">{streak} day streak</Text>
             </View>
           )}
 
-          {/* Footer */}
-          <View style={{ marginTop: 24, paddingTop: 16, borderTopColor: 'rgba(255,255,255,0.2)', borderTopWidth: 1 }}>
-            <Text style={{ textAlign: 'center', fontSize: 12, color: 'rgba(255,255,255,0.6)' }}>
-              vibecheck.app • Share your vibe
-            </Text>
-          </View>
-        </View>
-      </LinearGradient>
-
-      {/* Share button */}
-      <Pressable
-        onPress={handleShare}
-        style={{ marginTop: 16, alignSelf: 'center', backgroundColor: 'rgba(255,255,255,0.1)', borderRadius: 999, paddingHorizontal: 24, paddingVertical: 12, flexDirection: 'row', alignItems: 'center' }}
-      >
-        <Text style={{ color: 'white', fontWeight: '600', marginRight: 8 }}>Share Result</Text>
-        <Text style={{ color: 'white' }}>📤</Text>
-      </Pressable>
-    </Animated.View>
-  );
-}
-
-// Mini shareable card for history items
-export function MiniShareCard({
-  aesthetic,
-  emoji,
-  vibeScore,
-  onPress,
-}: {
-  aesthetic: string;
-  emoji: string;
-  vibeScore: number;
-  onPress?: () => void;
-}) {
-  return (
-    <Pressable
-      onPress={() => {
-        hapticSelection();
-        onPress?.();
-      }}
-      style={{ backgroundColor: '#111827', borderRadius: 16, borderWidth: 1, borderColor: '#1f2937', overflow: 'hidden' }}
-    >
-      <View style={{ padding: 16, flexDirection: 'row', alignItems: 'center' }}>
-        <Text style={{ fontSize: 36, marginRight: 12 }}>{emoji}</Text>
-        <View style={{ flex: 1 }}>
-          <Text style={{ fontSize: 16, fontWeight: '600', color: 'white', textTransform: 'capitalize' }}>
-            {aesthetic}
-          </Text>
-          <Text style={{ fontSize: 14, color: '#6b7280' }}>
-            Score: {vibeScore}/100
-          </Text>
-        </View>
-        <View style={{ width: 32, height: 32, borderRadius: 999, backgroundColor: '#1f2937', alignItems: 'center', justifyContent: 'center' }}>
-          <Text style={{ fontSize: 16 }}>📤</Text>
-        </View>
+          {/* Branding Footer */}
+          <Text className="text-xs text-white/60 mt-2">✨ vibecheck.app</Text>
+        </LinearGradient>
       </View>
-    </Pressable>
+
+      {/* Share Buttons */}
+      <View className="flex-row gap-3 mt-6 w-full max-w-[320]">
+        {/* Share Image Button */}
+        <Pressable
+          onPress={handleShareImage}
+          className="flex-1 flex-row items-center justify-center gap-2 bg-gray-900 rounded-2xl py-4 px-4 active:opacity-80"
+        >
+          <Ionicons name="image" size={20} color="white" />
+          <Text className="text-base font-semibold text-white">Share Image</Text>
+        </Pressable>
+
+        {/* Share Text Button */}
+        <Pressable
+          onPress={handleShareText}
+          className="flex-1 flex-row items-center justify-center gap-2 bg-gray-200 rounded-2xl py-4 px-4 active:opacity-80"
+        >
+          <Ionicons name="text" size={20} color="#374151" />
+          <Text className="text-base font-semibold text-gray-700">Share Text</Text>
+        </Pressable>
+      </View>
+    </View>
   );
 }

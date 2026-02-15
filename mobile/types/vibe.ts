@@ -20,6 +20,12 @@ export interface VibeStats {
   top_aesthetic: string;
 }
 
+export interface VibeTrendItem {
+  date: string;
+  vibe_score: number;
+  emoji: string;
+}
+
 export const AESTHETICS = [
   { key: 'chill', name: 'Chill Vibes', emoji: '😌', colors: ['#6366f1', '#a5b4fc', '#e0e7ff'] },
   { key: 'energetic', name: 'High Energy', emoji: '⚡', colors: ['#f97316', '#fdba74', '#fff7ed'] },

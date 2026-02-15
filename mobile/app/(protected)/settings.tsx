@@ -11,6 +11,7 @@ import { hapticWarning, hapticSelection, hapticSuccess, hapticError } from '../.
 import Modal from '../../components/ui/Modal';
 import Input from '../../components/ui/Input';
 import Button from '../../components/ui/Button';
+import PrivacyDashboard from '../../components/ui/PrivacyDashboard';
 
 const PRIVACY_POLICY_URL = 'https://vibecheck.app/privacy';
 const TERMS_URL = 'https://vibecheck.app/terms';
@@ -199,6 +200,14 @@ export default function SettingsScreen() {
             </View>
           </>
         )}
+
+        {/* Privacy Section */}
+        <Text className="text-xs font-semibold text-gray-500 uppercase tracking-wider px-5 py-2 mt-4">
+          Privacy
+        </Text>
+        <View className="mx-5 rounded-2xl bg-gray-900 border border-gray-800 overflow-hidden">
+          <PrivacyDashboard />
+        </View>
 
         {/* Subscription Section */}
         {isAuthenticated && (

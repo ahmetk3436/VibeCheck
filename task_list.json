@@ -41,61 +41,65 @@
       "id": "enhance_004",
       "title": "Enhance onboarding with gradient backgrounds and animated transitions",
       "description": "The onboarding screen (mobile/app/onboarding.tsx) exists with 3 pages but lacks visual polish — no gradients, no LinearGradient backgrounds, plain Next buttons, and minimal styling. The app's primary color is blue (#2563eb) but the onboarding uses indigo-500.\n\nModify file: mobile/app/onboarding.tsx\n\n1. Add imports at top:\n```tsx\nimport { LinearGradient } from 'expo-linear-gradient';\nimport { Animated } from 'react-native';\nimport { Ionicons } from '@expo/vector-icons';\n```\n\n2. Replace Page 1 (Welcome) inner content — wrap the card in LinearGradient:\n- Replace the `bg-indigo-500/10` View with `\u003cLinearGradient colors={['#1e3a8a', '#312e81', '#030712']} start={{x:0,y:0}} end={{x:1,y:1}} className=\"rounded-3xl p-10 items-center w-full\"\u003e`\n- Change the sparkle emoji to be larger (text-8xl) and add a subtitle: `\u003cText className=\"text-base text-primary-300 mt-2 text-center\"\u003eDiscover your daily aesthetic vibe\u003c/Text\u003e`\n\n3. Replace Page 2 (How It Works) feature icons:\n- Replace plain emoji circles with `\u003cLinearGradient colors={['#2563eb20', '#8b5cf620']} className=\"w-14 h-14 rounded-full items-center justify-center\"\u003e`\n- Add step numbers (1, 2, 3) as small badges on each feature item\n\n4. Replace Page 3 (CTA) buttons:\n- \"Try Free\" button: wrap in `\u003cLinearGradient colors={['#2563eb', '#1d4ed8']} className=\"rounded-2xl py-4 px-8 w-full items-center mb-4\"\u003e` \n- \"Sign In\" button: keep border style but use `border-primary-500/50` instead of `border-gray-700`\n\n5. Replace plain dot indicators with animated dots:\n- Active dot: `w-6 h-2 rounded-full bg-primary-500` (wider pill shape)\n- Inactive dot: `w-2 h-2 rounded-full bg-gray-700`\n\n6. Add Next/Back navigation: On pages 1 and 2, show a circular Pressable with Ionicons 'arrow-forward' instead of plain text \"Next\". On pages 1+, show 'Skip' text in top-right.\n\nTest: cd mobile \u0026\u0026 npx tsc --noEmit",
-      "status": "in_progress",
+      "status": "completed",
       "priority": 8,
       "depends_on": [],
       "test_command": "cd mobile \u0026\u0026 npx tsc --noEmit",
       "auto_commit": true,
       "created_at": "",
-      "updated_at": "2026-02-15T09:12:20Z"
+      "updated_at": "2026-02-15T09:27:51Z"
     },
     {
       "id": "enhance_005",
       "title": "Integrate unused 2025-2026 trend components into app screens",
       "description": "Seven production-ready components exist in mobile/components/ui/ but are NOT imported or used anywhere: LoadingShimmer.tsx, StreakBadge.tsx, BentoGrid.tsx, PrivacyDashboard.tsx, ContextualPaywall.tsx, ShareableResult.tsx, GestureSwipeCard.tsx. These implement 2025-2026 UI trends and must be integrated.\n\nModify file: mobile/app/(protected)/home.tsx\n1. Import StreakBadge: `import StreakBadge from '../../components/ui/StreakBadge';`\n2. Replace the plain streak text in the header (lines 222-224) with: `\u003cStreakBadge streak={stats.current_streak} /\u003e` \n3. Import LoadingShimmer: `import { CardSkeleton } from '../../components/ui/LoadingShimmer';`\n4. Replace the manual skeleton loading View (lines 157-169) with: `\u003cCardSkeleton /\u003e` wrapped in a SafeAreaView\n5. Import ShareableResult: `import ShareableResult from '../../components/ui/ShareableResult';`\n6. Replace the plain \"Share Your Vibe\" Pressable (lines 270-277) with:\n```tsx\n\u003cShareableResult\n  aesthetic={todayVibe.aesthetic}\n  emoji={todayVibe.emoji}\n  vibeScore={todayVibe.vibe_score}\n  moodText={todayVibe.mood_text}\n  colorPrimary={todayVibe.color_primary}\n  streak={stats?.current_streak}\n/\u003e\n```\nNote: Check ShareableResult.tsx props interface first and pass only what it accepts. If it uses react-native-view-shot for capture, that package is already in package.json.\n\nModify file: mobile/app/(protected)/history.tsx\n1. Import GestureSwipeCard: `import GestureSwipeCard from '../../components/ui/GestureSwipeCard';`\n2. Wrap each history item in GestureSwipeCard with swipeRight for share action\n3. Import LoadingShimmer for the loading state\n\nModify file: mobile/app/(protected)/settings.tsx\n1. Import PrivacyDashboard: `import PrivacyDashboard from '../../components/ui/PrivacyDashboard';`\n2. Add a new \"Privacy\" section between Security and Subscription sections that renders `\u003cPrivacyDashboard /\u003e`\n\nCheck each component's props interface before integrating. Only pass props that exist.\n\nTest: cd mobile \u0026\u0026 npx tsc --noEmit",
-      "status": "pending",
+      "status": "failed",
       "priority": 8,
       "depends_on": [],
       "test_command": "cd mobile \u0026\u0026 npx tsc --noEmit",
       "auto_commit": true,
       "created_at": "",
-      "updated_at": ""
+      "updated_at": "2026-02-15T09:46:36Z",
+      "error": "execution failed: claude CLI error: signal: killed\nstdout: \nstderr: "
     },
     {
       "id": "enhance_006",
       "title": "Build vibe trend chart and filter chips for history screen",
       "description": "The history screen (mobile/app/(protected)/history.tsx) shows a basic flat list with no chart or filtering. It needs a 7-day vibe score trend visualization and time-range filter chips.\n\nModify file: mobile/app/(protected)/history.tsx\n\n1. Add state for filters and trend data:\n```tsx\nconst [filter, setFilter] = useState\u003c'week' | 'month' | 'all'\u003e('all');\nconst [trend, setTrend] = useState\u003c{date: string; vibe_score: number; emoji: string}[]\u003e([]);\n```\n\n2. Add loadTrend function:\n```tsx\nconst loadTrend = async () =\u003e {\n  try {\n    const res = await api.get('/vibes/trend?days=7');\n    setTrend(res.data || []);\n  } catch { /* ignore */ }\n};\n```\nCall loadTrend in the useEffect alongside loadHistory.\n\n3. Add filter chips above the FlatList as a horizontal row:\n```tsx\n\u003cView className=\"flex-row gap-2 px-5 mb-4\"\u003e\n  {(['week', 'month', 'all'] as const).map((f) =\u003e (\n    \u003cPressable\n      key={f}\n      className={`px-4 py-2 rounded-full ${filter === f ? 'bg-primary-600' : 'bg-gray-800'}`}\n      onPress={() =\u003e { hapticSelection(); setFilter(f); }}\n    \u003e\n      \u003cText className={`text-sm font-medium ${filter === f ? 'text-white' : 'text-gray-400'}`}\u003e\n        {f === 'week' ? '7 Days' : f === 'month' ? '30 Days' : 'All Time'}\n      \u003c/Text\u003e\n    \u003c/Pressable\u003e\n  ))}\n\u003c/View\u003e\n```\nUpdate loadHistory to pass limit based on filter (week=7, month=30, all=50).\n\n4. Build a simple bar chart using plain Views (NO external chart library):\n```tsx\n\u003cView className=\"mx-5 mb-4 bg-gray-900 rounded-2xl p-4 border border-gray-800\"\u003e\n  \u003cText className=\"text-sm font-semibold text-white mb-3\"\u003e7-Day Trend\u003c/Text\u003e\n  \u003cView className=\"flex-row items-end justify-between\" style={{height: 80}}\u003e\n    {trend.map((item, i) =\u003e (\n      \u003cView key={i} className=\"items-center flex-1\"\u003e\n        \u003cView\n          className=\"w-6 rounded-t-lg bg-primary-500\"\n          style={{height: Math.max(4, (item.vibe_score / 100) * 70)}}\n        /\u003e\n        \u003cText className=\"text-xs text-gray-500 mt-1\"\u003e\n          {new Date(item.date).toLocaleDateString('en-US', {weekday: 'narrow'})}\n        \u003c/Text\u003e\n      \u003c/View\u003e\n    ))}\n  \u003c/View\u003e\n\u003c/View\u003e\n```\nShow this chart only when trend has data and user is not guest. Place it as ListHeaderComponent of FlatList.\n\n5. Add a guest empty state: when isGuest, show a card saying \"Sign up to track your vibe history\" with a CTA button to /(auth)/register.\n\nTest: cd mobile \u0026\u0026 npx tsc --noEmit",
-      "status": "pending",
+      "status": "failed",
       "priority": 7,
       "depends_on": [],
       "test_command": "cd mobile \u0026\u0026 npx tsc --noEmit",
       "auto_commit": true,
       "created_at": "",
-      "updated_at": ""
+      "updated_at": "2026-02-15T10:04:48Z",
+      "error": "execution failed: claude CLI error: signal: killed\nstdout: \nstderr: "
     },
     {
       "id": "enhance_007",
       "title": "Polish VibeCard with LinearGradient background and enhanced layout",
       "description": "The VibeCard component (mobile/components/ui/VibeCard.tsx) uses a plain View with background opacity (colorPrimary + '15'). It needs a proper gradient background, better typography hierarchy, and more visual depth for App Store quality.\n\nModify file: mobile/components/ui/VibeCard.tsx\n\n1. Add imports:\n```tsx\nimport { LinearGradient } from 'expo-linear-gradient';\n```\n\n2. Replace the outer View (line 37) with LinearGradient:\n```tsx\n\u003cLinearGradient\n  colors={[colorPrimary + '25', colorSecondary + '15', '#030712']}\n  start={{x: 0, y: 0}}\n  end={{x: 1, y: 1}}\n  className=\"w-full rounded-3xl overflow-hidden\"\n\u003e\n```\nClose with `\u003c/LinearGradient\u003e` instead of `\u003c/View\u003e`.\n\n3. Enhance the vibe score circle (lines 56-68):\n- Add a secondary outer ring: wrap the score circle in another View with `style={{borderWidth: 1, borderColor: colorPrimary + '40', borderRadius: 9999, padding: 4}}`\n- Below the score, add a descriptive label based on range:\n```tsx\n\u003cText className=\"text-xs font-medium mt-1\" style={{color: colorPrimary}}\u003e\n  {vibeScore \u003e= 80 ? 'Peak Vibes' : vibeScore \u003e= 60 ? 'Good Energy' : vibeScore \u003e= 40 ? 'Mellow' : 'Low Key'}\n\u003c/Text\u003e\n```\n\n4. Enhance the color palette row (lines 88-101):\n- Make circles larger: `w-8 h-8 rounded-full` with a subtle border: `borderWidth: 2, borderColor: '#ffffff20'`\n- Add labels below each dot: Primary, Secondary, Accent in `text-xs text-gray-600`\n\n5. Add a decorative pattern overlay at the top of the card:\n```tsx\n\u003cView className=\"absolute top-0 right-0 w-32 h-32 opacity-10\"\u003e\n  \u003cView className=\"w-full h-full rounded-bl-full\" style={{backgroundColor: colorPrimary}} /\u003e\n\u003c/View\u003e\n```\n\n6. Add the VibeCheck branding text at top with `letterSpacing: 4` for a premium look.\n\nTest: cd mobile \u0026\u0026 npx tsc --noEmit",
-      "status": "pending",
+      "status": "failed",
       "priority": 7,
       "depends_on": [],
       "test_command": "cd mobile \u0026\u0026 npx tsc --noEmit",
       "auto_commit": true,
       "created_at": "",
-      "updated_at": ""
+      "updated_at": "2026-02-15T10:22:02Z",
+      "error": "execution failed: claude CLI error: signal: killed\nstdout: \nstderr: "
     },
     {
       "id": "enhance_008",
       "title": "Add gradient accents and visual polish to home screen input area",
       "description": "The home screen (mobile/app/(protected)/home.tsx) input area is functional but lacks visual appeal — plain gray background, no gradient accents, basic submit button. Needs App Store-quality polish.\n\nModify file: mobile/app/(protected)/home.tsx\n\n1. Add import: `import { LinearGradient } from 'expo-linear-gradient';`\n\n2. Enhance the input section card (line 281, `bg-gray-900 rounded-3xl p-6 border border-gray-800`):\n- Wrap with a subtle top gradient accent: add a 4px height LinearGradient strip at top of the card with `colors={['#2563eb', '#8b5cf6']}` and `className=\"h-1 rounded-t-3xl\"`\n- Change border to `border-gray-700/50` for slightly more contrast\n\n3. Replace the submit button (lines 307-322):\n- Wrap in LinearGradient instead of plain bg-primary-600:\n```tsx\n\u003cPressable onPress={handleVibeCheck} disabled={submitting || !moodText.trim()}\u003e\n  \u003cLinearGradient\n    colors={submitting || !moodText.trim() ? ['#374151', '#374151'] : ['#2563eb', '#1d4ed8']}\n    start={{x: 0, y: 0}}\n    end={{x: 1, y: 0}}\n    className=\"rounded-2xl py-4 items-center\"\n  \u003e\n    {/* existing button content */}\n  \u003c/LinearGradient\u003e\n\u003c/Pressable\u003e\n```\n\n4. Enhance the stats row (lines 328-356):\n- Add LinearGradient accent to the active streak card: replace `bg-amber-500/10` with `\u003cLinearGradient colors={['#f59e0b15', '#f59e0b05']} className=\"flex-1 rounded-2xl p-4 items-center border border-amber-500/20\"\u003e`\n- Add a subtle bottom shadow to each stat card using `style={{shadowColor: '#000', shadowOffset: {width: 0, height: 2}, shadowOpacity: 0.2, shadowRadius: 4, elevation: 3}}`\n\n5. Enhance the upgrade banner (lines 360-370):\n- Replace plain bg with LinearGradient: `colors={['#2563eb10', '#8b5cf610']}`\n- Add a small crown icon before \"Upgrade\": `\u003cIonicons name=\"diamond\" size={14} color=\"#3b82f6\" /\u003e`\n- Import Ionicons if not already imported\n\n6. Enhance streak celebration overlay (lines 200-207):\n- Replace plain bg-black/80 with LinearGradient: `colors={['rgba(0,0,0,0.9)', 'rgba(37,99,235,0.3)', 'rgba(0,0,0,0.9)']}`\n- Add scaling animation effect using Animated.View with a spring animation on mount\n\nTest: cd mobile \u0026\u0026 npx tsc --noEmit",
-      "status": "pending",
+      "status": "failed",
       "priority": 7,
       "depends_on": [],
       "test_command": "cd mobile \u0026\u0026 npx tsc --noEmit",
       "auto_commit": true,
       "created_at": "",
-      "updated_at": ""
+      "updated_at": "2026-02-15T10:35:25Z",
+      "error": "execution failed: claude CLI error: signal: killed\nstdout: \nstderr: "
     },
     {
       "id": "enhance_009",
@@ -114,13 +118,13 @@
       "id": "enhance_010",
       "title": "Add share result card with ViewShot capture for Instagram/social sharing",
       "description": "The app has react-native-view-shot in package.json and ShareableResult component exists but is unused. The current share (home.tsx line 141-151) only shares plain text. Users need a beautiful gradient card they can share as an image to Instagram Stories, etc.\n\nModify file: mobile/components/ui/ShareableResult.tsx — Verify and update the component to accept these props:\n```tsx\ninterface ShareableResultProps {\n  aesthetic: string;\n  emoji: string;\n  vibeScore: number;\n  moodText: string;\n  colorPrimary: string;\n  colorSecondary?: string;\n  colorAccent?: string;\n  streak?: number;\n  onShare?: () =\u003e void;\n}\n```\n\nThe component should:\n1. Use ViewShot ref to capture the card as a PNG image\n2. Render a gradient card (LinearGradient with colorPrimary → colorSecondary) containing:\n   - Large emoji (text-7xl)\n   - Aesthetic name (text-2xl font-bold text-white)\n   - Vibe score in a circle with border\n   - Mood text quote (truncated to 100 chars)\n   - Color palette dots\n   - \"vibecheck.app\" branding footer\n3. Below the card, render a \"Share\" Pressable that:\n   - Captures the ViewShot as base64 PNG using `captureRef(viewShotRef, {format: 'png', quality: 0.9})`\n   - Calls Share.share with the captured image URI\n   - Triggers hapticSuccess on share\n4. Also render a \"Share as Text\" fallback button that shares the plain text format\n\nModify file: mobile/app/(protected)/home.tsx\n- Import ShareableResult and replace the plain share button (lines 270-277) with the ShareableResult component, passing todayVibe data as props\n- Remove the old handleShare function (lines 141-151) since ShareableResult handles sharing internally\n\nTest: cd mobile \u0026\u0026 npx tsc --noEmit",
-      "status": "pending",
+      "status": "in_progress",
       "priority": 6,
       "depends_on": [],
       "test_command": "cd mobile \u0026\u0026 npx tsc --noEmit",
       "auto_commit": true,
       "created_at": "",
-      "updated_at": ""
+      "updated_at": "2026-02-15T10:35:25Z"
     },
     {
       "id": "enhance_011",
