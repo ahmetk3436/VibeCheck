@@ -53,13 +53,13 @@
       "id": "enhance_005",
       "title": "Integrate unused 2025-2026 trend components into app screens",
       "description": "Seven production-ready components exist in mobile/components/ui/ but are NOT imported or used anywhere: LoadingShimmer.tsx, StreakBadge.tsx, BentoGrid.tsx, PrivacyDashboard.tsx, ContextualPaywall.tsx, ShareableResult.tsx, GestureSwipeCard.tsx. These implement 2025-2026 UI trends and must be integrated.\n\nModify file: mobile/app/(protected)/home.tsx\n1. Import StreakBadge: `import StreakBadge from '../../components/ui/StreakBadge';`\n2. Replace the plain streak text in the header (lines 222-224) with: `\u003cStreakBadge streak={stats.current_streak} /\u003e` \n3. Import LoadingShimmer: `import { CardSkeleton } from '../../components/ui/LoadingShimmer';`\n4. Replace the manual skeleton loading View (lines 157-169) with: `\u003cCardSkeleton /\u003e` wrapped in a SafeAreaView\n5. Import ShareableResult: `import ShareableResult from '../../components/ui/ShareableResult';`\n6. Replace the plain \"Share Your Vibe\" Pressable (lines 270-277) with:\n```tsx\n\u003cShareableResult\n  aesthetic={todayVibe.aesthetic}\n  emoji={todayVibe.emoji}\n  vibeScore={todayVibe.vibe_score}\n  moodText={todayVibe.mood_text}\n  colorPrimary={todayVibe.color_primary}\n  streak={stats?.current_streak}\n/\u003e\n```\nNote: Check ShareableResult.tsx props interface first and pass only what it accepts. If it uses react-native-view-shot for capture, that package is already in package.json.\n\nModify file: mobile/app/(protected)/history.tsx\n1. Import GestureSwipeCard: `import GestureSwipeCard from '../../components/ui/GestureSwipeCard';`\n2. Wrap each history item in GestureSwipeCard with swipeRight for share action\n3. Import LoadingShimmer for the loading state\n\nModify file: mobile/app/(protected)/settings.tsx\n1. Import PrivacyDashboard: `import PrivacyDashboard from '../../components/ui/PrivacyDashboard';`\n2. Add a new \"Privacy\" section between Security and Subscription sections that renders `\u003cPrivacyDashboard /\u003e`\n\nCheck each component's props interface before integrating. Only pass props that exist.\n\nTest: cd mobile \u0026\u0026 npx tsc --noEmit",
-      "status": "pending",
+      "status": "in_progress",
       "priority": 8,
       "depends_on": [],
       "test_command": "cd mobile \u0026\u0026 npx tsc --noEmit",
       "auto_commit": true,
       "created_at": "",
-      "updated_at": "2026-02-15T09:46:36Z",
+      "updated_at": "2026-02-15T11:38:13Z",
       "error": "execution failed: claude CLI error: signal: killed\nstdout: \nstderr: "
     },
     {
@@ -105,13 +105,13 @@
       "id": "enhance_009",
       "title": "Fix guest device ID to be persistent and add proper guest vibe history",
       "description": "CRITICAL BUG: In home.tsx line 94, the guest device_id is generated fresh every request with `'guest-' + Math.random().toString(36).substring(2, 10)`. This means the backend's 3-per-day guest limit (vibe_service.go line 97-99) NEVER actually limits because each request has a unique device ID. The guest can use unlimited vibes.\n\nModify file: mobile/app/(protected)/home.tsx\n\n1. Add import: `import AsyncStorage from '@react-native-async-storage/async-storage';`\n2. Add state: `const [deviceId, setDeviceId] = useState\u003cstring\u003e('');`\n3. Add useEffect to generate/retrieve persistent device ID:\n```tsx\nuseEffect(() =\u003e {\n  const initDeviceId = async () =\u003e {\n    let id = await AsyncStorage.getItem('guest_device_id');\n    if (!id) {\n      id = 'guest-' + Math.random().toString(36).substring(2, 15);\n      await AsyncStorage.setItem('guest_device_id', id);\n    }\n    setDeviceId(id);\n  };\n  initDeviceId();\n}, []);\n```\n4. Replace line 94 `device_id: 'guest-' + Math.random()...` with `device_id: deviceId`\n5. Add early return if deviceId is empty: `if (isGuest \u0026\u0026 !deviceId) return;` before the API call\n\nAdditionally, store guest vibe results locally:\n6. After a successful guest vibe check (line 97), save to AsyncStorage:\n```tsx\nconst guestHistory = JSON.parse(await AsyncStorage.getItem('guest_vibes') || '[]');\nguestHistory.unshift(result);\nawait AsyncStorage.setItem('guest_vibes', JSON.stringify(guestHistory.slice(0, 10)));\n```\n\n7. In history.tsx, for guest users, load from AsyncStorage instead of showing nothing:\n```tsx\nif (isGuest) {\n  const stored = await AsyncStorage.getItem('guest_vibes');\n  if (stored) setVibes(JSON.parse(stored));\n  setIsLoading(false);\n}\n```\n\nTest: cd mobile \u0026\u0026 npx tsc --noEmit",
-      "status": "in_progress",
+      "status": "completed",
       "priority": 9,
       "depends_on": [],
       "test_command": "cd mobile \u0026\u0026 npx tsc --noEmit",
       "auto_commit": true,
       "created_at": "",
-      "updated_at": "2026-02-15T11:34:17Z",
+      "updated_at": "2026-02-15T11:38:13Z",
       "error": "execution failed: claude CLI error: signal: killed\nstdout: \nstderr: "
     },
     {

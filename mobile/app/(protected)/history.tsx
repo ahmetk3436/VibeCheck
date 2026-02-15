@@ -6,6 +6,8 @@ import {
   FlatList,
   ActivityIndicator,
   RefreshControl,
+  Share,
+  Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
@@ -14,9 +16,11 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useAuth } from '../../contexts/AuthContext';
 import { useSubscription } from '../../contexts/SubscriptionContext';
 import api from '../../lib/api';
-import { hapticSelection, hapticError, hapticMedium, hapticLight } from '../../lib/haptics';
+import { hapticSelection, hapticError, hapticSuccess, hapticMedium, hapticLight } from '../../lib/haptics';
 import { VibeCheck, VibeTrendItem } from '../../types/vibe';
 import { UpgradeBanner } from '../../components/ui/ContextualPaywall';
+import GestureSwipeCard from '../../components/ui/GestureSwipeCard';
+import { CardSkeleton } from '../../components/ui/LoadingShimmer';
 
 // Color scheme for VibeMeter
 const COLORS = {
@@ -245,46 +249,111 @@ export default function HistoryScreen() {
     );
   };
 
-  // Render history item
+  // Handle share for a history item
+  const handleShare = useCallback(async (item: VibeCheck) => {
+    hapticSelection();
+
+    const shareMessage =
+      `🎨 My Vibe: ${item.emoji} ${item.aesthetic}\n` +
+      `✨ Vibe Score: ${item.vibe_score}/100\n` +
+      `💭 "${item.mood_text}"\n\n` +
+      `Check your vibe at vibecheck.app`;
+
+    try {
+      await Share.share({
+        message: shareMessage,
+        title: 'My Vibe Result',
+      });
+      hapticSuccess();
+    } catch (error) {
+      hapticError();
+      console.error('Share failed:', error);
+    }
+  }, []);
+
+  // Handle delete for a history item
+  const handleDelete = useCallback(async (item: VibeCheck) => {
+    hapticSelection();
+
+    if (isGuest) {
+      // Remove from local storage
+      try {
+        const stored = await AsyncStorage.getItem('guest_vibes');
+        if (stored) {
+          const vibes = JSON.parse(stored).filter((v: VibeCheck) => v.id !== item.id);
+          await AsyncStorage.setItem('guest_vibes', JSON.stringify(vibes));
+          setHistory(vibes);
+          hapticSuccess();
+        }
+      } catch (error) {
+        hapticError();
+        console.error('Delete failed:', error);
+      }
+      return;
+    }
+
+    try {
+      await api.delete(`/vibes/${item.id}`);
+      setHistory(prev => prev.filter(v => v.id !== item.id));
+      hapticSuccess();
+    } catch (error) {
+      hapticError();
+      Alert.alert('Error', 'Failed to delete vibe. Please try again.');
+      console.error('Delete failed:', error);
+    }
+  }, [isGuest]);
+
+  // Render history item wrapped in GestureSwipeCard
   const renderHistoryItem = ({ item }: { item: VibeCheck }) => (
-    <Pressable
-      className="bg-gray-900 rounded-2xl p-4 mb-3 mx-5 border border-gray-800 flex-row items-center active:opacity-80"
-      onPress={() => hapticSelection()}
-    >
-      {/* Emoji container */}
-      <View className="w-12 h-12 rounded-xl bg-gray-800 items-center justify-center">
-        <Text className="text-2xl">{item.emoji}</Text>
-      </View>
-
-      {/* Content */}
-      <View className="flex-1 ml-3">
-        <Text className="text-base font-semibold text-white" numberOfLines={1}>
-          {item.aesthetic}
-        </Text>
-        <Text className="text-xs text-gray-500 mt-1" numberOfLines={1}>
-          {item.mood_text}
-        </Text>
-        {item.insight && (
-          <Text className="text-sm text-gray-400 italic mb-2">
-            {'✨ '}{item.insight}
-          </Text>
-        )}
-        <Text className="text-xs text-gray-600 mt-1">
-          {formatDate(item.check_date)}
-        </Text>
-      </View>
-
-      {/* Score badge */}
-      <View
-        className={`px-3 py-1 rounded-full ${getScoreBadgeStyle(item.vibe_score)}`}
+    <View className="mx-5 mb-3">
+      <GestureSwipeCard
+        title={item.aesthetic}
+        subtitle={formatDate(item.check_date)}
+        leftAction={{
+          icon: 'trash',
+          color: '#EF4444',
+          label: 'Delete',
+          onPress: () => handleDelete(item),
+        }}
+        rightAction={{
+          icon: 'share-social',
+          color: '#8B5CF6',
+          label: 'Share',
+          onPress: () => handleShare(item),
+        }}
+        onPress={() => hapticSelection()}
       >
-        <Text
-          className={`text-sm font-bold ${getScoreTextColor(item.vibe_score)}`}
-        >
-          {item.vibe_score}
-        </Text>
-      </View>
-    </Pressable>
+        <View className="flex-row items-center">
+          {/* Emoji container */}
+          <View className="w-12 h-12 rounded-xl bg-gray-800 items-center justify-center">
+            <Text className="text-2xl">{item.emoji}</Text>
+          </View>
+
+          {/* Content */}
+          <View className="flex-1 ml-3">
+            <Text className="text-xs text-gray-500" numberOfLines={1}>
+              {item.mood_text}
+            </Text>
+            {item.insight && (
+              <Text className="text-sm text-gray-400 italic mt-1">
+                {'✨ '}{item.insight}
+              </Text>
+            )}
+          </View>
+
+          {/* Score badge */}
+          <View
+            className={`px-3 py-1 rounded-full ${getScoreBadgeStyle(item.vibe_score)}`}
+          >
+            <Text
+              className={`text-sm font-bold ${getScoreTextColor(item.vibe_score)}`}
+            >
+              {item.vibe_score}
+            </Text>
+          </View>
+        </View>
+      </GestureSwipeCard>
+    </View>
   );
 
   // Render empty state for logged-in users
@@ -338,11 +407,16 @@ export default function HistoryScreen() {
   if (isLoading) {
     return (
       <SafeAreaView className="flex-1 bg-gray-950">
-        <View className="flex-1 items-center justify-center">
-          <ActivityIndicator size="large" color={COLORS.primary} />
-          <Text className="text-gray-400 mt-3">
-            Loading your vibe history...
-          </Text>
+        <View className="px-5 pt-4 pb-3">
+          <Text className="text-2xl font-bold text-white">Vibe History</Text>
+          <Text className="text-sm text-gray-400 mt-1">Track your emotional journey over time</Text>
+        </View>
+        <View className="flex-1 px-5 pt-4">
+          <CardSkeleton />
+          <View className="mt-3" />
+          <CardSkeleton />
+          <View className="mt-3" />
+          <CardSkeleton />
         </View>
       </SafeAreaView>
     );
@@ -355,7 +429,7 @@ export default function HistoryScreen() {
         <View className="px-5 pt-4 pb-3">
           <Text className="text-2xl font-bold text-white">Vibe History</Text>
           <Text className="text-sm text-gray-400 mt-1">
-            {isGuest ? 'Your local vibe history' : 'Track your emotional journey over time'}
+            {isGuest ? 'Your local vibe history' : 'Swipe to share or delete'}
           </Text>
         </View>
 
