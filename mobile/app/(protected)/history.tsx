@@ -12,7 +12,7 @@ import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../../contexts/AuthContext';
 import api from '../../lib/api';
-import { hapticSelection, hapticError } from '../../lib/haptics';
+import { hapticSelection, hapticError, hapticMedium, hapticLight } from '../../lib/haptics';
 import { VibeCheck, VibeTrendItem } from '../../types/vibe';
 
 // Color scheme for VibeMeter

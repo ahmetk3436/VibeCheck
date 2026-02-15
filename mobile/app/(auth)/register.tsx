@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import { Link } from 'expo-router';
 import { useAuth } from '../../contexts/AuthContext';
+import { hapticLight, hapticMedium, hapticSuccess, hapticError } from '../../lib/haptics';
 import Button from '../../components/ui/Button';
 import Input from '../../components/ui/Input';
 
@@ -21,19 +22,23 @@ export default function RegisterScreen() {
   const [isLoading, setIsLoading] = useState(false);
 
   const handleRegister = async () => {
+    hapticMedium();
     setError('');
 
     if (!email || !password || !confirmPassword) {
+      hapticError();
       setError('Please fill in all fields');
       return;
     }
 
     if (password.length < 8) {
+      hapticError();
       setError('Password must be at least 8 characters');
       return;
     }
 
     if (password !== confirmPassword) {
+      hapticError();
       setError('Passwords do not match');
       return;
     }
@@ -41,7 +46,9 @@ export default function RegisterScreen() {
     setIsLoading(true);
     try {
       await register(email, password);
+      hapticSuccess();
     } catch (err: any) {
+      hapticError();
       setError(
         err.response?.data?.message || 'Registration failed. Please try again.'
       );
@@ -117,7 +124,9 @@ export default function RegisterScreen() {
         <View className="mt-6 flex-row items-center justify-center">
           <Text className="text-gray-400">Already have an account? </Text>
           <Link href="/(auth)/login" asChild>
-            <Text className="font-semibold text-primary-500">Sign In</Text>
+            <Pressable onPress={() => hapticLight()}>
+              <Text className="font-semibold text-primary-500">Sign In</Text>
+            </Pressable>
           </Link>
         </View>
 

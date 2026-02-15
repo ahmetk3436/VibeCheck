@@ -118,25 +118,25 @@
       "id": "enhance_010",
       "title": "Add share result card with ViewShot capture for Instagram/social sharing",
       "description": "The app has react-native-view-shot in package.json and ShareableResult component exists but is unused. The current share (home.tsx line 141-151) only shares plain text. Users need a beautiful gradient card they can share as an image to Instagram Stories, etc.\n\nModify file: mobile/components/ui/ShareableResult.tsx — Verify and update the component to accept these props:\n```tsx\ninterface ShareableResultProps {\n  aesthetic: string;\n  emoji: string;\n  vibeScore: number;\n  moodText: string;\n  colorPrimary: string;\n  colorSecondary?: string;\n  colorAccent?: string;\n  streak?: number;\n  onShare?: () =\u003e void;\n}\n```\n\nThe component should:\n1. Use ViewShot ref to capture the card as a PNG image\n2. Render a gradient card (LinearGradient with colorPrimary → colorSecondary) containing:\n   - Large emoji (text-7xl)\n   - Aesthetic name (text-2xl font-bold text-white)\n   - Vibe score in a circle with border\n   - Mood text quote (truncated to 100 chars)\n   - Color palette dots\n   - \"vibecheck.app\" branding footer\n3. Below the card, render a \"Share\" Pressable that:\n   - Captures the ViewShot as base64 PNG using `captureRef(viewShotRef, {format: 'png', quality: 0.9})`\n   - Calls Share.share with the captured image URI\n   - Triggers hapticSuccess on share\n4. Also render a \"Share as Text\" fallback button that shares the plain text format\n\nModify file: mobile/app/(protected)/home.tsx\n- Import ShareableResult and replace the plain share button (lines 270-277) with the ShareableResult component, passing todayVibe data as props\n- Remove the old handleShare function (lines 141-151) since ShareableResult handles sharing internally\n\nTest: cd mobile \u0026\u0026 npx tsc --noEmit",
+      "status": "completed",
+      "priority": 6,
+      "depends_on": [],
+      "test_command": "cd mobile \u0026\u0026 npx tsc --noEmit",
+      "auto_commit": true,
+      "created_at": "",
+      "updated_at": "2026-02-15T10:40:11Z"
+    },
+    {
+      "id": "enhance_011",
+      "title": "Add haptic feedback to all remaining interactive elements and micro-interactions",
+      "description": "While the app has haptics imported in most screens, several interactive elements are missing haptic feedback. Apple Guideline 4.2 requires consistent tactile feedback.\n\nModify file: mobile/app/onboarding.tsx\n- The goToPage function (line 68) calls scrollTo but has no haptic. Add `hapticLight()` at the start.\n- handleTryFree has hapticSuccess (good). handleSignIn has hapticLight (good).\n- Add hapticSelection() to each dot indicator if they become pressable.\n\nModify file: mobile/app/(auth)/login.tsx\n- Verify all buttons have haptic feedback. The \"Continue as Guest\" link needs `hapticLight()` on press.\n- The form submit button needs `hapticMedium()` on press.\n- Import all needed haptics: `import { hapticLight, hapticMedium, hapticSuccess, hapticError } from '../../lib/haptics';`\n\nModify file: mobile/app/(auth)/register.tsx\n- Same pattern as login. Ensure register button has `hapticMedium()`, success callback has `hapticSuccess()`, error has `hapticError()`.\n\nModify file: mobile/app/(protected)/home.tsx\n- TextInput onFocus: add `hapticLight()` when user taps to type\n- The guest CTA banner (line 243) Pressable needs `hapticSelection()` added to onPress\n- Pull-to-refresh already triggers via onRefresh — add `hapticLight()` at start of onRefresh\n\nModify file: mobile/app/(protected)/history.tsx\n- The empty state \"Check My Vibe\" button (line 224-231) needs `hapticMedium()` on press\n- Each history card expand (toggleExpand, line 76) already has hapticSelection (good)\n\nModify file: mobile/app/(protected)/paywall.tsx\n- Package cards (line 130-152): hapticSelection is called in handlePackagePurchase (good)\n- Close button (line 85-93): has hapticSelection (good)\n\nModify file: mobile/components/ui/VibeCard.tsx\n- This is a display component, no interactions needed.\n\nEnsure NO duplicate haptic calls. Only add where missing.\n\nTest: cd mobile \u0026\u0026 npx tsc --noEmit",
       "status": "in_progress",
       "priority": 6,
       "depends_on": [],
       "test_command": "cd mobile \u0026\u0026 npx tsc --noEmit",
       "auto_commit": true,
       "created_at": "",
-      "updated_at": "2026-02-15T10:35:25Z"
-    },
-    {
-      "id": "enhance_011",
-      "title": "Add haptic feedback to all remaining interactive elements and micro-interactions",
-      "description": "While the app has haptics imported in most screens, several interactive elements are missing haptic feedback. Apple Guideline 4.2 requires consistent tactile feedback.\n\nModify file: mobile/app/onboarding.tsx\n- The goToPage function (line 68) calls scrollTo but has no haptic. Add `hapticLight()` at the start.\n- handleTryFree has hapticSuccess (good). handleSignIn has hapticLight (good).\n- Add hapticSelection() to each dot indicator if they become pressable.\n\nModify file: mobile/app/(auth)/login.tsx\n- Verify all buttons have haptic feedback. The \"Continue as Guest\" link needs `hapticLight()` on press.\n- The form submit button needs `hapticMedium()` on press.\n- Import all needed haptics: `import { hapticLight, hapticMedium, hapticSuccess, hapticError } from '../../lib/haptics';`\n\nModify file: mobile/app/(auth)/register.tsx\n- Same pattern as login. Ensure register button has `hapticMedium()`, success callback has `hapticSuccess()`, error has `hapticError()`.\n\nModify file: mobile/app/(protected)/home.tsx\n- TextInput onFocus: add `hapticLight()` when user taps to type\n- The guest CTA banner (line 243) Pressable needs `hapticSelection()` added to onPress\n- Pull-to-refresh already triggers via onRefresh — add `hapticLight()` at start of onRefresh\n\nModify file: mobile/app/(protected)/history.tsx\n- The empty state \"Check My Vibe\" button (line 224-231) needs `hapticMedium()` on press\n- Each history card expand (toggleExpand, line 76) already has hapticSelection (good)\n\nModify file: mobile/app/(protected)/paywall.tsx\n- Package cards (line 130-152): hapticSelection is called in handlePackagePurchase (good)\n- Close button (line 85-93): has hapticSelection (good)\n\nModify file: mobile/components/ui/VibeCard.tsx\n- This is a display component, no interactions needed.\n\nEnsure NO duplicate haptic calls. Only add where missing.\n\nTest: cd mobile \u0026\u0026 npx tsc --noEmit",
-      "status": "pending",
-      "priority": 6,
-      "depends_on": [],
-      "test_command": "cd mobile \u0026\u0026 npx tsc --noEmit",
-      "auto_commit": true,
-      "created_at": "",
-      "updated_at": ""
+      "updated_at": "2026-02-15T10:40:11Z"
     },
     {
       "id": "enhance_012",

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, KeyboardAvoidingView, Platform, Pressable } from 'react-native';
 import { Link, router } from 'expo-router';
 import { useAuth } from '../../contexts/AuthContext';
-import { hapticLight } from '../../lib/haptics';
+import { hapticLight, hapticMedium, hapticSuccess, hapticError } from '../../lib/haptics';
 import Button from '../../components/ui/Button';
 import Input from '../../components/ui/Input';
 import AppleSignInButton from '../../components/ui/AppleSignInButton';
@@ -15,8 +15,10 @@ export default function LoginScreen() {
   const [isLoading, setIsLoading] = useState(false);
 
   const handleLogin = async () => {
+    hapticMedium();
     setError('');
     if (!email || !password) {
+      hapticError();
       setError('Please fill in all fields');
       return;
     }
@@ -24,7 +26,9 @@ export default function LoginScreen() {
     setIsLoading(true);
     try {
       await login(email, password);
+      hapticSuccess();
     } catch (err: any) {
+      hapticError();
       setError(
         err.response?.data?.message || 'Login failed. Please try again.'
       );

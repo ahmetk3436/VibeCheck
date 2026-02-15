@@ -107,6 +107,7 @@ export default function HomeScreen() {
   };
 
   const onRefresh = useCallback(() => {
+    hapticLight();
     setIsRefreshing(true);
     loadData();
   }, [isAuthenticated]);
@@ -323,7 +324,10 @@ export default function HomeScreen() {
         {isGuest && (
           <Pressable
             className="mx-5 mt-4 rounded-2xl bg-amber-500/10 border border-amber-500/20 p-4"
-            onPress={() => router.push('/(auth)/register')}
+            onPress={() => {
+              hapticSelection();
+              router.push('/(auth)/register');
+            }}
           >
             <Text className="text-amber-400 font-medium text-sm">
               You have {remainingFreeUses} free {remainingFreeUses === 1 ? 'vibe' : 'vibes'} left
@@ -389,6 +393,7 @@ export default function HomeScreen() {
                 maxLength={500}
                 style={{ minHeight: 120, textAlignVertical: 'top' }}
                 editable={!submitting}
+                onFocus={() => hapticLight()}
               />
               <Text className="text-xs text-gray-500 text-right mt-1">
                 {moodText.length}/500
