@@ -354,15 +354,12 @@ export default function HomeScreen() {
         {todayVibe ? (
           <View className="mx-5 mt-6">
             <VibeCard
-              vibeName={todayVibe.aesthetic}
-              vibeDescription={todayVibe.mood_text}
               vibeScore={todayVibe.vibe_score}
               colorPrimary={todayVibe.color_primary}
               colorSecondary={todayVibe.color_secondary}
               colorAccent={todayVibe.color_accent}
-              keywords={todayVibe.insight ? todayVibe.insight.split(' ').slice(0, 3) : []}
+              analysisText={todayVibe.mood_text}
               timestamp={todayVibe.check_date}
-              insight={todayVibe.insight}
             />
             <View className="mt-4 items-center">
               <ShareableResult
