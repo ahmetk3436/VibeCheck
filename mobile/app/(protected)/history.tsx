@@ -11,9 +11,11 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../../contexts/AuthContext';
+import { useSubscription } from '../../contexts/SubscriptionContext';
 import api from '../../lib/api';
 import { hapticSelection, hapticError, hapticMedium, hapticLight } from '../../lib/haptics';
 import { VibeCheck, VibeTrendItem } from '../../types/vibe';
+import { UpgradeBanner } from '../../components/ui/ContextualPaywall';
 
 // Color scheme for VibeMeter
 const COLORS = {
@@ -37,6 +39,7 @@ type FilterType = 'week' | 'month' | 'all';
 export default function HistoryScreen() {
   const router = useRouter();
   const { isGuest } = useAuth();
+  const { isSubscribed } = useSubscription();
 
   // State
   const [history, setHistory] = useState<VibeCheck[]>([]);
@@ -361,6 +364,17 @@ export default function HistoryScreen() {
           {renderFilterChip('month', '30 Days')}
           {renderFilterChip('all', 'All Time')}
         </View>
+
+        {/* Contextual Paywall Banner - shown when history has 5+ items and user is not subscribed */}
+        {history.length >= 5 && !isSubscribed && (
+          <View className="mx-5 mb-4">
+            <UpgradeBanner
+              title="5+ Vibe Checks! Unlock Premium"
+              description="Get unlimited history & deep insights"
+              onPress={() => router.push('/(protected)/paywall')}
+            />
+          </View>
+        )}
 
         {/* History List with Trend Chart Header */}
         <FlatList

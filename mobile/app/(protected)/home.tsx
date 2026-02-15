@@ -7,6 +7,7 @@ import {
   Pressable,
   ActivityIndicator,
   RefreshControl,
+  Modal,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
@@ -17,6 +18,7 @@ import Animated, { useSharedValue, useAnimatedStyle, withSpring } from 'react-na
 import api from '../../lib/api';
 import { hapticSuccess, hapticError, hapticSelection, hapticLight } from '../../lib/haptics';
 import { useAuth } from '../../contexts/AuthContext';
+import { useSubscription } from '../../contexts/SubscriptionContext';
 import { VibeCheck, VibeStats } from '../../types/vibe';
 import VibeCard from '../../components/ui/VibeCard';
 import StreakBadge from '../../components/ui/StreakBadge';
@@ -31,6 +33,7 @@ export default function HomeScreen() {
     canUseFeature,
     incrementGuestUsage,
   } = useAuth();
+  const { isSubscribed } = useSubscription();
 
   const [todayVibe, setTodayVibe] = useState<VibeCheck | null>(null);
   const [stats, setStats] = useState<VibeStats | null>(null);
@@ -40,6 +43,7 @@ export default function HomeScreen() {
   const [moodText, setMoodText] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const [showUpgradePrompt, setShowUpgradePrompt] = useState(false);
 
   const [deviceId, setDeviceId] = useState<string>('');
 
@@ -203,6 +207,13 @@ export default function HomeScreen() {
               }, 300);
             }, 2500);
           }
+        }
+
+        // Contextual paywall trigger - show after 3+ vibe checks for non-subscribers
+        if (!isSubscribed && statsRes?.data && statsRes.data.total_checks >= 3) {
+          setTimeout(() => {
+            setShowUpgradePrompt(true);
+          }, 2000);
         }
       }
     } catch (error: any) {
@@ -529,6 +540,95 @@ export default function HomeScreen() {
           </Pressable>
         )}
       </ScrollView>
+
+      {/* Contextual Upgrade Prompt Modal */}
+      <Modal
+        visible={showUpgradePrompt}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setShowUpgradePrompt(false)}
+      >
+        <Pressable
+          className="flex-1 bg-black/60 justify-end"
+          onPress={() => setShowUpgradePrompt(false)}
+        >
+          <Pressable
+            className="bg-gray-900 rounded-t-3xl p-6 pb-10 border-t border-gray-700"
+            onPress={(e) => e.stopPropagation()}
+          >
+            {/* Handle */}
+            <View className="w-12 h-1 bg-gray-600 rounded-full self-center mb-4" />
+
+            {/* Icon */}
+            <View className="items-center mb-4">
+              <LinearGradient
+                colors={['#8B5CF6', '#D946EF']}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+                className="w-16 h-16 rounded-full items-center justify-center"
+              >
+                <Ionicons name="sparkles" size={32} color="white" />
+              </LinearGradient>
+            </View>
+
+            {/* Title */}
+            <Text className="text-2xl font-bold text-white text-center mb-2">
+              Loving VibeCheck?
+            </Text>
+
+            {/* Description */}
+            <Text className="text-base text-gray-400 text-center mb-6">
+              Unlock AI-powered deep analysis and 20+ aesthetic palettes
+            </Text>
+
+            {/* Features List */}
+            <View className="mb-6 gap-3">
+              <View className="flex-row items-center gap-3">
+                <Ionicons name="checkmark-circle" size={20} color="#8B5CF6" />
+                <Text className="text-gray-300">Unlimited vibe checks</Text>
+              </View>
+              <View className="flex-row items-center gap-3">
+                <Ionicons name="checkmark-circle" size={20} color="#8B5CF6" />
+                <Text className="text-gray-300">Deep AI personality insights</Text>
+              </View>
+              <View className="flex-row items-center gap-3">
+                <Ionicons name="checkmark-circle" size={20} color="#8B5CF6" />
+                <Text className="text-gray-300">20+ aesthetic color palettes</Text>
+              </View>
+            </View>
+
+            {/* Upgrade Button */}
+            <Pressable
+              onPress={() => {
+                hapticSelection();
+                setShowUpgradePrompt(false);
+                router.push('/(protected)/paywall');
+              }}
+              className="overflow-hidden rounded-2xl"
+            >
+              <LinearGradient
+                colors={['#8b5cf6', '#ec4899']}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 0 }}
+                className="py-4 items-center"
+              >
+                <Text className="text-white font-bold text-lg">Go Premium</Text>
+              </LinearGradient>
+            </Pressable>
+
+            {/* Dismiss Button */}
+            <Pressable
+              className="mt-3 py-3 items-center"
+              onPress={() => {
+                hapticSelection();
+                setShowUpgradePrompt(false);
+              }}
+            >
+              <Text className="text-gray-500 text-base">Maybe later</Text>
+            </Pressable>
+          </Pressable>
+        </Pressable>
+      </Modal>
     </SafeAreaView>
   );
 }

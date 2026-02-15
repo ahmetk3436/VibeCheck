@@ -130,25 +130,25 @@
       "id": "enhance_011",
       "title": "Add haptic feedback to all remaining interactive elements and micro-interactions",
       "description": "While the app has haptics imported in most screens, several interactive elements are missing haptic feedback. Apple Guideline 4.2 requires consistent tactile feedback.\n\nModify file: mobile/app/onboarding.tsx\n- The goToPage function (line 68) calls scrollTo but has no haptic. Add `hapticLight()` at the start.\n- handleTryFree has hapticSuccess (good). handleSignIn has hapticLight (good).\n- Add hapticSelection() to each dot indicator if they become pressable.\n\nModify file: mobile/app/(auth)/login.tsx\n- Verify all buttons have haptic feedback. The \"Continue as Guest\" link needs `hapticLight()` on press.\n- The form submit button needs `hapticMedium()` on press.\n- Import all needed haptics: `import { hapticLight, hapticMedium, hapticSuccess, hapticError } from '../../lib/haptics';`\n\nModify file: mobile/app/(auth)/register.tsx\n- Same pattern as login. Ensure register button has `hapticMedium()`, success callback has `hapticSuccess()`, error has `hapticError()`.\n\nModify file: mobile/app/(protected)/home.tsx\n- TextInput onFocus: add `hapticLight()` when user taps to type\n- The guest CTA banner (line 243) Pressable needs `hapticSelection()` added to onPress\n- Pull-to-refresh already triggers via onRefresh — add `hapticLight()` at start of onRefresh\n\nModify file: mobile/app/(protected)/history.tsx\n- The empty state \"Check My Vibe\" button (line 224-231) needs `hapticMedium()` on press\n- Each history card expand (toggleExpand, line 76) already has hapticSelection (good)\n\nModify file: mobile/app/(protected)/paywall.tsx\n- Package cards (line 130-152): hapticSelection is called in handlePackagePurchase (good)\n- Close button (line 85-93): has hapticSelection (good)\n\nModify file: mobile/components/ui/VibeCard.tsx\n- This is a display component, no interactions needed.\n\nEnsure NO duplicate haptic calls. Only add where missing.\n\nTest: cd mobile \u0026\u0026 npx tsc --noEmit",
+      "status": "completed",
+      "priority": 6,
+      "depends_on": [],
+      "test_command": "cd mobile \u0026\u0026 npx tsc --noEmit",
+      "auto_commit": true,
+      "created_at": "",
+      "updated_at": "2026-02-15T10:44:06Z"
+    },
+    {
+      "id": "enhance_012",
+      "title": "Add contextual paywall triggers at win moments instead of only settings",
+      "description": "The paywall is only accessible from settings screen subscription section and the upgrade banner on home. Per 2025-2026 trends, contextual paywalls should appear at 'win' moments for higher conversion.\n\nModify file: mobile/app/(protected)/home.tsx\n1. After a successful vibe check (inside the try block after line 103), check if the user is authenticated but NOT subscribed. If so, and if this is their 3rd+ vibe check (stats.total_checks \u003e= 3), show a contextual upgrade prompt after a 2-second delay:\n```tsx\nif (isAuthenticated \u0026\u0026 !isSubscribed \u0026\u0026 stats \u0026\u0026 stats.total_checks \u003e= 3) {\n  setTimeout(() =\u003e {\n    setShowUpgradePrompt(true);\n  }, 2000);\n}\n```\n2. Add state: `const [showUpgradePrompt, setShowUpgradePrompt] = useState(false);`\n3. Import `useSubscription` from contexts: `const { isSubscribed } = useSubscription();`\n4. Add a bottom sheet-style prompt (using the existing Modal component):\n```tsx\n\u003cModal visible={showUpgradePrompt} onClose={() =\u003e setShowUpgradePrompt(false)} title=\"Loving VibeCheck?\"\u003e\n  \u003cText className=\"text-sm text-gray-400 mb-4\"\u003eUnlock AI-powered deep analysis and 20+ aesthetic palettes\u003c/Text\u003e\n  \u003cButton title=\"Go Premium\" variant=\"primary\" onPress={() =\u003e { setShowUpgradePrompt(false); router.push('/(protected)/paywall'); }} /\u003e\n  \u003cPressable className=\"mt-3 py-2 items-center\" onPress={() =\u003e setShowUpgradePrompt(false)}\u003e\n    \u003cText className=\"text-gray-500 text-sm\"\u003eMaybe later\u003c/Text\u003e\n  \u003c/Pressable\u003e\n\u003c/Modal\u003e\n```\n\nModify file: mobile/app/(protected)/history.tsx\n5. When history has 5+ items and user is not subscribed, show a ContextualPaywall banner from components/ui/ContextualPaywall.tsx above the list:\n```tsx\n{vibes.length \u003e= 5 \u0026\u0026 !isSubscribed \u0026\u0026 (\n  \u003cContextualPaywall\n    trigger=\"history_milestone\"\n    onUpgrade={() =\u003e router.push('/(protected)/paywall')}\n  /\u003e\n)}\n```\nImport ContextualPaywall and useSubscription.\n\nCheck ContextualPaywall.tsx props and adapt the usage to match its actual interface.\n\nTest: cd mobile \u0026\u0026 npx tsc --noEmit",
       "status": "in_progress",
       "priority": 6,
       "depends_on": [],
       "test_command": "cd mobile \u0026\u0026 npx tsc --noEmit",
       "auto_commit": true,
       "created_at": "",
-      "updated_at": "2026-02-15T10:40:11Z"
-    },
-    {
-      "id": "enhance_012",
-      "title": "Add contextual paywall triggers at win moments instead of only settings",
-      "description": "The paywall is only accessible from settings screen subscription section and the upgrade banner on home. Per 2025-2026 trends, contextual paywalls should appear at 'win' moments for higher conversion.\n\nModify file: mobile/app/(protected)/home.tsx\n1. After a successful vibe check (inside the try block after line 103), check if the user is authenticated but NOT subscribed. If so, and if this is their 3rd+ vibe check (stats.total_checks \u003e= 3), show a contextual upgrade prompt after a 2-second delay:\n```tsx\nif (isAuthenticated \u0026\u0026 !isSubscribed \u0026\u0026 stats \u0026\u0026 stats.total_checks \u003e= 3) {\n  setTimeout(() =\u003e {\n    setShowUpgradePrompt(true);\n  }, 2000);\n}\n```\n2. Add state: `const [showUpgradePrompt, setShowUpgradePrompt] = useState(false);`\n3. Import `useSubscription` from contexts: `const { isSubscribed } = useSubscription();`\n4. Add a bottom sheet-style prompt (using the existing Modal component):\n```tsx\n\u003cModal visible={showUpgradePrompt} onClose={() =\u003e setShowUpgradePrompt(false)} title=\"Loving VibeCheck?\"\u003e\n  \u003cText className=\"text-sm text-gray-400 mb-4\"\u003eUnlock AI-powered deep analysis and 20+ aesthetic palettes\u003c/Text\u003e\n  \u003cButton title=\"Go Premium\" variant=\"primary\" onPress={() =\u003e { setShowUpgradePrompt(false); router.push('/(protected)/paywall'); }} /\u003e\n  \u003cPressable className=\"mt-3 py-2 items-center\" onPress={() =\u003e setShowUpgradePrompt(false)}\u003e\n    \u003cText className=\"text-gray-500 text-sm\"\u003eMaybe later\u003c/Text\u003e\n  \u003c/Pressable\u003e\n\u003c/Modal\u003e\n```\n\nModify file: mobile/app/(protected)/history.tsx\n5. When history has 5+ items and user is not subscribed, show a ContextualPaywall banner from components/ui/ContextualPaywall.tsx above the list:\n```tsx\n{vibes.length \u003e= 5 \u0026\u0026 !isSubscribed \u0026\u0026 (\n  \u003cContextualPaywall\n    trigger=\"history_milestone\"\n    onUpgrade={() =\u003e router.push('/(protected)/paywall')}\n  /\u003e\n)}\n```\nImport ContextualPaywall and useSubscription.\n\nCheck ContextualPaywall.tsx props and adapt the usage to match its actual interface.\n\nTest: cd mobile \u0026\u0026 npx tsc --noEmit",
-      "status": "pending",
-      "priority": 6,
-      "depends_on": [],
-      "test_command": "cd mobile \u0026\u0026 npx tsc --noEmit",
-      "auto_commit": true,
-      "created_at": "",
-      "updated_at": ""
+      "updated_at": "2026-02-15T10:44:06Z"
     },
     {
       "id": "enhance_013",
