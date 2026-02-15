@@ -53,6 +53,7 @@ func Setup(
 	vibes.Post("", vibeHandler.CreateVibeCheck)       // Create daily vibe check
 	vibes.Get("/today", vibeHandler.GetTodayCheck)    // Get today's vibe
 	vibes.Get("/history", vibeHandler.GetVibeHistory) // Get vibe history
+	vibes.Get("/trend", vibeHandler.GetVibeTrend)     // Get vibe trend for charts
 	vibes.Get("/stats", vibeHandler.GetVibeStats)     // Get stats & streaks
 
 	// Admin moderation panel (protected + admin role required)

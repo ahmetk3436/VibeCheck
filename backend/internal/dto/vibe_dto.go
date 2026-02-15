@@ -33,3 +33,22 @@ type VibeStatsResponse struct {
 	TopAesthetic  string  `json:"top_aesthetic"`
 	AvgVibeScore  float64 `json:"avg_vibe_score"`
 }
+
+// VibeTrendItem represents a single day's vibe data for trend charts
+type VibeTrendItem struct {
+	Date      string `json:"date"`       // Format: "2006-01-02"
+	VibeScore int    `json:"vibe_score"` // 0-100, 0 means no check that day
+	Aesthetic string `json:"aesthetic"`  // Empty string if no check
+	Emoji     string `json:"emoji"`      // Empty string if no check
+}
+
+// VibeStatsEnhanced contains extended statistics including trend data
+type VibeStatsEnhanced struct {
+	CurrentStreak    int            `json:"current_streak"`
+	LongestStreak    int            `json:"longest_streak"`
+	TotalChecks      int            `json:"total_checks"`
+	AvgVibeScore     float64        `json:"avg_vibe_score"`
+	TopAesthetic     string         `json:"top_aesthetic"`
+	Last7Avg         float64        `json:"last_7_avg"`
+	MoodDistribution map[string]int `json:"mood_distribution"`
+}

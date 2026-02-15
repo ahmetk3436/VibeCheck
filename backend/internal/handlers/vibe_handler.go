@@ -137,3 +137,38 @@ func (h *VibeHandler) GetVibeStats(c *fiber.Ctx) error {
 
 	return c.JSON(stats)
 }
+
+// GetVibeTrend handles GET /api/vibes/trend
+func (h *VibeHandler) GetVibeTrend(c *fiber.Ctx) error {
+	userToken := c.Locals("user").(*jwt.Token)
+	claims := userToken.Claims.(jwt.MapClaims)
+	userID, _ := uuid.Parse(claims["sub"].(string))
+
+	days, err := strconv.Atoi(c.Query("days", "7"))
+	if err != nil {
+		days = 7
+	}
+	if days < 1 {
+		days = 7
+	}
+	if days > 30 {
+		days = 30
+	}
+
+	trendData, err := h.service.GetVibeTrend(userID, days)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error":   true,
+			"message": "Failed to fetch vibe trend",
+		})
+	}
+
+	return c.JSON(fiber.Map{
+		"success": true,
+		"data":    trendData,
+		"meta": fiber.Map{
+			"days":      days,
+			"data_type": "vibe_trend",
+		},
+	})
+}

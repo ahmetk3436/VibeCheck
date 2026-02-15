@@ -775,7 +775,7 @@ func (s *VibeService) GetVibeHistory(userID uuid.UUID, limit, offset int) ([]mod
 	return checks, total, nil
 }
 
-// GetVibeStats returns user's vibe statistics
+// GetVibeStats returns user's vibe statistics with enhanced metrics
 func (s *VibeService) GetVibeStats(userID uuid.UUID) (map[string]interface{}, error) {
 	var streak models.VibeStreak
 	s.db.Where("user_id = ?", userID).First(&streak)
@@ -796,11 +796,92 @@ func (s *VibeService) GetVibeStats(userID uuid.UUID) (map[string]interface{}, er
 		Limit(1).
 		Scan(&topAesthetic)
 
+	// Last 7 days average
+	var last7Avg float64
+	sevenDaysAgo := time.Now().AddDate(0, 0, -6).Truncate(24 * time.Hour)
+	s.db.Model(&models.VibeCheck{}).
+		Where("user_id = ? AND check_date >= ?", userID, sevenDaysAgo).
+		Select("COALESCE(AVG(vibe_score), 0)").
+		Scan(&last7Avg)
+
+	// Mood distribution: count per aesthetic
+	type aestheticCount struct {
+		Aesthetic string
+		Count     int
+	}
+	var distribution []aestheticCount
+	s.db.Model(&models.VibeCheck{}).
+		Where("user_id = ? AND aesthetic IS NOT NULL AND aesthetic != ''", userID).
+		Select("aesthetic, COUNT(*) as count").
+		Group("aesthetic").
+		Order("count DESC").
+		Scan(&distribution)
+
+	moodDistribution := make(map[string]int)
+	for _, d := range distribution {
+		moodDistribution[d.Aesthetic] = d.Count
+	}
+
 	return map[string]interface{}{
-		"current_streak": streak.CurrentStreak,
-		"longest_streak": streak.LongestStreak,
-		"total_checks":   streak.TotalChecks,
-		"avg_vibe_score": avgScore,
-		"top_aesthetic":  topAesthetic,
+		"current_streak":    streak.CurrentStreak,
+		"longest_streak":    streak.LongestStreak,
+		"total_checks":      streak.TotalChecks,
+		"avg_vibe_score":    avgScore,
+		"top_aesthetic":     topAesthetic,
+		"last_7_avg":        last7Avg,
+		"mood_distribution": moodDistribution,
 	}, nil
+}
+
+// GetVibeTrend retrieves vibe data for the last N days, filling gaps with zero values
+func (s *VibeService) GetVibeTrend(userID uuid.UUID, days int) ([]map[string]interface{}, error) {
+	if days > 30 {
+		days = 30
+	}
+	if days < 1 {
+		days = 7
+	}
+
+	endDate := time.Now().Truncate(24 * time.Hour)
+	startDate := endDate.AddDate(0, 0, -(days - 1))
+
+	// Query vibe checks in the date range
+	var checks []models.VibeCheck
+	if err := s.db.Where("user_id = ? AND check_date >= ? AND check_date <= ?", userID, startDate, endDate).
+		Order("check_date ASC").
+		Find(&checks).Error; err != nil {
+		return nil, err
+	}
+
+	// Build a map of existing data by date string
+	existingData := make(map[string]models.VibeCheck)
+	for _, check := range checks {
+		dateStr := check.CheckDate.Format("2006-01-02")
+		existingData[dateStr] = check
+	}
+
+	// Build result array with all dates, filling gaps
+	result := make([]map[string]interface{}, 0, days)
+	for i := 0; i < days; i++ {
+		date := startDate.AddDate(0, 0, i)
+		dateStr := date.Format("2006-01-02")
+
+		if check, exists := existingData[dateStr]; exists {
+			result = append(result, map[string]interface{}{
+				"date":       dateStr,
+				"vibe_score": check.VibeScore,
+				"aesthetic":  check.Aesthetic,
+				"emoji":      check.Emoji,
+			})
+		} else {
+			result = append(result, map[string]interface{}{
+				"date":       dateStr,
+				"vibe_score": 0,
+				"aesthetic":  "",
+				"emoji":      "",
+			})
+		}
+	}
+
+	return result, nil
 }

@@ -4,25 +4,25 @@
       "id": "enhance_001",
       "title": "Replace fallback keyword analysis with robust AI scoring and insight engine",
       "description": "The backend vibe_service.go currently falls back to a simplistic keyword matching algorithm (lines 228-296) that returns random aesthetics when no keywords match and calculates vibe scores with basic +/-10 increments. This produces low-quality, often random results.\n\nModify file: backend/internal/services/vibe_service.go\n\n1. IMPROVE the fallbackAnalyze method to use a weighted multi-signal scoring algorithm instead of simple keyword matching:\n   - Create a comprehensive keyword map with weighted scores (1.0 for exact match, 0.5 for partial). Add 15+ keywords per aesthetic category covering slang, emoji descriptions, and common phrases.\n   - Implement a scoring system: iterate ALL aesthetic categories, sum weighted keyword matches, pick the highest-scoring aesthetic (not first match).\n   - For vibe_score: use sentiment analysis with 3 tiers — strong positive words (+15), mild positive (+8), neutral (0), mild negative (-8), strong negative (-15). Add length bonus (+5 for \u003e100 chars, +3 for \u003e50). Base score 55 instead of 50.\n   - Generate dynamic insight strings using 5+ templates per aesthetic (e.g., for 'chill': \"Your calm energy is exactly what you need right now\", \"Embracing the slow vibes — this is self-care\"). Select template based on score range (10-30: empathetic, 31-60: neutral, 61-100: enthusiastic).\n   - REMOVE the random fallback at line 266. Instead, default to 'peaceful' aesthetic with score 50 and insight \"Take a moment to check in with yourself\".\n\n2. Add a new method `generateInsight(aestheticKey string, vibeScore int, moodText string) string` that creates contextual insights combining the aesthetic name, score range, and detected emotion words.\n\n3. Ensure the OpenAI path (lines 132-226) remains unchanged — this only improves the fallback path.\n\nTest: cd backend \u0026\u0026 go build ./...",
+      "status": "completed",
+      "priority": 10,
+      "depends_on": [],
+      "test_command": "cd backend \u0026\u0026 go build ./...",
+      "auto_commit": true,
+      "created_at": "",
+      "updated_at": "2026-02-15T08:06:10Z"
+    },
+    {
+      "id": "enhance_002",
+      "title": "Add vibe trend endpoint and enhance stats with weekly data",
+      "description": "The backend has /vibes/stats but it only returns aggregate data (current_streak, longest_streak, total_checks, avg_vibe_score, top_aesthetic). There is no trend data for the history screen chart.\n\nModify file: backend/internal/services/vibe_service.go — Add new method:\n```go\nfunc (s *VibeService) GetVibeTrend(userID uuid.UUID, days int) ([]map[string]interface{}, error)\n```\nThis queries vibe_checks for the last N days (default 7), returns array of {date, vibe_score, aesthetic, emoji}. Use `ORDER BY check_date ASC`. If a day has no check, include it with vibe_score: 0 and aesthetic: \"\" so the frontend can show gaps.\n\nModify file: backend/internal/dto/vibe_dto.go — Add:\n```go\ntype VibeTrendItem struct {\n    Date      string `json:\"date\"`\n    VibeScore int    `json:\"vibe_score\"`\n    Aesthetic string `json:\"aesthetic\"`\n    Emoji     string `json:\"emoji\"`\n}\n```\n\nModify file: backend/internal/handlers/vibe_handler.go — Add handler:\n```go\nfunc (h *VibeHandler) GetVibeTrend(c *fiber.Ctx) error\n```\nParse query param `days` (default 7, max 30). Call service.GetVibeTrend. Return JSON array.\n\nModify file: backend/internal/routes/routes.go — Add route:\n```go\nvibes.Get(\"/trend\", vibeHandler.GetVibeTrend)  // inside the protected vibes group\n```\nPlace this BEFORE the wildcard routes to avoid routing conflicts.\n\nAlso enhance GetVibeStats to include `last_7_avg` (average score of last 7 days) and `mood_distribution` (count per aesthetic as map[string]int).\n\nTest: cd backend \u0026\u0026 go build ./...",
       "status": "in_progress",
       "priority": 10,
       "depends_on": [],
       "test_command": "cd backend \u0026\u0026 go build ./...",
       "auto_commit": true,
       "created_at": "",
-      "updated_at": "2026-02-15T07:45:23Z"
-    },
-    {
-      "id": "enhance_002",
-      "title": "Add vibe trend endpoint and enhance stats with weekly data",
-      "description": "The backend has /vibes/stats but it only returns aggregate data (current_streak, longest_streak, total_checks, avg_vibe_score, top_aesthetic). There is no trend data for the history screen chart.\n\nModify file: backend/internal/services/vibe_service.go — Add new method:\n```go\nfunc (s *VibeService) GetVibeTrend(userID uuid.UUID, days int) ([]map[string]interface{}, error)\n```\nThis queries vibe_checks for the last N days (default 7), returns array of {date, vibe_score, aesthetic, emoji}. Use `ORDER BY check_date ASC`. If a day has no check, include it with vibe_score: 0 and aesthetic: \"\" so the frontend can show gaps.\n\nModify file: backend/internal/dto/vibe_dto.go — Add:\n```go\ntype VibeTrendItem struct {\n    Date      string `json:\"date\"`\n    VibeScore int    `json:\"vibe_score\"`\n    Aesthetic string `json:\"aesthetic\"`\n    Emoji     string `json:\"emoji\"`\n}\n```\n\nModify file: backend/internal/handlers/vibe_handler.go — Add handler:\n```go\nfunc (h *VibeHandler) GetVibeTrend(c *fiber.Ctx) error\n```\nParse query param `days` (default 7, max 30). Call service.GetVibeTrend. Return JSON array.\n\nModify file: backend/internal/routes/routes.go — Add route:\n```go\nvibes.Get(\"/trend\", vibeHandler.GetVibeTrend)  // inside the protected vibes group\n```\nPlace this BEFORE the wildcard routes to avoid routing conflicts.\n\nAlso enhance GetVibeStats to include `last_7_avg` (average score of last 7 days) and `mood_distribution` (count per aesthetic as map[string]int).\n\nTest: cd backend \u0026\u0026 go build ./...",
-      "status": "pending",
-      "priority": 10,
-      "depends_on": [],
-      "test_command": "cd backend \u0026\u0026 go build ./...",
-      "auto_commit": true,
-      "created_at": "",
-      "updated_at": ""
+      "updated_at": "2026-02-15T08:06:10Z"
     },
     {
       "id": "enhance_003",
