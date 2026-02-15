@@ -63,16 +63,15 @@ export default function Modal({
 
   React.useEffect(() => {
     if (visible) {
-      Animated.parallel([showModal.start, fadeIn.start]).start();
+      Animated.parallel([showModal, fadeIn]).start();
     } else {
-      Animated.parallel([hideModal.start, fadeOut.start]).start();
+      Animated.parallel([hideModal, fadeOut]).start();
     }
   }, [visible]);
 
   const handleClose = () => {
     hapticSelection();
-    Animated.parallel([hideModal, fadeOut]).start?.();
-    setTimeout(() => onClose(), 250);
+    Animated.parallel([hideModal, fadeOut]).start(() => onClose());
   };
 
   const handleBackdropPress = () => {

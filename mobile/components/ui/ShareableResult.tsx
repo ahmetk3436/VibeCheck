@@ -95,7 +95,7 @@ export default function ShareableResult({
       }}
     >
       <LinearGradient
-        colors={getGradientColors()}
+        colors={getGradientColors() as any}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
         style={{ width: SCREEN_WIDTH * 0.85, borderRadius: 24, overflow: 'hidden' }}
@@ -132,7 +132,7 @@ export default function ShareableResult({
           <Text style={{ fontSize: 56, textAlign: 'center', marginVertical: 24 }}>{emoji}</Text>
 
           {/* Aesthetic name */}
-          <Text style={{ fontSize: 24, fontWeight: 'bold', color: 'white', textAlign: 'center', capitalize: 'true' }}>
+          <Text style={{ fontSize: 24, fontWeight: 'bold', color: 'white', textAlign: 'center', textTransform: 'capitalize' }}>
             {aesthetic}
           </Text>
 
@@ -203,7 +203,7 @@ export function MiniShareCard({
       <View style={{ padding: 16, flexDirection: 'row', alignItems: 'center' }}>
         <Text style={{ fontSize: 36, marginRight: 12 }}>{emoji}</Text>
         <View style={{ flex: 1 }}>
-          <Text style={{ fontSize: 16, fontWeight: '600', color: 'white', capitalize: 'true' }}>
+          <Text style={{ fontSize: 16, fontWeight: '600', color: 'white', textTransform: 'capitalize' }}>
             {aesthetic}
           </Text>
           <Text style={{ fontSize: 14, color: '#6b7280' }}>

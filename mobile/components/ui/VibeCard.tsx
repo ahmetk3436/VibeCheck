@@ -79,9 +79,11 @@ export default function VibeCard({
 
         {/* Insight */}
         {insight ? (
-          <Text className="text-sm text-gray-500 mt-3 text-center">
-            {insight}
-          </Text>
+          <View className="bg-gray-800/50 rounded-xl p-3 mt-4">
+            <Text className="text-sm text-gray-300">
+              {'\u2728'} {insight}
+            </Text>
+          </View>
         ) : null}
 
         {/* Color palette */}

@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import api from '../../lib/api';
 import { hapticSuccess, hapticError, hapticSelection, hapticLight } from '../../lib/haptics';
 import { useAuth } from '../../contexts/AuthContext';
@@ -35,10 +36,30 @@ export default function HomeScreen() {
   const [errorMsg, setErrorMsg] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
+  const [deviceId, setDeviceId] = useState<string>('');
+
   // Streak celebration
   const [showCelebration, setShowCelebration] = useState(false);
   const [celebrationText, setCelebrationText] = useState('');
   const [prevStreak, setPrevStreak] = useState(0);
+
+  // Initialize persistent device ID for guests
+  useEffect(() => {
+    const initDeviceId = async () => {
+      try {
+        let id = await AsyncStorage.getItem('guest_device_id');
+        if (!id) {
+          id = 'guest-' + Math.random().toString(36).substring(2, 15);
+          await AsyncStorage.setItem('guest_device_id', id);
+        }
+        setDeviceId(id);
+      } catch (err) {
+        console.error('Failed to initialize device ID:', err);
+        setDeviceId('guest-' + Math.random().toString(36).substring(2, 15));
+      }
+    };
+    initDeviceId();
+  }, []);
 
   useEffect(() => {
     loadData();
@@ -82,16 +103,23 @@ export default function HomeScreen() {
       return;
     }
 
+    // For guest users, wait for device ID to be ready
+    if (isGuest && !deviceId) {
+      hapticError();
+      setErrorMsg('Please wait while we set up your session');
+      return;
+    }
+
     setSubmitting(true);
     setErrorMsg('');
     try {
       let result: VibeCheck;
 
       if (isGuest) {
-        // Call the real guest API endpoint
+        // Call the real guest API endpoint with persistent device ID
         const res = await api.post('/vibes/guest', {
           mood_text: moodText,
-          device_id: 'guest-' + Math.random().toString(36).substring(2, 10),
+          device_id: deviceId,
         });
         result = res.data;
         await incrementGuestUsage();
@@ -103,6 +131,29 @@ export default function HomeScreen() {
       setTodayVibe(result);
       setMoodText('');
       hapticSuccess();
+
+      // Store guest vibe results locally for history
+      if (isGuest && result) {
+        try {
+          const guestHistory = JSON.parse(await AsyncStorage.getItem('guest_vibes') || '[]');
+          const historyEntry = {
+            id: result.id || Date.now().toString(),
+            mood_text: moodText.trim(),
+            aesthetic: result.aesthetic,
+            color_primary: result.color_primary,
+            color_secondary: result.color_secondary,
+            color_accent: result.color_accent,
+            vibe_score: result.vibe_score,
+            emoji: result.emoji,
+            insight: result.insight,
+            check_date: result.check_date || new Date().toISOString(),
+          };
+          guestHistory.unshift(historyEntry);
+          await AsyncStorage.setItem('guest_vibes', JSON.stringify(guestHistory.slice(0, 10)));
+        } catch (storageErr) {
+          console.error('Failed to save guest vibe history:', storageErr);
+        }
+      }
 
       // Reload stats and check streak
       if (isAuthenticated) {
@@ -130,9 +181,13 @@ export default function HomeScreen() {
         }
       }
     } catch (error: any) {
-      const msg = error.response?.data?.message || 'Something went wrong. Please try again.';
-      setErrorMsg(msg);
       hapticError();
+      if (error.response?.status === 429) {
+        setErrorMsg('Daily limit reached! Sign up for unlimited vibes.');
+      } else {
+        const msg = error.response?.data?.message || 'Something went wrong. Please try again.';
+        setErrorMsg(msg);
+      }
     } finally {
       setSubmitting(false);
     }
@@ -266,6 +321,7 @@ export default function HomeScreen() {
               colorAccent={todayVibe.color_accent}
               date={todayVibe.check_date}
               streak={stats?.current_streak}
+              insight={todayVibe.insight}
             />
             <Pressable
               className="bg-gray-800 rounded-2xl py-4 mt-4 items-center"

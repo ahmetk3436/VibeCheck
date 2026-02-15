@@ -61,7 +61,7 @@ export default function BentoGrid({
           >
             {item.gradient && item.gradientColors ? (
               <LinearGradient
-                colors={item.gradientColors}
+                colors={item.gradientColors as any}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 1 }}
                 style={styles.gradient}
@@ -169,7 +169,7 @@ export function GradientBentoItem({
       style={styles.gradientItem}
     >
       <LinearGradient
-        colors={gradientColors}
+        colors={gradientColors as any}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
         style={styles.gradient}

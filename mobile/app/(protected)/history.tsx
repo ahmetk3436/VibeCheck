@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import api from '../../lib/api';
 import { hapticSelection, hapticLight, hapticError } from '../../lib/haptics';
 import { useAuth } from '../../contexts/AuthContext';
@@ -24,20 +25,29 @@ export default function HistoryScreen() {
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [errorMsg, setErrorMsg] = useState('');
 
-  useEffect(() => {
-    if (!isGuest) {
-      loadHistory();
-    } else {
-      setIsLoading(false);
+  const loadHistory = useCallback(async (isRefresh: boolean = false) => {
+    if (isRefresh) {
+      setIsRefreshing(true);
     }
-  }, [isGuest]);
-
-  const loadHistory = async () => {
     setErrorMsg('');
     try {
-      const res = await api.get('/vibes/history?limit=50');
-      setVibes(res.data.data || []);
-      setTotal(res.data.total || 0);
+      if (isGuest) {
+        // Load guest vibe history from AsyncStorage
+        const stored = await AsyncStorage.getItem('guest_vibes');
+        if (stored) {
+          const parsedVibes = JSON.parse(stored);
+          setVibes(parsedVibes);
+          setTotal(parsedVibes.length);
+        } else {
+          setVibes([]);
+          setTotal(0);
+        }
+      } else {
+        // Load authenticated user's history from API
+        const res = await api.get('/vibes/history?limit=50');
+        setVibes(res.data.data || []);
+        setTotal(res.data.total || 0);
+      }
     } catch (error: any) {
       setErrorMsg('Failed to load history. Pull down to retry.');
       hapticError();
@@ -45,12 +55,15 @@ export default function HistoryScreen() {
       setIsLoading(false);
       setIsRefreshing(false);
     }
-  };
+  }, [isGuest]);
+
+  useEffect(() => {
+    loadHistory();
+  }, [loadHistory]);
 
   const onRefresh = useCallback(() => {
-    setIsRefreshing(true);
-    loadHistory();
-  }, []);
+    loadHistory(true);
+  }, [loadHistory]);
 
   const formatDate = (dateStr: string) => {
     const date = new Date(dateStr);
@@ -144,6 +157,11 @@ export default function HistoryScreen() {
         {isExpanded && (
           <View className="mt-3">
             <View className="h-px bg-gray-800 my-3" />
+            {item.insight && (
+              <Text className="text-sm text-gray-400 italic mb-2">
+                {'\u2728'} {item.insight}
+              </Text>
+            )}
             <Pressable
               className="flex-row items-center justify-center py-2"
               onPress={() => handleShare(item)}
@@ -198,7 +216,9 @@ export default function HistoryScreen() {
     <SafeAreaView className="flex-1 bg-gray-950" edges={['top']}>
       <View className="px-5 pt-6 pb-2">
         <Text className="text-2xl font-bold text-white">Vibe History</Text>
-        <Text className="text-sm text-gray-500 mt-1">{total} vibes logged</Text>
+        <Text className="text-sm text-gray-500 mt-1">
+          {isGuest ? 'Your recent vibe checks' : `${total} vibes logged`}
+        </Text>
       </View>
 
       <FlatList
@@ -219,7 +239,10 @@ export default function HistoryScreen() {
               No Vibes Yet
             </Text>
             <Text className="text-base text-gray-400 mt-2 text-center px-8">
-              Check your first vibe to start building your history
+              {isGuest
+                ? 'Start analyzing vibes to see your history here. Sign up to save more!'
+                : 'Check your first vibe to start building your history'
+              }
             </Text>
             <Pressable
               className="bg-primary-600 rounded-2xl px-8 py-3 mt-6"
@@ -233,6 +256,20 @@ export default function HistoryScreen() {
         }
         contentContainerStyle={{ paddingBottom: 100, paddingTop: 8 }}
       />
+
+      {isGuest && vibes.length > 0 && (
+        <View className="px-5 py-4 bg-gray-900 border-t border-gray-800">
+          <Pressable
+            className="bg-primary-600 py-3 rounded-2xl items-center"
+            onPress={() => {
+              hapticSelection();
+              router.push('/(auth)/register');
+            }}
+          >
+            <Text className="text-white font-semibold">Sign Up to Save All Your Vibes</Text>
+          </Pressable>
+        </View>
+      )}
     </SafeAreaView>
   );
 }

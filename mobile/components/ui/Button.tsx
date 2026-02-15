@@ -88,10 +88,10 @@ export default function Button({
     outputRange: [-200, 200],
   });
 
-  const handlePress = () => {
+  const handlePress = (e: any) => {
     hapticSelection();
     if (onPress) {
-      onPress();
+      onPress(e);
     }
   };
 
@@ -130,7 +130,7 @@ export default function Button({
         style={style as ViewStyle}
       >
         <LinearGradient
-          colors={GRADIENT_COLORS.primary}
+          colors={GRADIENT_COLORS.primary as any}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
           style={{ position: 'absolute', left: 0, right: 0, top: 0, bottom: 0 }}
