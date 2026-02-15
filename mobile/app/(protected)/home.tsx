@@ -362,6 +362,7 @@ export default function HomeScreen() {
               colorAccent={todayVibe.color_accent}
               keywords={todayVibe.insight ? todayVibe.insight.split(' ').slice(0, 3) : []}
               timestamp={todayVibe.check_date}
+              insight={todayVibe.insight}
             />
             <View className="mt-4 items-center">
               <ShareableResult

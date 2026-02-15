@@ -13,6 +13,7 @@ interface VibeCardProps {
   colorAccent: string;
   keywords: string[];
   timestamp?: string;
+  insight?: string;
 }
 
 export default function VibeCard({
@@ -24,6 +25,7 @@ export default function VibeCard({
   colorAccent,
   keywords = [],
   timestamp,
+  insight,
 }: VibeCardProps) {
   const handleShare = async () => {
     await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
@@ -179,6 +181,15 @@ export default function VibeCard({
                 </Text>
               </View>
             ))}
+          </View>
+        )}
+
+        {/* Insight */}
+        {insight && (
+          <View className="bg-gray-800/50 rounded-xl p-3 mt-4">
+            <Text className="text-sm text-gray-300">
+              {'✨ ' + insight}
+            </Text>
           </View>
         )}
 

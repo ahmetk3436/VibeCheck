@@ -247,6 +247,11 @@ export default function HistoryScreen() {
         <Text className="text-xs text-gray-500 mt-1" numberOfLines={1}>
           {item.mood_text}
         </Text>
+        {item.insight && (
+          <Text className="text-sm text-gray-400 italic mb-2">
+            {'✨ '}{item.insight}
+          </Text>
+        )}
         <Text className="text-xs text-gray-600 mt-1">
           {formatDate(item.check_date)}
         </Text>
