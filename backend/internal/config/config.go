@@ -19,6 +19,10 @@ type Config struct {
 
 	RevenueCatWebhookAuth string
 
+	OpenAIKey string
+
+	AppleBundleID string
+
 	Port        string
 	CORSOrigins string
 }
@@ -37,6 +41,10 @@ func Load() *Config {
 		JWTRefreshExpiry: parseDuration(getEnv("JWT_REFRESH_EXPIRY", "168h")),
 
 		RevenueCatWebhookAuth: getEnv("REVENUECAT_WEBHOOK_AUTH", ""),
+
+		OpenAIKey: getEnv("OPENAI_API_KEY", ""),
+
+		AppleBundleID: getEnv("APPLE_BUNDLE_ID", ""),
 
 		Port:        getEnv("PORT", "8080"),
 		CORSOrigins: getEnv("CORS_ORIGINS", "*"),

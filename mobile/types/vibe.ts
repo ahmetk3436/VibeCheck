@@ -7,7 +7,9 @@ export interface VibeCheck {
   color_accent: string;
   vibe_score: number;
   emoji: string;
+  insight?: string;
   check_date: string;
+  device_id?: string;
 }
 
 export interface VibeStats {
@@ -16,6 +18,12 @@ export interface VibeStats {
   total_checks: number;
   avg_vibe_score: number;
   top_aesthetic: string;
+}
+
+export interface VibeTrendItem {
+  date: string;
+  vibe_score: number;
+  emoji: string;
 }
 
 export const AESTHETICS = [

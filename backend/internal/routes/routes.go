@@ -5,21 +5,28 @@ import (
 	"github.com/ahmetcoskunkizilkaya/vibecheck/backend/internal/handlers"
 	"github.com/ahmetcoskunkizilkaya/vibecheck/backend/internal/middleware"
 	"github.com/gofiber/fiber/v2"
+	"gorm.io/gorm"
 )
 
 func Setup(
 	app *fiber.App,
 	cfg *config.Config,
+	db *gorm.DB,
 	authHandler *handlers.AuthHandler,
 	healthHandler *handlers.HealthHandler,
 	webhookHandler *handlers.WebhookHandler,
 	moderationHandler *handlers.ModerationHandler,
 	vibeHandler *handlers.VibeHandler,
+	legalHandler *handlers.LegalHandler,
 ) {
 	api := app.Group("/api")
 
 	// Health
 	api.Get("/health", healthHandler.Check)
+
+	// Legal pages (public)
+	api.Get("/legal/privacy", legalHandler.PrivacyPolicy)
+	api.Get("/legal/terms", legalHandler.TermsOfService)
 
 	// Auth (public)
 	auth := api.Group("/auth")
@@ -27,6 +34,9 @@ func Setup(
 	auth.Post("/login", authHandler.Login)
 	auth.Post("/refresh", authHandler.Refresh)
 	auth.Post("/apple", authHandler.AppleSignIn) // Sign in with Apple (Guideline 4.8)
+
+	// Guest vibe check (public, rate limited by device)
+	api.Post("/vibes/guest", vibeHandler.CreateGuestVibeCheck)
 
 	// Auth (protected)
 	protected := api.Group("", middleware.JWTProtected(cfg))
@@ -43,11 +53,11 @@ func Setup(
 	vibes.Post("", vibeHandler.CreateVibeCheck)       // Create daily vibe check
 	vibes.Get("/today", vibeHandler.GetTodayCheck)    // Get today's vibe
 	vibes.Get("/history", vibeHandler.GetVibeHistory) // Get vibe history
+	vibes.Get("/trend", vibeHandler.GetVibeTrend)     // Get vibe trend for charts
 	vibes.Get("/stats", vibeHandler.GetVibeStats)     // Get stats & streaks
 
-	// Admin moderation panel (protected + admin check)
-	// In production, add an admin role middleware here
-	admin := api.Group("/admin", middleware.JWTProtected(cfg))
+	// Admin moderation panel (protected + admin role required)
+	admin := api.Group("/admin", middleware.JWTProtected(cfg), middleware.AdminRequired(db))
 	admin.Get("/moderation/reports", moderationHandler.ListReports)
 	admin.Put("/moderation/reports/:id", moderationHandler.ActionReport)
 

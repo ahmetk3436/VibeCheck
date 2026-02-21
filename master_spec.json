@@ -1,0 +1,1531 @@
+{
+  "app_name": "VibeSnap",
+  "tagline": "Snap a selfie, discover your vibe",
+  "description": "VibeSnap analyzes your selfie using on-device color extraction and facial expression mapping to generate a unique vibe card with personality traits, mood energy score, and aesthetic archetype. Users get instant shareable results styled as premium social cards optimized for Instagram Stories and TikTok. The app combines the virality of photo-based personality quizzes with a beautiful, ad-free experience.",
+  "target_audience": "Gen Z and young millennials (16-28) who love personality quizzes, selfie culture, and sharing aesthetic content on social media",
+  "market_research": {
+    "niche": "vibe check personality mood from photo",
+    "market_size_estimate": "TAM estimated at 50-100M users interested in mood/personality apps globally. SAM for photo-based vibe checking estimated at 5-10M early adopters. Top apps in adjacent spaces (Mood AI, The Personality Types) have 12,000-22,000+ reviews indicating strong user engagement. The niche is emerging with AI photo analysis capabilities.",
+    "pain_points": [
+      {
+        "description": "Face detection/recognition failures prevent users from even using the app",
+        "frequency": 7,
+        "severity": 9,
+        "source": "App Store Reviews",
+        "quotes": [
+          "I've taken thirty two pictures and I can't get my face verified",
+          "It never detected my face no matter what I did. Unless i was 2 meters away from the camera"
+        ]
+      },
+      {
+        "description": "Limited customization options for mood avatars and mood types",
+        "frequency": 6,
+        "severity": 6,
+        "source": "App Store Reviews",
+        "quotes": [
+          "Can we pls be able to change our vibe moji??? Mine looks hideous and I can't fix it",
+          "We need the ability to add our own custom moods and triggers. The current options put me in a box"
+        ]
+      },
+      {
+        "description": "App crashes and performance issues making apps unusable",
+        "frequency": 5,
+        "severity": 8,
+        "source": "App Store Reviews",
+        "quotes": [
+          "It crashes anytime I open it, iPhone 12 Pro Max",
+          "It's become so slow to open and each section is slow to populate"
+        ]
+      },
+      {
+        "description": "Subscription cancellation problems and hidden charges",
+        "frequency": 4,
+        "severity": 9,
+        "source": "App Store Reviews",
+        "quotes": [
+          "I can't find nor cancel my subscription. I don't know who to contact for support",
+          "This site continuously tries to extort money from the users"
+        ]
+      },
+      {
+        "description": "Excessive popups and ads interrupting app usage",
+        "frequency": 5,
+        "severity": 7,
+        "source": "App Store Reviews",
+        "quotes": [
+          "Won't let me just use the app, dozens of popups, prompts to spend money. Ridiculous"
+        ]
+      },
+      {
+        "description": "Phone verification failures blocking account creation",
+        "frequency": 3,
+        "severity": 7,
+        "source": "App Store Reviews",
+        "quotes": [
+          "I couldn't get past the phone verification code for some reason it wouldn't send to my phone"
+        ]
+      }
+    ],
+    "feature_requests": [
+      {
+        "name": "Photo-based mood/vibe analysis",
+        "description": "Users want to snap a photo and get instant personality or mood insights using AI",
+        "demand_score": 8,
+        "source": "Web Search (VibeCheck, Aurascope, Vibemax apps)"
+      },
+      {
+        "name": "Custom mood/avatar creation",
+        "description": "Ability to personalize vibe mojis, custom moods, and triggers beyond preset options",
+        "demand_score": 7,
+        "source": "App Store Reviews (Vibes, Mood AI)"
+      },
+      {
+        "name": "Quick mood entry",
+        "description": "Low-effort mood tracking that takes less than 5 seconds without writing",
+        "demand_score": 8,
+        "source": "Reddit (r/therapists, r/AppIdeas)"
+      },
+      {
+        "name": "Mood trend visualization",
+        "description": "Visual charts showing mood patterns over time to identify triggers",
+        "demand_score": 7,
+        "source": "Reddit (r/AppIdeas)"
+      },
+      {
+        "name": "Better face detection accuracy",
+        "description": "Reliable facial recognition that works in various lighting and distances",
+        "demand_score": 9,
+        "source": "App Store Reviews (Vibe app)"
+      },
+      {
+        "name": "Social sharing features",
+        "description": "Share vibes/moods with friends on lock screens or social platforms",
+        "demand_score": 6,
+        "source": "App Store Data (Vibes app popularity)"
+      }
+    ],
+    "competitors": [
+      {
+        "name": "Vibe - Make New Friends",
+        "rating": 3.9,
+        "review_count": 9257,
+        "price_model": "free",
+        "strengths": [
+          "Social friend-making features",
+          "Snapchat integration",
+          "Large user base"
+        ],
+        "weaknesses": [
+          "Face detection failures",
+          "Age matching issues",
+          "Verification problems"
+        ],
+        "missing_features": [
+          "Photo-based vibe analysis",
+          "Personality insights from photos"
+        ]
+      },
+      {
+        "name": "Vibes - BFF mood tracker",
+        "rating": 4.6,
+        "review_count": 2339,
+        "price_model": "free",
+        "strengths": [
+          "Lock screen integration",
+          "Real-time mood sharing",
+          "Clean design concept"
+        ],
+        "weaknesses": [
+          "Limited avatar customization",
+          "Crashing issues",
+          "UI changes upset users"
+        ],
+        "missing_features": [
+          "Photo analysis",
+          "Personality typing",
+          "AI insights"
+        ]
+      },
+      {
+        "name": "Mood AI - Daily journal",
+        "rating": 4.8,
+        "review_count": 22551,
+        "price_model": "freemium",
+        "strengths": [
+          "AI integration",
+          "Large user base",
+          "Mood tracking depth"
+        ],
+        "weaknesses": [
+          "Slow performance",
+          "Limited customization",
+          "Subscription required for features"
+        ],
+        "missing_features": [
+          "Photo-based analysis",
+          "Personality matching",
+          "Social features"
+        ]
+      },
+      {
+        "name": "Pulse: Emotional resonance",
+        "rating": 4.0,
+        "review_count": 2579,
+        "price_model": "freemium",
+        "strengths": [
+          "Unique fingerprint approach",
+          "Novel concept"
+        ],
+        "weaknesses": [
+          "Subscription cancellation issues",
+          "Perceived as fake/AI",
+          "Support problems"
+        ],
+        "missing_features": [
+          "Transparent pricing",
+          "Photo analysis",
+          "Genuine AI insights"
+        ]
+      },
+      {
+        "name": "The Personality Types",
+        "rating": 4.8,
+        "review_count": 12765,
+        "price_model": "free",
+        "strengths": [
+          "Comprehensive MBTI database",
+          "Celebrity matching",
+          "High user satisfaction"
+        ],
+        "weaknesses": [
+          "Not photo-based",
+          "Reference app not interactive mood tracker"
+        ],
+        "missing_features": [
+          "Photo analysis",
+          "Real-time mood tracking",
+          "Social sharing"
+        ]
+      },
+      {
+        "name": "VibeCheck: Test Your Photos",
+        "rating": 0.0,
+        "review_count": 0,
+        "price_model": "free",
+        "strengths": [
+          "Direct photo feedback",
+          "Dating profile optimization"
+        ],
+        "weaknesses": [
+          "Limited reviews available",
+          "Narrow use case"
+        ],
+        "missing_features": [
+          "Personality analysis",
+          "Mood tracking",
+          "Social features"
+        ]
+      }
+    ],
+    "market_sentiment": "neutral",
+    "market_sentiment_score": 3.2,
+    "trends": [
+      "AI-powered mood and personality analysis becoming mainstream",
+      "Photo-based vibe checking apps emerging (VibeCheck, Aurascope, Vibemax)",
+      "Lock screen integration for real-time mood sharing",
+      "Quick/low-effort mood tracking with minimal user input",
+      "Vibe coding terminology trending in tech culture 2025-2026",
+      "Mental health apps integrating AI for personalized recommendations"
+    ],
+    "monetization_insights": [
+      "Freemium model dominant - free basic features with premium subscriptions",
+      "Users strongly dislike excessive popups and ads - prefer clean experience",
+      "Subscription cancellation issues cause major user frustration and negative reviews",
+      "In-app purchases for customization options (avatars, themes) accepted",
+      "Premium features include advanced AI analysis, unlimited tracking, custom options",
+      "Transparent pricing and easy cancellation are critical for user trust"
+    ],
+    "raw_data_summary": "Analyzed 8 App Store apps (3.9-4.8 ratings, 865-22,551 reviews) in mood/personality space plus web search results. Key findings: face detection failures are a major pain point, users want customization and quick entry, AI photo analysis is an emerging trend with few established players. Market has high engagement but significant technical and UX issues to solve."
+  },
+  "strategy": {
+    "niche": "vibe check personality mood from photo",
+    "opportunities": [
+      {
+        "name": "VibeSnap",
+        "tagline": "Snap a selfie, discover your vibe",
+        "description": "VibeSnap analyzes your selfie using on-device color extraction and facial expression mapping to generate a unique vibe card with personality traits, mood energy score, and aesthetic archetype. Users get instant shareable results styled as premium social cards optimized for Instagram Stories and TikTok. The app combines the virality of photo-based personality quizzes with a beautiful, ad-free experience.",
+        "target_audience": "Gen Z and young millennials (16-28) who love personality quizzes, selfie culture, and sharing aesthetic content on social media",
+        "core_features": [
+          "Selfie capture with guided framing overlay for reliable face positioning",
+          "On-device color palette extraction from photo (skin tone, clothing, background colors)",
+          "AI vibe analysis combining color data with optional 3-question micro-quiz for personality depth",
+          "Shareable vibe card with gradient background, vibe name, energy score, and trait badges",
+          "Vibe history timeline showing how your energy shifts over days and weeks",
+          "Daily vibe check notification with streak counter and loss-aversion messaging",
+          "Guest mode with 3 free vibe reads before signup prompt"
+        ],
+        "differentiator": "Unlike competitors that fail at face detection or require lengthy quizzes, VibeSnap uses color-based analysis (no complex facial recognition needed) combined with a quick micro-quiz to deliver instant, visually stunning vibe cards. The focus is on shareability and aesthetic output rather than clinical mood tracking.",
+        "monetization": "Freemium: 3 free analyses for guests, 1 daily free vibe for registered users. Premium at $2.99/week or $4.99/month or $29.99/year unlocks unlimited daily vibes, custom card themes, HD export, vibe history analytics, and exclusive vibe archetypes.",
+        "feasibility": "moderate",
+        "estimated_dev_days": 10,
+        "risk_factors": [
+          "Photo analysis accuracy perception — users may feel results are random if not calibrated well",
+          "Retention challenge — novelty may wear off after initial shareability spike",
+          "App Store review risk if analysis claims are perceived as health/medical advice",
+          "Competition from TikTok filters that offer similar instant vibe overlays"
+        ],
+        "confidence_score": 0.82
+      },
+      {
+        "name": "AuraCast",
+        "tagline": "Your photo reveals your aura energy",
+        "description": "AuraCast transforms any selfie into a personalized aura reading with layered color energy visualization, mood archetype matching, and daily energy forecasts. The app extracts dominant colors from the user's photo and maps them to an aura energy system inspired by color psychology, generating beautiful radial gradient aura portraits. Users can track their aura shifts over time and share stunning aura cards with friends.",
+        "target_audience": "Spirituality-curious millennials and Gen Z (18-32) interested in astrology, manifestation, crystals, and aesthetic self-discovery content",
+        "core_features": [
+          "Photo-to-aura conversion using dominant color extraction and color psychology mapping",
+          "Layered aura portrait visualization with animated radial gradients around user silhouette",
+          "7 aura energy types with detailed personality descriptions and compatibility insights",
+          "Daily aura forecast based on check-in streak and historical patterns",
+          "Aura compatibility checker — compare your aura with a friend's photo",
+          "Shareable aura portrait cards with custom backgrounds for social media",
+          "Weekly aura energy report with mood trend visualization",
+          "Sign in with Apple + guest mode with 3 free readings"
+        ],
+        "differentiator": "AuraCast owns the 'aura from photo' niche with stunning visual output that no competitor delivers. While Pulse uses fingerprints and Mood AI uses journaling, AuraCast creates Instagram-worthy aura portraits that users genuinely want to share. The aura compatibility feature adds a viral social loop missing from all competitors.",
+        "monetization": "Freemium: 3 free aura reads for guests, 1 daily free reading for users. Premium at $2.99/week or $4.99/month or $39.99/year unlocks unlimited readings, aura compatibility, HD exports, premium aura themes, weekly reports, and exclusive aura types.",
+        "feasibility": "moderate",
+        "estimated_dev_days": 12,
+        "risk_factors": [
+          "Aura/spirituality positioning may attract App Store scrutiny if claims are too strong",
+          "Color extraction from photos in poor lighting may produce inconsistent results",
+          "Niche audience — spirituality-curious is growing but still smaller than general personality quiz market",
+          "User expectations for 'real' aura reading vs algorithmic color mapping"
+        ],
+        "confidence_score": 0.78
+      },
+      {
+        "name": "MoodLens",
+        "tagline": "See your mood, track your energy",
+        "description": "MoodLens combines instant photo-based mood detection with lightweight daily tracking to help users understand their emotional patterns. Take a selfie and get an instant mood read based on facial expression cues and color analysis, then optionally add context with a single tap. Over time, MoodLens builds a beautiful mood calendar heatmap showing emotional trends and potential triggers.",
+        "target_audience": "Health-conscious adults (22-35) interested in self-improvement, emotional intelligence, and mental wellness tracking without the burden of journaling",
+        "core_features": [
+          "Quick selfie mood scan using expression mapping and color tone analysis",
+          "One-tap mood confirmation or adjustment after photo analysis",
+          "Mood calendar heatmap with day-by-day emotional pattern visualization",
+          "Weekly mood summary with streak tracking and gentle push notifications",
+          "Optional context tags (work, social, exercise, sleep) for trigger identification",
+          "Shareable weekly mood summary cards for social media",
+          "Privacy-first design with all data stored on-device by default"
+        ],
+        "differentiator": "MoodLens bridges the gap between fun vibe-check apps and serious mood trackers. Unlike Mood AI which requires lengthy journaling, MoodLens gets a mood read from a 2-second selfie. Unlike Vibes which is purely social, MoodLens provides genuine self-insight through pattern tracking. The privacy-first, on-device approach addresses the trust issues plaguing competitors like Pulse.",
+        "monetization": "Freemium: Unlimited basic mood scans free forever. Premium at $2.99/week or $4.99/month or $29.99/year unlocks advanced analytics (trigger correlation, mood predictions), unlimited history, PDF mood reports, custom mood categories, and cloud backup.",
+        "feasibility": "moderate",
+        "estimated_dev_days": 11,
+        "risk_factors": [
+          "Facial expression analysis accuracy is limited without ML models — may need to rely more on user confirmation",
+          "Competing against established Mood AI (22K+ reviews) in mood tracking space",
+          "Users may not return daily if photo analysis feels gimmicky rather than insightful",
+          "Mental health app category has higher App Store review scrutiny"
+        ],
+        "confidence_score": 0.75
+      }
+    ],
+    "selected_opportunity": {
+      "name": "VibeSnap",
+      "tagline": "Snap a selfie, discover your vibe",
+      "description": "VibeSnap analyzes your selfie using on-device color extraction and facial expression mapping to generate a unique vibe card with personality traits, mood energy score, and aesthetic archetype. Users get instant shareable results styled as premium social cards optimized for Instagram Stories and TikTok. The app combines the virality of photo-based personality quizzes with a beautiful, ad-free experience.",
+      "target_audience": "Gen Z and young millennials (16-28) who love personality quizzes, selfie culture, and sharing aesthetic content on social media",
+      "core_features": [
+        "Selfie capture with guided framing overlay for reliable face positioning",
+        "On-device color palette extraction from photo (skin tone, clothing, background colors)",
+        "AI vibe analysis combining color data with optional 3-question micro-quiz for personality depth",
+        "Shareable vibe card with gradient background, vibe name, energy score, and trait badges",
+        "Vibe history timeline showing how your energy shifts over days and weeks",
+        "Daily vibe check notification with streak counter and loss-aversion messaging",
+        "Guest mode with 3 free vibe reads before signup prompt"
+      ],
+      "differentiator": "Unlike competitors that fail at face detection or require lengthy quizzes, VibeSnap uses color-based analysis (no complex facial recognition needed) combined with a quick micro-quiz to deliver instant, visually stunning vibe cards. The focus is on shareability and aesthetic output rather than clinical mood tracking.",
+      "monetization": "Freemium: 3 free analyses for guests, 1 daily free vibe for registered users. Premium at $2.99/week or $4.99/month or $29.99/year unlocks unlimited daily vibes, custom card themes, HD export, vibe history analytics, and exclusive vibe archetypes.",
+      "feasibility": "moderate",
+      "estimated_dev_days": 10,
+      "risk_factors": [
+        "Photo analysis accuracy perception — users may feel results are random if not calibrated well",
+        "Retention challenge — novelty may wear off after initial shareability spike",
+        "App Store review risk if analysis claims are perceived as health/medical advice",
+        "Competition from TikTok filters that offer similar instant vibe overlays"
+      ],
+      "confidence_score": 0.82
+    },
+    "rejected_features": [
+      {
+        "feature": "Real-time facial emotion recognition with ML",
+        "reason": "On-device ML facial emotion detection requires TensorFlow Lite or CoreML native modules which add significant complexity to Expo builds. Color-based analysis and simple expression mapping are more reliable and feasible within Expo SDK 54."
+      },
+      {
+        "feature": "Lock screen widget for mood sharing",
+        "reason": "WidgetKit requires native iOS modules and cannot be implemented in React Native/Expo without bare workflow and native Swift code. This is a hard native-only feature."
+      },
+      {
+        "feature": "AR aura overlay on live camera",
+        "reason": "Real-time AR overlays on camera feed require ARKit (iOS) which has very limited support in Expo/React Native. Static photo processing is feasible but live AR is not."
+      },
+      {
+        "feature": "Background mood monitoring via phone usage patterns",
+        "reason": "iOS does not allow third-party apps to monitor phone usage, app switching, or screen time data. This violates Apple privacy guidelines and would result in immediate rejection."
+      },
+      {
+        "feature": "Snapchat/Instagram direct integration for vibe sharing",
+        "reason": "Deep platform integrations with Snapchat/Instagram APIs are restricted and unreliable. Standard iOS share sheet with pre-formatted images is the feasible and approved approach."
+      }
+    ],
+    "market_positioning": "Position as the premium, ad-free alternative in a market plagued by broken face detection, aggressive monetization, and poor UX. Lead with visual quality — the shareable output cards should be so beautiful that users share them organically. Differentiate from social apps (Vibe, Vibes) by focusing on self-discovery rather than friend-matching, and from journaling apps (Mood AI) by making mood capture effortless through photo analysis. Key messaging: 'Your vibe in 2 seconds — no quiz, no journaling, just snap.' Avoid spirituality claims that could trigger App Store scrutiny; frame as entertainment and self-discovery. Use contextual paywall at the moment of delight (after seeing your first vibe result) rather than aggressive upfront gates. Build retention through streak mechanics and daily vibe notifications with loss-aversion copy."
+  },
+  "design_system": {
+    "colors": [
+      {
+        "name": "primary",
+        "hex": "#8B5CF6",
+        "usage": "Primary brand color, CTA buttons, active states, gradient starts"
+      },
+      {
+        "name": "secondary",
+        "hex": "#F472B6",
+        "usage": "Secondary accent, gradient ends, highlight elements, energy indicators"
+      },
+      {
+        "name": "accent",
+        "hex": "#22D3EE",
+        "usage": "Energy scores, notification badges, success states, vibe streaks"
+      },
+      {
+        "name": "surface",
+        "hex": "#18181B",
+        "usage": "Card backgrounds, elevated surfaces, glassmorphism base layer"
+      },
+      {
+        "name": "surface_elevated",
+        "hex": "#27272A",
+        "usage": "Modal backgrounds, bottom sheets, higher elevation cards"
+      },
+      {
+        "name": "background",
+        "hex": "#09090B",
+        "usage": "App background, OLED deep dark, primary canvas"
+      },
+      {
+        "name": "text_primary",
+        "hex": "#FAFAFA",
+        "usage": "Primary text, headings, important content on dark backgrounds"
+      },
+      {
+        "name": "text_secondary",
+        "hex": "#A1A1AA",
+        "usage": "Secondary text, descriptions, timestamps, less prominent labels"
+      },
+      {
+        "name": "text_muted",
+        "hex": "#71717A",
+        "usage": "Placeholder text, disabled states, hint text"
+      },
+      {
+        "name": "border",
+        "hex": "#3F3F46",
+        "usage": "Subtle borders, dividers, input outlines in dark mode"
+      },
+      {
+        "name": "border_glow",
+        "hex": "#A855F7",
+        "usage": "Glowing borders for premium cards, active camera frame"
+      },
+      {
+        "name": "success",
+        "hex": "#4ADE80",
+        "usage": "Positive vibe traits, completion states, streak achievements"
+      },
+      {
+        "name": "warning",
+        "hex": "#FBBF24",
+        "usage": "Moderate energy levels, caution states, limited free uses"
+      },
+      {
+        "name": "overlay",
+        "hex": "#09090B",
+        "usage": "Modal overlays, image overlays with 60-80% opacity"
+      },
+      {
+        "name": "glass_tint",
+        "hex": "#FFFFFF",
+        "usage": "Glassmorphism tint layer at 8-12% opacity for frosted effect"
+      }
+    ],
+    "typography": [
+      {
+        "name": "display",
+        "font_size": 36,
+        "font_weight": "bold",
+        "line_height": 1.1
+      },
+      {
+        "name": "heading1",
+        "font_size": 28,
+        "font_weight": "bold",
+        "line_height": 1.2
+      },
+      {
+        "name": "heading2",
+        "font_size": 22,
+        "font_weight": "semibold",
+        "line_height": 1.3
+      },
+      {
+        "name": "heading3",
+        "font_size": 18,
+        "font_weight": "semibold",
+        "line_height": 1.4
+      },
+      {
+        "name": "body",
+        "font_size": 16,
+        "font_weight": "normal",
+        "line_height": 1.5
+      },
+      {
+        "name": "body_small",
+        "font_size": 14,
+        "font_weight": "normal",
+        "line_height": 1.5
+      },
+      {
+        "name": "caption",
+        "font_size": 12,
+        "font_weight": "medium",
+        "line_height": 1.4
+      },
+      {
+        "name": "micro",
+        "font_size": 10,
+        "font_weight": "medium",
+        "line_height": 1.2
+      },
+      {
+        "name": "energy_score",
+        "font_size": 48,
+        "font_weight": "bold",
+        "line_height": 1.0
+      },
+      {
+        "name": "vibe_name",
+        "font_size": 32,
+        "font_weight": "bold",
+        "line_height": 1.1
+      }
+    ],
+    "spacing": [
+      {
+        "name": "xs",
+        "value": 4
+      },
+      {
+        "name": "sm",
+        "value": 8
+      },
+      {
+        "name": "md",
+        "value": 16
+      },
+      {
+        "name": "lg",
+        "value": 24
+      },
+      {
+        "name": "xl",
+        "value": 32
+      },
+      {
+        "name": "2xl",
+        "value": 48
+      },
+      {
+        "name": "3xl",
+        "value": 64
+      }
+    ],
+    "components": [
+      {
+        "name": "vibe_card",
+        "border_radius": 24,
+        "padding": "p-6",
+        "shadow": "shadow-2xl",
+        "notes": "Glassmorphism card with gradient haze background, 40% surface opacity, backdrop-blur-xl, 1px border with glow effect for premium"
+      },
+      {
+        "name": "button_primary",
+        "border_radius": 16,
+        "padding": "px-6 py-4",
+        "shadow": "shadow-lg",
+        "notes": "Min 44px height, gradient background primary to secondary, haptic feedback on press, scale-95 active state"
+      },
+      {
+        "name": "button_secondary",
+        "border_radius": 16,
+        "padding": "px-6 py-4",
+        "shadow": "shadow-md",
+        "notes": "Glass background with border, transparent fill, 1.5px border, used for skip/guest actions"
+      },
+      {
+        "name": "trait_badge",
+        "border_radius": 20,
+        "padding": "px-4 py-2",
+        "shadow": "",
+        "notes": "Pill-shaped badge with gradient or solid accent color, small text, arranged in flex-wrap row"
+      },
+      {
+        "name": "energy_ring",
+        "border_radius": 9999,
+        "padding": "p-4",
+        "shadow": "shadow-xl",
+        "notes": "Circular progress indicator, gradient stroke, centered score number, animated fill on reveal"
+      },
+      {
+        "name": "camera_frame",
+        "border_radius": 32,
+        "padding": "p-2",
+        "shadow": "",
+        "notes": "Oval guide overlay with animated dashed border, 2px stroke, glow pulse animation for positioning"
+      },
+      {
+        "name": "modal_sheet",
+        "border_radius": 28,
+        "padding": "p-6",
+        "shadow": "shadow-2xl",
+        "notes": "Bottom sheet with glassmorphism, rounded top corners only, drag handle at top"
+      },
+      {
+        "name": "history_card",
+        "border_radius": 16,
+        "padding": "p-4",
+        "shadow": "shadow-sm",
+        "notes": "Bento grid item, compact vibe preview with mini gradient, date, and mini energy score"
+      },
+      {
+        "name": "input_field",
+        "border_radius": 12,
+        "padding": "px-4 py-3",
+        "shadow": "",
+        "notes": "Glass background, subtle border, 44px min height, focus ring with accent glow"
+      },
+      {
+        "name": "toast_notification",
+        "border_radius": 12,
+        "padding": "px-4 py-3",
+        "shadow": "shadow-lg",
+        "notes": "Floating toast with glass effect, icon + text, auto-dismiss, slide-in from top animation"
+      },
+      {
+        "name": "streak_badge",
+        "border_radius": 12,
+        "padding": "px-3 py-1",
+        "shadow": "",
+        "notes": "Small fire icon with number, gradient background, displayed in header for daily streaks"
+      },
+      {
+        "name": "quiz_option",
+        "border_radius": 16,
+        "padding": "p-4",
+        "shadow": "shadow-sm",
+        "notes": "Selectable card with glass effect, selected state shows gradient border glow, 44px min touch target"
+      }
+    ],
+    "overall_style": "Neo-Aesthetic Dark with AI Gradient Haze and Glassmorphism",
+    "dark_mode_palette": [
+      {
+        "name": "dm_background",
+        "hex": "#09090B",
+        "usage": "OLED deep black background for maximum contrast and battery efficiency"
+      },
+      {
+        "name": "dm_surface",
+        "hex": "#18181B",
+        "usage": "Elevated card surfaces with subtle transparency for glassmorphism"
+      },
+      {
+        "name": "dm_gradient_start",
+        "hex": "#7C3AED",
+        "usage": "Deep purple for gradient starts in dark mode, slightly darker than light mode"
+      },
+      {
+        "name": "dm_gradient_end",
+        "hex": "#EC4899",
+        "usage": "Deep pink for gradient ends in dark mode"
+      },
+      {
+        "name": "dm_text",
+        "hex": "#FAFAFA",
+        "usage": "High contrast white text for dark backgrounds, WCAG AA compliant"
+      }
+    ],
+    "nativewind_config": {
+      "theme": {
+        "extend": {
+          "colors": {
+            "vibe": {
+              "primary": "#8B5CF6",
+              "secondary": "#F472B6",
+              "accent": "#22D3EE",
+              "surface": "#18181B",
+              "surfaceElevated": "#27272A",
+              "background": "#09090B",
+              "textPrimary": "#FAFAFA",
+              "textSecondary": "#A1A1AA",
+              "textMuted": "#71717A",
+              "border": "#3F3F46",
+              "borderGlow": "#A855F7",
+              "success": "#4ADE80",
+              "warning": "#FBBF24",
+              "overlay": "#09090B",
+              "glassTint": "#FFFFFF"
+            }
+          },
+          "borderRadius": {
+            "card": "24px",
+            "button": "16px",
+            "pill": "20px",
+            "modal": "28px",
+            "input": "12px"
+          },
+          "boxShadow": {
+            "glow": "0 0 20px rgba(139, 92, 246, 0.4)",
+            "glowAccent": "0 0 20px rgba(34, 211, 238, 0.4)",
+            "glass": "0 8px 32px rgba(0, 0, 0, 0.4)"
+          },
+          "fontFamily": {
+            "display": [
+              "System",
+              "sans-serif"
+            ],
+            "body": [
+              "System",
+              "sans-serif"
+            ]
+          },
+          "animation": {
+            "pulse-glow": "pulse-glow 2s ease-in-out infinite",
+            "slide-up": "slide-up 0.3s ease-out",
+            "fade-in": "fade-in 0.2s ease-out",
+            "scale-pop": "scale-pop 0.2s ease-out"
+          },
+          "keyframes": {
+            "pulse-glow": {
+              "0%, 100%": {
+                "boxShadow": "0 0 20px rgba(139, 92, 246, 0.4)"
+              },
+              "50%": {
+                "boxShadow": "0 0 40px rgba(139, 92, 246, 0.6)"
+              }
+            },
+            "slide-up": {
+              "0%": {
+                "transform": "translateY(20px)",
+                "opacity": "0"
+              },
+              "100%": {
+                "transform": "translateY(0)",
+                "opacity": "1"
+              }
+            },
+            "fade-in": {
+              "0%": {
+                "opacity": "0"
+              },
+              "100%": {
+                "opacity": "1"
+              }
+            },
+            "scale-pop": {
+              "0%": {
+                "transform": "scale(0.95)"
+              },
+              "50%": {
+                "transform": "scale(1.02)"
+              },
+              "100%": {
+                "transform": "scale(1)"
+              }
+            }
+          },
+          "backdropBlur": {
+            "glass": "24px"
+          }
+        }
+      }
+    },
+    "design_notes": [
+      "AI Gradient Haze: Use animated gradient backgrounds on vibe cards with blur overlay - creates dreamy, ethereal aesthetic popular on TikTok",
+      "OLED Deep Dark: True black (#09090B) background saves battery on OLED screens and makes gradients pop dramatically",
+      "Glassmorphism: All cards use backdrop-blur-xl with 8-12% white tint overlay, creating depth without heavy shadows",
+      "Haptic-Visual Sync: Button presses trigger haptic feedback synchronized with scale animations (scale-95 on press, scale-pop on release)",
+      "Bento Grid: Vibe history uses asymmetric 2-column grid layout with varying card heights for visual interest",
+      "All touch targets are minimum 44x44px for accessibility compliance",
+      "Energy score uses animated circular progress with gradient stroke - reveals with satisfying animation on vibe completion",
+      "Camera framing overlay uses pulsing glow animation to guide face positioning without complex AR",
+      "Trait badges use gradient fills matching the vibe card's extracted color palette for personalization",
+      "Streak counter uses loss-aversion messaging with fire icon and warm gradient to drive daily engagement",
+      "Premium cards feature subtle animated border glow to differentiate from free tier",
+      "Shareable vibe cards are pre-formatted for Instagram Stories (9:16) and TikTok with proper safe zones"
+    ]
+  },
+  "ux_architecture": {
+    "screens": [
+      {
+        "name": "index",
+        "route": "app/index.tsx",
+        "description": "Smart router: checks AsyncStorage for onboarding completion, then auth state. Redirects to /onboarding if first launch, /(auth)/login if unauthenticated and no guest session, or /(protected)/home if authenticated or guest.",
+        "components": [
+          "ActivityIndicator",
+          "Full-screen splash with VibeSnap logo"
+        ],
+        "api_calls": []
+      },
+      {
+        "name": "onboarding",
+        "route": "app/onboarding.tsx",
+        "description": "3-step horizontal pager. Step 1: 'Snap Your Vibe' — animated selfie frame illustration with tagline 'One selfie reveals your energy'. Step 2: 'AI-Powered Insights' — color palette morphing animation with tagline 'Colors, traits, and energy — decoded in seconds'. Step 3: 'Share Your Vibe' — mock vibe card with tagline 'Flex your energy on Instagram and TikTok'. Bottom: dot indicators + 'Get Started' button on step 3 (calls continueAsGuest or navigates to auth). Skip button top-right on steps 1-2.",
+        "components": [
+          "FlatList horizontal pagingEnabled",
+          "Animated.View for illustrations",
+          "DotIndicator (3 dots)",
+          "GradientButton 'Get Started'",
+          "Pressable 'Skip'"
+        ],
+        "api_calls": []
+      },
+      {
+        "name": "login",
+        "route": "app/(auth)/login.tsx",
+        "description": "Auth screen with VibeSnap logo at top (48x48), tagline 'Discover your energy'. Email input (placeholder: 'your@email.com'), password input with show/hide toggle. 'Sign In' gradient button (#7C3AED → #0EA5E9). 'Forgot Password?' link below. Divider '— or —'. AppleSignInButton (dark, rounded). 'Don't have an account? Sign Up' link. 'Continue as Guest' subtle text link at bottom. Haptic feedback on all buttons.",
+        "components": [
+          "Logo",
+          "TextInput email",
+          "TextInput password with eye toggle",
+          "GradientButton 'Sign In'",
+          "AppleSignInButton",
+          "Pressable 'Sign Up' link",
+          "Pressable 'Continue as Guest'"
+        ],
+        "api_calls": [
+          "POST /api/auth/login",
+          "POST /api/auth/apple"
+        ]
+      },
+      {
+        "name": "register",
+        "route": "app/(auth)/register.tsx",
+        "description": "Registration screen. VibeSnap logo, 'Create Your Vibe Profile' heading. Email input, password input (min 8 chars, show strength indicator), confirm password input. 'Create Account' gradient button. AppleSignInButton. 'Already have an account? Sign In' link. On success: auto-login + navigate to /(protected)/home with success haptic.",
+        "components": [
+          "Logo",
+          "TextInput email",
+          "TextInput password with strength bar",
+          "TextInput confirm password",
+          "GradientButton 'Create Account'",
+          "AppleSignInButton",
+          "Pressable 'Sign In' link"
+        ],
+        "api_calls": [
+          "POST /api/auth/register"
+        ]
+      },
+      {
+        "name": "protected-layout",
+        "route": "app/(protected)/_layout.tsx",
+        "description": "Protected layout using Slot (NOT Stack/Tabs). Checks isAuthenticated or isGuest from AuthContext — if neither, redirect to /(auth)/login. Renders Slot for child content + custom tab bar at bottom. Tab bar: 4 items (Home, Capture, History, Settings). Tab bar background: #000000 with 0.95 opacity blur. Active tab: #7C3AED icon + label. Inactive: #6B7280. Capture tab is center-emphasized with larger icon (28px vs 24px).",
+        "components": [
+          "Slot",
+          "CustomTabBar with 4 Pressable items",
+          "SafeAreaView bottom padding"
+        ],
+        "api_calls": []
+      },
+      {
+        "name": "home",
+        "route": "app/(protected)/home.tsx",
+        "description": "Main dashboard. Top: greeting 'Hey {name}! 👋' or 'Hey there! 👋' for guests. Streak banner: flame icon + '{N}-day streak — keep it alive!' in amber gradient card (#F59E0B → #EF4444) or 'Start your streak today' if no streak. Below: latest vibe card (if exists) — full gradient background with vibe name, energy score circle, trait badges. If no vibes yet: empty state illustration + 'Take Your First Vibe Snap' CTA button. Guest users see UsageBadge '{N}/3 free vibes remaining' below streak. Bottom section: 'Your Vibe Trend' mini chart showing last 7 days energy scores as a sparkline. Pull-to-refresh enabled.",
+        "components": [
+          "SafeAreaView",
+          "ScrollView refreshControl",
+          "GreetingHeader",
+          "StreakBanner (GradientCard amber)",
+          "LatestVibeCard or EmptyState",
+          "UsageBadge (guests only)",
+          "VibeTrendSparkline",
+          "GradientButton 'Snap Your Vibe'"
+        ],
+        "api_calls": [
+          "GET /api/vibes/latest",
+          "GET /api/vibes/streak",
+          "GET /api/vibes/trend?days=7"
+        ]
+      },
+      {
+        "name": "capture",
+        "route": "app/(protected)/capture.tsx",
+        "description": "Selfie capture screen. Full-screen camera preview (expo-camera, front-facing). Overlay: rounded-rectangle face guide frame (dashed border, #7C3AED at 40% opacity, 260x340px centered). Text above frame: 'Center your face in the frame'. Face detection indicator: green dot when face detected, red dot when not. Bottom controls: circular capture button (64px, white border 3px, gradient fill #7C3AED → #0EA5E9) centered. Flash toggle top-left (Ionicons 'flash' / 'flash-off'). Camera flip top-right (Ionicons 'camera-reverse'). On capture: haptic impact medium, brief white flash animation, navigate to /analyze with photo URI. Guest check: if guestUsageCount >= 3, show soft paywall modal instead of capturing.",
+        "components": [
+          "CameraView (expo-camera)",
+          "FaceGuideOverlay (dashed rounded rect)",
+          "FaceDetectionIndicator (green/red dot)",
+          "Pressable capture button with gradient",
+          "Pressable flash toggle",
+          "Pressable camera flip",
+          "GuestLimitModal"
+        ],
+        "api_calls": []
+      },
+      {
+        "name": "analyze",
+        "route": "app/(protected)/analyze.tsx",
+        "description": "Analysis loading + optional quiz screen. Two phases: Phase 1 — 'Extracting your colors...' with animated color dots appearing one by one from the selfie (show 6 extracted hex swatches morphing in). Progress bar 0-40%. Phase 2 — 3-question micro-quiz (optional, can skip). Q1: 'Right now I feel...' → 4 emoji options (😊 Energized, 😌 Calm, 😤 Fired Up, 🥱 Low-Key). Q2: 'My ideal Friday night:' → 4 text options (Party with friends, Cozy night in, Creative project, Adventure outdoors). Q3: 'Pick a word:' → 4 options (Bold, Gentle, Wild, Mysterious). Each answer triggers haptic light + color pulse animation. 'Skip Quiz' link at bottom. After quiz or skip: progress bar fills to 100% with 'Generating your vibe...' + streaming text animation. Then navigate to /result with vibeId.",
+        "components": [
+          "Animated color extraction visualization",
+          "ProgressBar (Animated.View)",
+          "QuizCard with 4 option Pressables per question",
+          "Pressable 'Skip Quiz'",
+          "StreamingText 'Generating your vibe...'"
+        ],
+        "api_calls": [
+          "POST /api/vibes/analyze (multipart: photo + quiz_answers)"
+        ]
+      },
+      {
+        "name": "result",
+        "route": "app/(protected)/result.tsx",
+        "description": "Vibe result card — the hero screen. Full-screen gradient background (dynamic based on vibe: warm vibes = #EF4444→#F59E0B, cool vibes = #0EA5E9→#7C3AED, balanced = #22C55E→#0EA5E9, intense = #7C3AED→#EF4444). Vibe card centered: vibe name large (e.g. 'Solar Flare', 'Ocean Zen', 'Electric Spark') in 32px bold white. Energy score: circular progress ring (120px) with score 0-100 and label. Trait badges: 3-4 pill-shaped badges (e.g. 'Creative', 'Adventurous', 'Warm') in frosted glass style. Color palette strip: 6 extracted colors as circles. Quote: AI-generated one-liner about the vibe. Bottom actions: 'Share Vibe' primary button (opens share sheet with rendered card image), 'Save to History' secondary, 'Retake' text link. Confetti animation on first load (react-native-reanimated). Haptic success on load. Guest users: increment usage count, show 'N/3 free vibes used' toast.",
+        "components": [
+          "LinearGradient full-screen",
+          "VibeNameText 32px bold",
+          "EnergyScoreRing (Animated circular progress)",
+          "TraitBadges (frosted glass pills)",
+          "ColorPaletteStrip (6 circles)",
+          "VibeQuoteText italic",
+          "GradientButton 'Share Vibe'",
+          "Pressable 'Save to History'",
+          "Pressable 'Retake'",
+          "ConfettiAnimation"
+        ],
+        "api_calls": [
+          "GET /api/vibes/{id}",
+          "POST /api/vibes/{id}/save"
+        ]
+      },
+      {
+        "name": "history",
+        "route": "app/(protected)/history.tsx",
+        "description": "Vibe history timeline. Top: 'Your Vibe Journey' heading + current streak badge. Filter chips: 'Week' | 'Month' | 'All' (default: Week). Timeline view: vertical list of vibe cards, each showing date, mini gradient thumbnail, vibe name, energy score, and top trait. Cards are Pressable — tap to view full result. Energy trend chart: line graph showing energy scores over selected period (react-native-svg or simple Animated.View bars). Empty state for new users: illustration + 'Your vibe story starts with a snap' + CTA button. Guests see max 3 entries with blur overlay on the rest + 'Sign up to unlock your full vibe history' banner.",
+        "components": [
+          "SafeAreaView",
+          "ScrollView",
+          "StreakBadge",
+          "FilterChips (Week/Month/All)",
+          "FlatList of VibeHistoryCard",
+          "EnergyTrendChart",
+          "EmptyState illustration",
+          "GuestBlurOverlay + SignUpBanner"
+        ],
+        "api_calls": [
+          "GET /api/vibes/history?period=week|month|all",
+          "GET /api/vibes/streak"
+        ]
+      },
+      {
+        "name": "settings",
+        "route": "app/(protected)/settings.tsx",
+        "description": "Settings screen. Profile section: avatar (from latest selfie or default), name, email. 'Edit Profile' row. Sections with grouped rows: [Subscription] 'VibeSnap Pro' — shows current plan or 'Upgrade' with sparkle icon. [Preferences] 'Daily Vibe Reminder' toggle (default ON, 9:00 AM), 'Notification Time' picker. [Privacy] 'Privacy Hub' — shows data collected (selfies processed on-device, quiz answers stored, no biometric data sold). 'Delete My Data' — confirmation modal + haptic warning. [Account] 'Restore Purchases', 'Sign Out', 'Delete Account' (red, with password confirmation modal). [About] 'Privacy Policy', 'Terms of Service', 'Rate VibeSnap', 'Version 1.0.0'. Guest users see 'Create Account' CTA instead of profile section.",
+        "components": [
+          "SafeAreaView",
+          "ScrollView",
+          "ProfileSection (avatar + name + email)",
+          "SettingsRow with chevron",
+          "Switch for toggles",
+          "Pressable rows",
+          "DeleteAccountModal with password input",
+          "DeleteDataModal",
+          "GuestCTABanner"
+        ],
+        "api_calls": [
+          "GET /api/user/profile",
+          "PUT /api/user/profile",
+          "POST /api/auth/logout",
+          "DELETE /api/auth/account",
+          "POST /api/user/delete-data"
+        ]
+      },
+      {
+        "name": "paywall",
+        "route": "app/(protected)/paywall.tsx",
+        "description": "Paywall screen triggered at guest limit (3 vibes) or from settings. Hero: gradient background (#7C3AED → #0EA5E9) + 'Unlock Unlimited Vibes' heading. Benefit list with checkmark icons: 'Unlimited vibe reads', 'Full vibe history & trends', 'Exclusive vibe types', 'Priority AI analysis', 'No ads ever'. Plan cards: Weekly $2.99/week (no highlight), Monthly $4.99/month ('Most Popular' badge, highlighted border), Annual $39.99/year ('Best Value' badge, shows $3.33/month). 'Start Free Trial' gradient button (if eligible) or 'Subscribe' button. 'Restore Purchases' link below. 'Not now' dismiss link at bottom. Haptic on plan selection.",
+        "components": [
+          "LinearGradient header",
+          "BenefitList with Ionicons checkmarks",
+          "PlanCard x3 (Pressable, highlighted border for selected)",
+          "GradientButton 'Start Free Trial' / 'Subscribe'",
+          "Pressable 'Restore Purchases'",
+          "Pressable 'Not now'"
+        ],
+        "api_calls": [
+          "RevenueCat getOfferings()",
+          "RevenueCat purchasePackage()"
+        ]
+      },
+      {
+        "name": "share",
+        "route": "app/(protected)/share.tsx",
+        "description": "Share preview screen. Shows the rendered vibe card as it will appear when shared. Card is captured as image using react-native-view-shot. Preview of the card with VibeSnap watermark (small logo + 'vibeSnap' text bottom-right). Share options: 'Instagram Stories' (opens IG with sticker), 'Save to Photos', 'Copy Link', 'More...' (native share sheet). Referral code shown: 'Share your code: VIBE-{userCode} — friends get 1 extra free vibe'. Haptic on share success.",
+        "components": [
+          "ViewShot wrapper",
+          "VibeCardPreview (rendered result card)",
+          "WatermarkOverlay",
+          "ShareOptionButton x4 (Instagram, Save, Copy, More)",
+          "ReferralCodeBanner"
+        ],
+        "api_calls": [
+          "POST /api/vibes/{id}/share-link",
+          "GET /api/user/referral-code"
+        ]
+      }
+    ],
+    "flows": [
+      {
+        "name": "onboarding",
+        "steps": [
+          "index",
+          "onboarding",
+          "login"
+        ],
+        "description": "First launch: index checks AsyncStorage hasSeenOnboarding=false → shows 3-step onboarding → user taps 'Get Started' → login screen. Can skip to guest mode from login."
+      },
+      {
+        "name": "guest-flow",
+        "steps": [
+          "login",
+          "home",
+          "capture",
+          "analyze",
+          "result",
+          "paywall"
+        ],
+        "description": "Guest taps 'Continue as Guest' on login → home (empty state) → capture selfie → analyze → result (usage count incremented). After 3rd vibe, capture redirects to paywall instead of camera."
+      },
+      {
+        "name": "main-usage",
+        "steps": [
+          "home",
+          "capture",
+          "analyze",
+          "result",
+          "share"
+        ],
+        "description": "Authenticated user: home shows latest vibe + streak → tap 'Snap Your Vibe' or Capture tab → camera with face guide → take selfie → color extraction + optional quiz → result card with confetti → share to social."
+      },
+      {
+        "name": "history-review",
+        "steps": [
+          "history",
+          "result"
+        ],
+        "description": "User taps History tab → views timeline of past vibes → taps a card → views full result with option to re-share."
+      },
+      {
+        "name": "settings-management",
+        "steps": [
+          "settings",
+          "paywall"
+        ],
+        "description": "User taps Settings tab → manage profile, notifications, privacy, subscription. 'Upgrade' row navigates to paywall. 'Delete Account' triggers confirmation modal then logout."
+      },
+      {
+        "name": "daily-notification",
+        "steps": [
+          "home",
+          "capture",
+          "analyze",
+          "result"
+        ],
+        "description": "Push notification: 'Your daily vibe check is waiting! 🔥 Don't break your {N}-day streak!' → opens app to home → user taps capture → completes flow → streak incremented."
+      }
+    ],
+    "navigation_type": "custom-tab-bar",
+    "tab_bar_items": [
+      {
+        "label": "Home",
+        "icon": "home",
+        "icon_outline": "home-outline",
+        "route": "/(protected)/home",
+        "active_color": "#7C3AED",
+        "inactive_color": "#6B7280"
+      },
+      {
+        "label": "Snap",
+        "icon": "camera",
+        "icon_outline": "camera-outline",
+        "route": "/(protected)/capture",
+        "active_color": "#7C3AED",
+        "inactive_color": "#6B7280",
+        "emphasized": true,
+        "icon_size": 28
+      },
+      {
+        "label": "History",
+        "icon": "time",
+        "icon_outline": "time-outline",
+        "route": "/(protected)/history",
+        "active_color": "#7C3AED",
+        "inactive_color": "#6B7280"
+      },
+      {
+        "label": "Settings",
+        "icon": "settings",
+        "icon_outline": "settings-outline",
+        "route": "/(protected)/settings",
+        "active_color": "#7C3AED",
+        "inactive_color": "#6B7280"
+      }
+    ],
+    "mermaid_diagram": "graph TD\n    A[App Launch - index.tsx] -->|First Launch| B[Onboarding 3 Steps]\n    A -->|Has Account| F[Protected Home]\n    A -->|No Auth| C[Login Screen]\n    B --> C\n    C -->|Sign In| F\n    C -->|Register| D[Register Screen]\n    C -->|Apple Sign In| F\n    C -->|Continue as Guest| F\n    D -->|Auto-Login| F\n    F -->|Tap Snap / Capture Tab| G[Camera Capture]\n    G -->|Guest Limit Reached| P[Paywall]\n    G -->|Face Detected + Capture| H[Analyze Screen]\n    H -->|Color Extraction| I[Quiz Phase - Optional]\n    I -->|Complete or Skip| J[AI Processing]\n    J --> K[Result Card]\n    K -->|Share| L[Share Screen]\n    K -->|Save| F\n    K -->|Retake| G\n    L -->|Instagram/Save/Copy| M[External Share]\n    F -->|History Tab| N[History Timeline]\n    N -->|Tap Card| K\n    F -->|Settings Tab| O[Settings]\n    O -->|Upgrade| P\n    O -->|Sign Out| C\n    O -->|Delete Account| C\n    P -->|Subscribe| F\n    P -->|Not Now| F"
+  },
+  "backend_spec": {
+    "models": [
+      {
+        "name": "User",
+        "table": "users",
+        "fields": {
+          "ID": "uuid;default:gen_random_uuid();primaryKey",
+          "Email": "string;uniqueIndex;not null",
+          "PasswordHash": "string",
+          "AppleUserID": "string;uniqueIndex",
+          "DisplayName": "string;size:50",
+          "AvatarURL": "string",
+          "IsPremium": "bool;default:false",
+          "StreakCount": "int;default:0",
+          "LongestStreak": "int;default:0",
+          "LastVibeAt": "*time.Time",
+          "TotalVibes": "int;default:0",
+          "CreatedAt": "time.Time;autoCreateTime",
+          "UpdatedAt": "time.Time;autoUpdateTime",
+          "DeletedAt": "gorm.DeletedAt;index"
+        }
+      },
+      {
+        "name": "RefreshToken",
+        "table": "refresh_tokens",
+        "fields": {
+          "ID": "uuid;default:gen_random_uuid();primaryKey",
+          "UserID": "uuid;index;not null",
+          "Token": "string;uniqueIndex;not null",
+          "ExpiresAt": "time.Time;not null",
+          "CreatedAt": "time.Time;autoCreateTime",
+          "DeletedAt": "gorm.DeletedAt;index"
+        },
+        "relations": {
+          "User": "belongsTo User;foreignKey:UserID"
+        }
+      },
+      {
+        "name": "VibeAnalysis",
+        "table": "vibe_analyses",
+        "fields": {
+          "ID": "uuid;default:gen_random_uuid();primaryKey",
+          "UserID": "uuid;index;not null",
+          "VibeName": "string;size:60;not null",
+          "VibeEmoji": "string;size:10",
+          "EnergyScore": "int;not null;check:energy_score >= 0 AND energy_score <= 100",
+          "DominantColors": "jsonb;not null",
+          "TraitBadges": "jsonb;not null",
+          "GradientStart": "string;size:7;not null",
+          "GradientEnd": "string;size:7;not null",
+          "QuizAnswers": "jsonb",
+          "VibeDescription": "string;size:280",
+          "SelfieURL": "string",
+          "ShareToken": "string;uniqueIndex;size:12",
+          "IsPublic": "bool;default:true",
+          "CreatedAt": "time.Time;autoCreateTime",
+          "DeletedAt": "gorm.DeletedAt;index"
+        },
+        "relations": {
+          "User": "belongsTo User;foreignKey:UserID"
+        },
+        "indexes": [
+          "idx_user_created:UserID,CreatedAt DESC"
+        ]
+      },
+      {
+        "name": "DailyStreak",
+        "table": "daily_streaks",
+        "fields": {
+          "ID": "uuid;default:gen_random_uuid();primaryKey",
+          "UserID": "uuid;not null",
+          "Date": "date;not null",
+          "VibeAnalysisID": "uuid;not null",
+          "CreatedAt": "time.Time;autoCreateTime"
+        },
+        "relations": {
+          "User": "belongsTo User;foreignKey:UserID",
+          "VibeAnalysis": "belongsTo VibeAnalysis;foreignKey:VibeAnalysisID"
+        },
+        "indexes": [
+          "idx_user_date:UserID,Date UNIQUE"
+        ]
+      },
+      {
+        "name": "Subscription",
+        "table": "subscriptions",
+        "fields": {
+          "ID": "uuid;default:gen_random_uuid();primaryKey",
+          "UserID": "uuid;index;not null",
+          "RevenueCatID": "string;uniqueIndex",
+          "ProductID": "string;not null",
+          "Status": "string;not null;default:active",
+          "ExpiresAt": "time.Time",
+          "CreatedAt": "time.Time;autoCreateTime",
+          "UpdatedAt": "time.Time;autoUpdateTime",
+          "DeletedAt": "gorm.DeletedAt;index"
+        },
+        "relations": {
+          "User": "belongsTo User;foreignKey:UserID"
+        },
+        "status_enum": [
+          "active",
+          "expired",
+          "cancelled",
+          "billing_retry"
+        ]
+      },
+      {
+        "name": "Report",
+        "table": "reports",
+        "fields": {
+          "ID": "uuid;default:gen_random_uuid();primaryKey",
+          "ReporterID": "uuid;not null",
+          "ReportedUserID": "uuid",
+          "ReportedVibeID": "uuid",
+          "Reason": "string;not null",
+          "Details": "string;size:500",
+          "Status": "string;default:pending",
+          "AdminNote": "string",
+          "ResolvedAt": "*time.Time",
+          "CreatedAt": "time.Time;autoCreateTime",
+          "DeletedAt": "gorm.DeletedAt;index"
+        },
+        "relations": {
+          "Reporter": "belongsTo User;foreignKey:ReporterID",
+          "ReportedUser": "belongsTo User;foreignKey:ReportedUserID",
+          "ReportedVibe": "belongsTo VibeAnalysis;foreignKey:ReportedVibeID"
+        },
+        "status_enum": [
+          "pending",
+          "reviewed",
+          "actioned",
+          "dismissed"
+        ]
+      },
+      {
+        "name": "Block",
+        "table": "blocks",
+        "fields": {
+          "ID": "uuid;default:gen_random_uuid();primaryKey",
+          "BlockerID": "uuid;not null",
+          "BlockedID": "uuid;not null",
+          "CreatedAt": "time.Time;autoCreateTime",
+          "DeletedAt": "gorm.DeletedAt;index"
+        },
+        "relations": {
+          "Blocker": "belongsTo User;foreignKey:BlockerID",
+          "Blocked": "belongsTo User;foreignKey:BlockedID"
+        },
+        "indexes": [
+          "idx_blocker_blocked:BlockerID,BlockedID UNIQUE"
+        ]
+      },
+      {
+        "name": "PushToken",
+        "table": "push_tokens",
+        "fields": {
+          "ID": "uuid;default:gen_random_uuid();primaryKey",
+          "UserID": "uuid;index;not null",
+          "Token": "string;not null",
+          "Platform": "string;size:10;not null",
+          "CreatedAt": "time.Time;autoCreateTime",
+          "UpdatedAt": "time.Time;autoUpdateTime"
+        },
+        "relations": {
+          "User": "belongsTo User;foreignKey:UserID"
+        }
+      }
+    ],
+    "endpoints": [
+      {
+        "method": "GET",
+        "path": "/api/health",
+        "description": "Health check — returns server status, DB connectivity, uptime, and version string. Response: {\"status\": \"ok\", \"database\": \"connected\", \"uptime\": \"2h30m\", \"version\": \"1.0.0\"}",
+        "auth_required": false,
+        "request_body": null,
+        "response_body": "{\"status\": \"ok\", \"database\": \"connected\", \"uptime\": \"string\", \"version\": \"string\"}"
+      },
+      {
+        "method": "POST",
+        "path": "/api/auth/register",
+        "description": "Register with email and password. Hashes password with bcrypt (cost 12). Returns access token (15min), refresh token (7d), and user profile. Validates: email format, password min 8 chars.",
+        "auth_required": false,
+        "request_body": "{\"email\": \"string\", \"password\": \"string\", \"display_name\": \"string\"}",
+        "response_body": "{\"access_token\": \"string\", \"refresh_token\": \"string\", \"user\": {\"id\": \"uuid\", \"email\": \"string\", \"display_name\": \"string\", \"is_premium\": false, \"streak_count\": 0}}"
+      },
+      {
+        "method": "POST",
+        "path": "/api/auth/login",
+        "description": "Login with email/password. Returns JWT access token (15min exp, sub=userID, email claim) and refresh token (7d). Compares bcrypt hash.",
+        "auth_required": false,
+        "request_body": "{\"email\": \"string\", \"password\": \"string\"}",
+        "response_body": "{\"access_token\": \"string\", \"refresh_token\": \"string\", \"user\": {\"id\": \"uuid\", \"email\": \"string\", \"display_name\": \"string\", \"is_premium\": bool, \"streak_count\": int, \"total_vibes\": int}}"
+      },
+      {
+        "method": "POST",
+        "path": "/api/auth/apple",
+        "description": "Sign in with Apple. Accepts identity_token (JWT from Apple) and authorization_code. Verifies token with Apple JWKS. Creates user if new (apple_user_id lookup), otherwise logs in existing. Returns access + refresh tokens.",
+        "auth_required": false,
+        "request_body": "{\"identity_token\": \"string\", \"authorization_code\": \"string\", \"full_name\": \"string|null\"}",
+        "response_body": "{\"access_token\": \"string\", \"refresh_token\": \"string\", \"user\": {\"id\": \"uuid\", \"email\": \"string\", \"display_name\": \"string\", \"is_premium\": bool}, \"is_new_user\": bool}"
+      },
+      {
+        "method": "POST",
+        "path": "/api/auth/refresh",
+        "description": "Rotate refresh token. Validates current refresh token, deletes it, issues new access + refresh token pair. Token rotation prevents replay attacks.",
+        "auth_required": false,
+        "request_body": "{\"refresh_token\": \"string\"}",
+        "response_body": "{\"access_token\": \"string\", \"refresh_token\": \"string\"}"
+      },
+      {
+        "method": "POST",
+        "path": "/api/auth/logout",
+        "description": "Sign out — deletes the refresh token from DB, invalidating the session. Access token remains valid until expiry (15min max).",
+        "auth_required": true,
+        "request_body": "{\"refresh_token\": \"string\"}",
+        "response_body": "{\"message\": \"Logged out successfully\"}"
+      },
+      {
+        "method": "DELETE",
+        "path": "/api/auth/account",
+        "description": "Delete account permanently (Apple Guideline 5.1.1). Requires password confirmation for email users. Soft-deletes user, hard-deletes all refresh tokens, soft-deletes all vibe analyses. Irreversible from user perspective.",
+        "auth_required": true,
+        "request_body": "{\"password\": \"string|null\"}",
+        "response_body": "{\"message\": \"Account deleted successfully\"}"
+      },
+      {
+        "method": "POST",
+        "path": "/api/vibes/analyze",
+        "description": "Submit vibe analysis data from on-device processing. Client sends extracted color palette and optional quiz answers. Server generates vibe name, energy score, trait badges, gradient colors, and description using deterministic algorithm (no external AI call). Increments user total_vibes count. Updates streak if first vibe of the day. Returns complete vibe card data.",
+        "auth_required": true,
+        "request_body": "{\"dominant_colors\": [{\"hex\": \"#7C3AED\", \"percentage\": 35.2, \"label\": \"clothing\"}, {\"hex\": \"#F5E6D3\", \"percentage\": 28.1, \"label\": \"skin\"}, {\"hex\": \"#87CEEB\", \"percentage\": 20.4, \"label\": \"background\"}], \"quiz_answers\": [{\"question_id\": 1, \"answer_index\": 2}, {\"question_id\": 2, \"answer_index\": 0}, {\"question_id\": 3, \"answer_index\": 1}] | null}",
+        "response_body": "{\"vibe\": {\"id\": \"uuid\", \"vibe_name\": \"Cosmic Dreamer\", \"vibe_emoji\": \"✨\", \"energy_score\": 78, \"dominant_colors\": [...], \"trait_badges\": [\"Creative\", \"Intuitive\", \"Bold\"], \"gradient_start\": \"#7C3AED\", \"gradient_end\": \"#0EA5E9\", \"vibe_description\": \"Your energy radiates creative confidence with an intuitive edge.\", \"share_token\": \"abc123xyz789\", \"created_at\": \"2026-02-14T10:30:00Z\"}, \"streak\": {\"current\": 5, \"longest\": 12, \"is_new_today\": true}}"
+      },
+      {
+        "method": "GET",
+        "path": "/api/vibes/history",
+        "description": "Get paginated vibe history for authenticated user. Ordered by created_at DESC. Supports cursor-based pagination. Returns energy score trend data for timeline visualization.",
+        "auth_required": true,
+        "request_body": null,
+        "response_body": "{\"vibes\": [{\"id\": \"uuid\", \"vibe_name\": \"string\", \"vibe_emoji\": \"string\", \"energy_score\": int, \"gradient_start\": \"string\", \"gradient_end\": \"string\", \"trait_badges\": [\"string\"], \"created_at\": \"datetime\"}], \"next_cursor\": \"string|null\", \"has_more\": bool, \"total_count\": int}"
+      },
+      {
+        "method": "GET",
+        "path": "/api/vibes/:id",
+        "description": "Get a specific vibe analysis by ID. Only accessible by the vibe owner. Returns full vibe card data including selfie URL and quiz answers.",
+        "auth_required": true,
+        "request_body": null,
+        "response_body": "{\"vibe\": {\"id\": \"uuid\", \"vibe_name\": \"string\", \"vibe_emoji\": \"string\", \"energy_score\": int, \"dominant_colors\": [...], \"trait_badges\": [\"string\"], \"gradient_start\": \"string\", \"gradient_end\": \"string\", \"quiz_answers\": [...] | null, \"vibe_description\": \"string\", \"selfie_url\": \"string|null\", \"share_token\": \"string\", \"is_public\": bool, \"created_at\": \"datetime\"}}"
+      },
+      {
+        "method": "GET",
+        "path": "/api/vibes/shared/:shareToken",
+        "description": "Get a publicly shared vibe card by share token. No auth required. Returns limited vibe data (no selfie, no quiz answers) for social sharing. Checks is_public flag. Returns 404 if token invalid or vibe set to private.",
+        "auth_required": false,
+        "request_body": null,
+        "response_body": "{\"vibe\": {\"vibe_name\": \"string\", \"vibe_emoji\": \"string\", \"energy_score\": int, \"trait_badges\": [\"string\"], \"gradient_start\": \"string\", \"gradient_end\": \"string\", \"vibe_description\": \"string\", \"created_at\": \"datetime\", \"user_display_name\": \"string\"}}"
+      },
+      {
+        "method": "PUT",
+        "path": "/api/vibes/:id/visibility",
+        "description": "Toggle vibe card public/private visibility. Only the owner can change visibility. Affects whether the share_token link works.",
+        "auth_required": true,
+        "request_body": "{\"is_public\": bool}",
+        "response_body": "{\"id\": \"uuid\", \"is_public\": bool, \"share_token\": \"string\"}"
+      },
+      {
+        "method": "DELETE",
+        "path": "/api/vibes/:id",
+        "description": "Soft-delete a vibe analysis. Only the owner can delete. Decrements user total_vibes count.",
+        "auth_required": true,
+        "request_body": null,
+        "response_body": "{\"message\": \"Vibe deleted successfully\"}"
+      },
+      {
+        "method": "GET",
+        "path": "/api/vibes/stats",
+        "description": "Get user's vibe statistics — total count, current streak, longest streak, average energy score, most common vibe name, most common traits, energy trend (last 7 days as array of scores). Used for profile/settings display.",
+        "auth_required": true,
+        "request_body": null,
+        "response_body": "{\"total_vibes\": int, \"current_streak\": int, \"longest_streak\": int, \"avg_energy_score\": float, \"most_common_vibe\": \"string\", \"top_traits\": [\"string\"], \"energy_trend_7d\": [int], \"member_since\": \"datetime\"}"
+      },
+      {
+        "method": "GET",
+        "path": "/api/vibes/streak",
+        "description": "Get current streak details with daily breakdown. Returns streak calendar data for the current week/month. Includes motivational messaging based on streak length. Used by notification system and home screen streak widget.",
+        "auth_required": true,
+        "request_body": null,
+        "response_body": "{\"current_streak\": int, \"longest_streak\": int, \"streak_days\": [{\"date\": \"2026-02-14\", \"has_vibe\": true, \"energy_score\": 78}], \"motivation_message\": \"string\", \"next_milestone\": int}"
+      },
+      {
+        "method": "GET",
+        "path": "/api/quiz/questions",
+        "description": "Get the current set of 3 micro-quiz questions. Questions rotate weekly (seeded by ISO week number). Each question has 4 answer options. No auth required so guests can preview.",
+        "auth_required": false,
+        "request_body": null,
+        "response_body": "{\"questions\": [{\"id\": 1, \"text\": \"Pick the word that resonates with you right now:\", \"options\": [\"Serene\", \"Electric\", \"Grounded\", \"Wild\"]}, {\"id\": 2, \"text\": \"Your ideal Saturday morning:\", \"options\": [\"Sunrise yoga\", \"Coffee & creating\", \"Sleep in late\", \"Adventure outdoors\"]}, {\"id\": 3, \"text\": \"Choose an element:\", \"options\": [\"Fire\", \"Water\", \"Earth\", \"Air\"]}], \"week_number\": int}"
+      },
+      {
+        "method": "POST",
+        "path": "/api/push/register",
+        "description": "Register Expo push notification token. Upserts — if token already exists for user, updates platform. If new, creates entry. Used for daily vibe check reminders and streak-at-risk alerts.",
+        "auth_required": true,
+        "request_body": "{\"token\": \"ExponentPushToken[xxxxx]\", \"platform\": \"ios\"}",
+        "response_body": "{\"message\": \"Push token registered\"}"
+      },
+      {
+        "method": "DELETE",
+        "path": "/api/push/unregister",
+        "description": "Remove push notification token on logout or notification opt-out.",
+        "auth_required": true,
+        "request_body": "{\"token\": \"string\"}",
+        "response_body": "{\"message\": \"Push token removed\"}"
+      },
+      {
+        "method": "GET",
+        "path": "/api/user/profile",
+        "description": "Get current user profile with subscription status and streak info. Checks subscription expiry and updates is_premium if expired.",
+        "auth_required": true,
+        "request_body": null,
+        "response_body": "{\"user\": {\"id\": \"uuid\", \"email\": \"string\", \"display_name\": \"string\", \"avatar_url\": \"string|null\", \"is_premium\": bool, \"streak_count\": int, \"longest_streak\": int, \"total_vibes\": int, \"member_since\": \"datetime\"}, \"subscription\": {\"product_id\": \"string\", \"status\": \"string\", \"expires_at\": \"datetime\"} | null}"
+      },
+      {
+        "method": "PUT",
+        "path": "/api/user/profile",
+        "description": "Update user profile fields. Only display_name and avatar_url are updatable. Validates display_name length (2-50 chars).",
+        "auth_required": true,
+        "request_body": "{\"display_name\": \"string|null\", \"avatar_url\": \"string|null\"}",
+        "response_body": "{\"user\": {\"id\": \"uuid\", \"display_name\": \"string\", \"avatar_url\": \"string|null\", \"updated_at\": \"datetime\"}}"
+      },
+      {
+        "method": "POST",
+        "path": "/api/reports",
+        "description": "Report inappropriate content or user (Apple Guideline 1.2). Can report a vibe card (reported_vibe_id) or a user (reported_user_id). Reason required, details optional. Prevents duplicate reports from same reporter on same target.",
+        "auth_required": true,
+        "request_body": "{\"reported_user_id\": \"uuid|null\", \"reported_vibe_id\": \"uuid|null\", \"reason\": \"inappropriate|spam|harassment|other\", \"details\": \"string|null\"}",
+        "response_body": "{\"report_id\": \"uuid\", \"message\": \"Report submitted. We'll review it within 24 hours.\"}"
+      },
+      {
+        "method": "POST",
+        "path": "/api/blocks",
+        "description": "Block a user. Blocked user's shared vibes will not appear to the blocker. Cannot block yourself.",
+        "auth_required": true,
+        "request_body": "{\"blocked_user_id\": \"uuid\"}",
+        "response_body": "{\"block_id\": \"uuid\", \"message\": \"User blocked\"}"
+      },
+      {
+        "method": "DELETE",
+        "path": "/api/blocks/:id",
+        "description": "Unblock a user by block record ID. Only the blocker can remove their own blocks.",
+        "auth_required": true,
+        "request_body": null,
+        "response_body": "{\"message\": \"User unblocked\"}"
+      },
+      {
+        "method": "GET",
+        "path": "/api/admin/moderation/reports",
+        "description": "List all reports with pagination and status filter. Admin-only endpoint. Includes reporter and reported user/vibe details. Query params: ?status=pending&page=1&limit=20",
+        "auth_required": true,
+        "request_body": null,
+        "response_body": "{\"reports\": [{\"id\": \"uuid\", \"reporter\": {\"id\": \"uuid\", \"email\": \"string\"}, \"reported_user\": {...}|null, \"reported_vibe\": {...}|null, \"reason\": \"string\", \"details\": \"string|null\", \"status\": \"string\", \"created_at\": \"datetime\"}], \"total\": int, \"page\": int, \"limit\": int}"
+      },
+      {
+        "method": "PUT",
+        "path": "/api/admin/moderation/reports/:id",
+        "description": "Action a report — mark as reviewed, actioned (content removed), or dismissed. Admin-only. If actioned, optionally soft-delete the reported vibe. Sets resolved_at timestamp and admin_note.",
+        "auth_required": true,
+        "request_body": "{\"status\": \"reviewed|actioned|dismissed\", \"admin_note\": \"string|null\", \"delete_content\": bool}",
+        "response_body": "{\"report\": {\"id\": \"uuid\", \"status\": \"string\", \"admin_note\": \"string\", \"resolved_at\": \"datetime\"}}"
+      },
+      {
+        "method": "POST",
+        "path": "/api/webhooks/revenuecat",
+        "description": "RevenueCat webhook handler. Validates webhook authorization header. Handles events: INITIAL_PURCHASE, RENEWAL, CANCELLATION, EXPIRATION, BILLING_ISSUE_DETECTED, SUBSCRIBER_ALIAS. Updates subscription status and user is_premium flag. Idempotent — same event processed only once.",
+        "auth_required": false,
+        "request_body": "RevenueCat webhook payload (event type, app_user_id, product_id, expiration_at, etc.)",
+        "response_body": "{\"status\": \"ok\"}"
+      }
+    ],
+    "services": [
+      "AuthService — NewAuthService(db *gorm.DB, jwtSecret string). Methods: Register(email, password, displayName) → (user, accessToken, refreshToken, error). Login(email, password) → (user, accessToken, refreshToken, error). AppleSignIn(identityToken, authCode, fullName) → (user, accessToken, refreshToken, isNew, error). RefreshTokens(refreshToken) → (accessToken, newRefreshToken, error). Logout(userID, refreshToken) → error. DeleteAccount(userID, password) → error. Internal: generateAccessToken(user) signs JWT with sub=userID, email claim, 15min exp. generateRefreshToken() creates crypto/rand 32-byte token, stores hashed in DB with 7d expiry. rotateRefreshToken() deletes old, creates new (rotation prevents replay).",
+      "VibeService — NewVibeService(db *gorm.DB). Methods: Analyze(userID, dominantColors, quizAnswers) → (vibeAnalysis, streakInfo, error). GetHistory(userID, cursor, limit) → (vibes, nextCursor, hasMore, totalCount, error). GetByID(userID, vibeID) → (vibeAnalysis, error). GetShared(shareToken) → (vibeAnalysis, error). UpdateVisibility(userID, vibeID, isPublic) → error. Delete(userID, vibeID) → error. GetStats(userID) → (stats, error). Internal: calculateVibe(colors, quizAnswers) deterministic algorithm — maps color HSL values to vibe archetypes (Cosmic Dreamer, Serene Soul, Electric Storm, Earth Guardian, etc.). Energy score = weighted sum of color saturation (40%) + brightness (30%) + quiz modifier (30%). generateShareToken() creates 12-char alphanumeric token. selectTraitBadges(colors, quiz) picks 3 traits from pool of 20 based on color+quiz combination.",
+      "StreakService — NewStreakService(db *gorm.DB). Methods: RecordDaily(userID, vibeAnalysisID) → (currentStreak, longestStreak, isNewToday, error). GetStreak(userID) → (currentStreak, longestStreak, streakDays, motivationMessage, nextMilestone, error). GetStreakCalendar(userID, month) → ([]streakDay, error). Internal: calculateStreak(userID) counts consecutive days backwards from today where daily_streaks entry exists. Updates user streak_count and longest_streak. Motivation messages: 1-2 days='Just getting started!', 3-6='Building momentum!', 7-13='One week strong!', 14-29='Unstoppable energy!', 30+='Legendary vibes!'. Next milestone = next value in [3, 7, 14, 30, 60, 100, 365].",
+      "QuizService — NewQuizService(). Methods: GetQuestions(weekNumber) → ([]question, error). Internal: maintains pool of 30 questions grouped into 10 sets of 3. weekNumber % 10 selects the active set. Questions designed to modulate vibe output — each answer maps to energy modifier (-10 to +15) and trait affinity weights.",
+      "SubscriptionService — NewSubscriptionService(db *gorm.DB). Methods: HandleWebhook(event RevenueCatEvent) → error. GetSubscription(userID) → (subscription, error). IsUserPremium(userID) → (bool, error). Internal: processInitialPurchase() creates subscription record, sets user.is_premium=true. processRenewal() updates expires_at. processCancellation() sets status=cancelled but keeps premium until expires_at. processExpiration() sets status=expired, user.is_premium=false. processBillingIssue() sets status=billing_retry. Idempotency via unique RevenueCatID field.",
+      "ModerationService — NewModerationService(db *gorm.DB). Methods: CreateReport(reporterID, reportedUserID, reportedVibeID, reason, details) → (report, error). ListReports(status, page, limit) → (reports, total, error). ActionReport(reportID, status, adminNote, deleteContent) → (report, error). IsBlocked(blockerID, blockedID) → (bool, error). Internal: validates no duplicate reports (same reporter + same target). If deleteContent=true on action, soft-deletes the reported vibe.",
+      "BlockService — NewBlockService(db *gorm.DB). Methods: BlockUser(blockerID, blockedID) → (block, error). UnblockUser(blockerID, blockID) → error. GetBlockedIDs(userID) → ([]uuid, error). Internal: prevents self-blocking, checks for existing block before creating.",
+      "PushService — NewPushService(db *gorm.DB). Methods: RegisterToken(userID, token, platform) → error. UnregisterToken(userID, token) → error. SendNotification(userID, title, body, data) → error. SendStreakReminder(userID, streakCount) → error. Internal: uses Expo Push API (https://exp.host/--/api/v2/push/send). SendStreakReminder formats loss-aversion message: streakCount>0 → 'Your {N}-day streak is at risk! Snap a vibe to keep it alive 🔥', streakCount==0 → 'Start a new vibe streak today ✨'.",
+      "UserService — NewUserService(db *gorm.DB). Methods: GetProfile(userID) → (user, subscription, error). UpdateProfile(userID, displayName, avatarURL) → (user, error). Internal: GetProfile checks subscription expiry and auto-updates is_premium if subscription has expired."
+    ]
+  },
+  "monetization_model": "Freemium: 3 free analyses for guests, 1 daily free vibe for registered users. Premium at $2.99/week or $4.99/month or $29.99/year unlocks unlimited daily vibes, custom card themes, HD export, vibe history analytics, and exclusive vibe archetypes.",
+  "subscription_tiers": [
+    {
+      "name": "Free",
+      "price": "0",
+      "features": [
+        "3 uses/day",
+        "Basic features",
+        "Ads"
+      ]
+    },
+    {
+      "name": "Premium",
+      "price": "$4.99/month",
+      "features": [
+        "Unlimited",
+        "All features",
+        "No ads"
+      ]
+    },
+    {
+      "name": "Annual",
+      "price": "$39.99/year",
+      "features": [
+        "All Premium",
+        "33% savings"
+      ]
+    }
+  ],
+  "tech_stack": {
+    "mobile": "Expo SDK 54 + React Native 0.81 + NativeWind v4 + Expo Router v6",
+    "backend": "Go-Fiber v2 + GORM + PostgreSQL",
+    "auth": "JWT + Sign in with Apple",
+    "payments": "RevenueCat",
+    "deployment": "Coolify PaaS",
+    "ci_cd": "EAS Build + Fastlane"
+  },
+  "apple_compliance": [
+    "4.8 Sign in with Apple",
+    "5.1.1 Account Deletion",
+    "1.2 UGC Safety (Report + Block)",
+    "3.1.1 IAP via RevenueCat",
+    "5.1 Privacy Policy"
+  ],
+  "generated_at": "2026-02-14T12:42:23.589721+00:00",
+  "pipeline_version": "1.0.0"
+}

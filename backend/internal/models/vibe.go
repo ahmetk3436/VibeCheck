@@ -10,7 +10,8 @@ import (
 // VibeCheck represents a daily vibe/mood check
 type VibeCheck struct {
 	ID          uuid.UUID      `gorm:"type:uuid;default:gen_random_uuid();primaryKey" json:"id"`
-	UserID      uuid.UUID      `gorm:"type:uuid;not null;index" json:"user_id"`
+	UserID      *uuid.UUID     `gorm:"type:uuid;index" json:"user_id"`
+	DeviceID    *string        `gorm:"type:varchar(100);index" json:"device_id,omitempty"`
 	MoodText    string         `gorm:"size:500" json:"mood_text"`
 	Aesthetic   string         `gorm:"size:100" json:"aesthetic"`
 	ColorPrimary   string      `gorm:"size:7" json:"color_primary"`
@@ -18,6 +19,7 @@ type VibeCheck struct {
 	ColorAccent    string      `gorm:"size:7" json:"color_accent"`
 	VibeScore   int            `gorm:"default:50" json:"vibe_score"`
 	Emoji       string         `gorm:"size:10" json:"emoji"`
+	Insight     string         `gorm:"size:500" json:"insight"`
 	CheckDate   time.Time      `gorm:"type:date;not null" json:"check_date"`
 	CreatedAt   time.Time      `json:"created_at"`
 	UpdatedAt   time.Time      `json:"updated_at"`
